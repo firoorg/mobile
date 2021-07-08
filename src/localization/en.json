@@ -1,0 +1,168 @@
+{
+  "global": {
+    "firo": "Firo",
+    "balance": "Balance"
+  },
+
+  "component_button": {
+    "copy": "copy",
+    "max": "Max",
+    "get_firo": "Get Firo",
+    "cancel": "Cancel",
+    "ok": "OK"
+  },
+
+  "component_input": {
+    "mnemonic_input_hint": "enter your mnemonic here:",
+    "passphrase_input_hint": "Passphrase"
+  },
+
+  "create_address_card": {
+    "current_address": "Current Address:",
+    "address_name": "Address Name",
+    "save_address": "Save Address"
+  },
+
+  "empty_state": {
+    "no_transaction": "You Don’t Have Transactions Yet",
+    "short_description": "Short Description Here"
+  },
+
+  "send_address": {
+    "address": "Address"
+  },
+
+  "amount_input": {
+    "enter_amount": "Enter Amount",
+    "amount": "Amount"
+  },
+
+  "transaction_list_item": {
+    "received": "Received",
+    "sent": "Sent"
+  },
+
+  "welcome_screen": {
+    "title": "Welcome to Firo",
+    "body_part_1": "Create your wallet to manage your Firo Coins.",
+    "body_part_2": "Or",
+    "body_part_3": "Restore your already existing wallet.",
+    "create_wallet": "Create Wallet",
+    "creating": "Creating...",
+    "restore_wallet": "Restore Wallet"
+  },
+
+  "mnemonic_view_screen": {
+    "title": "Backup Mnemonic",
+    "body_part_1": "Write down/copy this mnemonic and keep it somewhere safe.",
+    "body_part_2": "These 24 words below store all the data and transactions of your Firo wallet. It will restore your wallet in case you lose your device.",
+    "continue": "Continue"
+  },
+
+  "mnemonic_input_screen": {
+    "title": "Enter Mnemonic",
+    "body_part_1": "Enter your mnemonic bellow, which you saved while creating your wallet.",
+    "body_part_2": "These 24 words below store all the data and transactions of your Firo wallet. It will restore your wallet in case you lose your device.",
+    "continue": "Continue",
+    "restoring": "Restoring"
+  },
+
+  "passphrase_screen": {
+    "title": "Create Passphrase",
+    "body": "You will use this passphrase for unlocking your wallet every time you enter it.",
+    "create": "Create",
+    "creating": "Creating..."
+  },
+  
+  "enter_passphrase_screen": {
+    "title": "Enter Passphrase",
+    "body": "For unlock wallet",
+    "login": "Login",
+    "loading": "Loading..."
+  },
+
+  "transaction_details": {
+    "title": "Transaction Details",
+    "transaction_id": "Transaction ID",
+    "sent": "Sent",
+    "received": "Received",
+    "sent_to": "Sent to",
+    "received_from": "Received from",
+    "label": "Label",
+    "fee": "Fee"
+  },
+
+  "send_screen": {
+    "title": "Send Firo",
+    "label_optional": "Label (optional)",
+    "transaction_fee": "Transaction Fee",
+    "total_send_amount": "Total Send Amount",
+    "send": "Send",
+    "reduce_fee": "Reduce Fee From Amount"
+  },
+
+  "receive_screen": {
+    "title": "Receive Firo",
+    "scan_qr": "Scan this QR code",
+    "select_from_saved_address": "Select From Saved Addresses"
+  },
+
+  "my_wallet_screen": {
+    "title": "My Wallet"
+  },
+
+  "address_details_screen": {
+    "title": "Add New Address",
+    "address": "Address",
+    "name": "Name"
+  },
+
+  "address_book_screen": {
+    "title": "Addressbook",
+    "add_new": "Add New"
+  },
+
+  "add_edit_address_screen": {
+    "edit_address": "Edit Address",
+    "add_new_address": "Add New Address",
+    "address": "Address",
+    "name": "Name",
+    "save": "Save"
+  },
+
+  "scan_qrcode_screen": {
+    "invalid_qrcode_fragment": "Invalid animated QRCode fragment. Please try again.",
+    "camera_use_permission_title": "Permission to use camera",
+    "camera_use_permission_message": "We need your permission to use your camera.",
+    "open_settings": "Open Settings"
+  },
+
+  "settings": {
+    "title": "Settings",
+    "title_currency": "Currency",
+    "description_currency": "Set your preffered fiat currency.",
+    "title_notification": "Notification",
+    "description_notification": "Show notification for incoming transactions.",
+    "title_passphrase": "Change passphrase",
+    "description_passphrase": "Update your Firo mobile wallet passphrase.",
+    "title_mnemonic": "Show my mnemonic recovery",
+    "description_mnemonic": "Double check your mnemonic recovery phrase.",
+    "title_restore": "Restore wallet",
+    "description_restore": "Restore existing Firo mobile wallet.",
+    "title_fingerprint": "Fingerprint",
+    "description_fingerprint": "Set up fingerprint configuration",
+    "button_done": "Done"
+  },
+
+  "currencies": {
+    "usd": "USD",
+    "eur": "EUR",
+    "gbp": "GBP",
+    "aud": "AUD",
+    "btc": "BTC"
+  },
+
+  "errors": {
+    "error": "Error"
+  }
+}
