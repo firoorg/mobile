@@ -1,5 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ToastAndroid,
+} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {BottomSheet, ListItem, Avatar} from 'react-native-elements';
 import {FiroToolbarWithoutBack} from '../components/Toolbar';
@@ -46,6 +53,11 @@ const AddressBookScreen = () => {
   const onCopyPress = () => {
     if (currentAddress !== undefined) {
       Clipboard.setString(currentAddress.address);
+      ToastAndroid.showWithGravity(
+        localization.address_book_screen.address_copied,
+        ToastAndroid.SHORT,
+        ToastAndroid.TOP,
+      );
     }
     onCancelPress();
   };
@@ -91,31 +103,41 @@ const AddressBookScreen = () => {
         <ListItem onPress={onCopyPress}>
           <Avatar source={require('../img/ic_copy.png')} />
           <ListItem.Content>
-            <ListItem.Title>Edit</ListItem.Title>
+            <ListItem.Title>
+              {localization.address_book_menu_screen.copy}
+            </ListItem.Title>
           </ListItem.Content>
         </ListItem>
         <ListItem onPress={onViewPress}>
           <Avatar source={require('../img/ic_view.png')} />
           <ListItem.Content>
-            <ListItem.Title>Edit</ListItem.Title>
+            <ListItem.Title>
+              {localization.address_book_menu_screen.view}
+            </ListItem.Title>
           </ListItem.Content>
         </ListItem>
         <ListItem onPress={onEditPress}>
           <Avatar source={require('../img/ic_edit.png')} />
           <ListItem.Content>
-            <ListItem.Title>Edit</ListItem.Title>
+            <ListItem.Title>
+              {localization.address_book_menu_screen.edit}
+            </ListItem.Title>
           </ListItem.Content>
         </ListItem>
         <ListItem onPress={onDeletePress}>
           <Avatar source={require('../img/ic_delete.png')} />
           <ListItem.Content>
-            <ListItem.Title>Delete</ListItem.Title>
+            <ListItem.Title>
+              {localization.address_book_menu_screen.delete}
+            </ListItem.Title>
           </ListItem.Content>
         </ListItem>
         <ListItem onPress={onCancelPress}>
           <Avatar source={require('../img/ic_close.png')} />
           <ListItem.Content>
-            <ListItem.Title>Cancel</ListItem.Title>
+            <ListItem.Title>
+              {localization.address_book_menu_screen.cancel}
+            </ListItem.Title>
           </ListItem.Content>
         </ListItem>
       </BottomSheet>

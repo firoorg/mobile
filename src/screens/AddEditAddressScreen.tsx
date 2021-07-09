@@ -1,5 +1,11 @@
 import React, {FC, useState} from 'react';
-import {StyleSheet, View, TextInput} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  TextInput,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {FiroToolbar} from '../components/Toolbar';
 import {CurrentFiroTheme} from '../Themes';
@@ -52,12 +58,31 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
               : localization.add_edit_address_screen.add_new_address
           }
         />
-        <TextInput
-          style={styles.label}
-          value={address}
-          placeholder={localization.add_edit_address_screen.address}
-          onChangeText={txt => setAddress(txt)}
-        />
+        <View style={[styles.card]}>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder={localization.send_address.address}
+              value={address}
+              onChangeText={txt => setAddress(txt)}
+            />
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              NavigationService.navigate('ScanQRCode', {
+                screen: 'ScanQRCodeScreen' as any,
+                params: {
+                  onBarScanned: (info: {data: string}) => {
+                    if (info.data) {
+                      setAddress(info.data);
+                    }
+                  },
+                },
+              });
+            }}>
+            <Image style={styles.icon} source={require('../img/ic_scan.png')} />
+          </TouchableOpacity>
+        </View>
         <TextInput
           style={styles.label}
           value={name}
@@ -83,6 +108,36 @@ const styles = StyleSheet.create({
     height: '100%',
     display: 'flex',
     padding: 30,
+  },
+  card: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 25,
+    elevation: 2,
+    width: '100%',
+  },
+  inputContainer: {
+    flexGrow: 1,
+    width: 0,
+  },
+  input: {
+    marginLeft: 20,
+    fontFamily: 'Rubik-Medium',
+    fontWeight: '500',
+    fontSize: 14,
+    color: 'rgba(15, 14, 14, 0.5)',
+  },
+  divider: {
+    width: 30,
+    marginHorizontal: -15,
+    transform: [{rotate: '90deg'}],
+  },
+  icon: {
+    marginHorizontal: 10,
+    width: 24,
+    height: 24,
   },
   label: {
     backgroundColor: colors.cardBackground,

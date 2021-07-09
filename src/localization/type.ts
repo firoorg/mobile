@@ -123,6 +123,15 @@ export interface IString extends LocalizedStringsMethods {
   address_book_screen: {
     title: string;
     add_new: string;
+    address_copied: string;
+  };
+
+  address_book_menu_screen: {
+    copy: string;
+    view: string;
+    edit: string;
+    delete: string;
+    cancel: string;
   };
 
   add_edit_address_screen: {

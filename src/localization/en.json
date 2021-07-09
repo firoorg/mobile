@@ -119,7 +119,16 @@
 
   "address_book_screen": {
     "title": "Addressbook",
-    "add_new": "Add New"
+    "add_new": "Add New",
+    "address_copied": "Address copied"
+  },
+
+  "address_book_menu_screen": {
+    "copy": "Copy",
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel"
   },
 
   "add_edit_address_screen": {

@@ -1,6 +1,7 @@
 import React, {useContext} from 'react';
 import * as NavigationService from '../NavigationService';
-import {Image, StyleSheet, View, Clipboard} from 'react-native';
+import {Image, StyleSheet, View} from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
 import {FiroSecondaryButton} from '../components/Button';
 import {FiroToolbar} from '../components/Toolbar';
 import {MnemonicText} from '../components/Mnemonic';
