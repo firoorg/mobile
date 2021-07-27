@@ -1,0 +1,3 @@
+[submodule "react-native-lelantus/native-libs/liblelantus"]
+	path = react-native-lelantus/native-libs/liblelantus
+	url = https://github.com/firoorg/mobileliblelantus.git

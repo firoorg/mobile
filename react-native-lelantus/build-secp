@@ -1,0 +1,8 @@
+#!/bin/bash
+set -u
+set -e
+
+echo Build Started
+
+./build-secp-android.sh
+./build-secp-ios.sh
