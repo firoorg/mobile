@@ -6,24 +6,27 @@ import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
 import {firoElectrum} from '../core/FiroElectrum';
 import {Currency} from '../utils/currency';
-import { AppStorage } from '../app-storage';
-import { CoreSettings } from '../core/CoreSettings';
+import {AppStorage} from '../app-storage';
+import {CoreSettings} from '../core/CoreSettings';
 
 const {colors} = CurrentFiroTheme;
 
 const SplashScreen = () => {
-  const { isStorageEncrypted, setSettings } = useContext(FiroContext);
+  const {isStorageEncrypted, setSettings} = useContext(FiroContext);
 
   const replaceStackNavigation = async () => {
     let coreSettings: CoreSettings | undefined;
     try {
-      coreSettings = JSON.parse(await new AppStorage().getItem(AppStorage.SETTINGS));
+      coreSettings = JSON.parse(
+        await new AppStorage().getItem(AppStorage.SETTINGS),
+      );
       if (coreSettings) {
         await setSettings(coreSettings, true);
       }
-    }
-    catch (error) { }
-    await Currency.setCurrentCurrency(coreSettings ? coreSettings.defaultCurrency : 'usd');
+    } catch (error) {}
+    await Currency.setCurrentCurrency(
+      coreSettings ? coreSettings.defaultCurrency : 'usd',
+    );
     if (await isStorageEncrypted()) {
       NavigationService.dispatch(StackActions.replace('EnterWallet'));
     } else {
@@ -35,7 +38,7 @@ const SplashScreen = () => {
   useEffect(() => {
     firoElectrum.connectMain();
     replaceStackNavigation();
-  }, []);
+  });
 
   return (
     <View style={styles.root}>

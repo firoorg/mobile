@@ -3,6 +3,8 @@ import {AbstractWallet} from './core/AbstractWallet';
 import AsyncStorage from '@react-native-community/async-storage';
 import RNSecureKeyStore, {ACCESSIBLE} from 'react-native-secure-key-store';
 import {AddressBookItem} from './data/AddressBookItem';
+const Realm = require('realm');
+const createHash = require('create-hash');
 
 const encryption = require('./utils/encryption');
 
@@ -19,6 +21,10 @@ export class AppStorage {
   static DELETE_WALLET_AFTER_UNINSTALL = 'deleteWalletAfterUninstall';
   static ADDRESS_BOOK = 'address_book';
   static SETTINGS = 'settings';
+
+  private wallet: AbstractWallet | null = null;
+  // private tx_metadata: Array<> = {};
+  private cachedPassword: string | null = null;
 
   /**
    * Wrapper for storage call. Secure store works only in RN environment. AsyncStorage is
@@ -59,13 +65,51 @@ export class AppStorage {
     }
   };
 
+  /**
+   * Returns instace of the Realm database, which is encrypted by user's password.
+   * Database file is deterministically derived from encryption key.
+   *
+   * @returns {Promise<Realm>}
+   */
+  async getRealm(): Promise<typeof Realm> {
+    const password = this.hashIt(this.cachedPassword || 'fyegjitkyf[eqjnc.lf');
+    const buf = Buffer.from(
+      this.hashIt(password) + this.hashIt(password),
+      'hex',
+    );
+    const encryptionKey = Int8Array.from(buf);
+    const path = this.hashIt(this.hashIt(password)) + '-wallets.realm';
+
+    const schema = [
+      {
+        name: 'Transaction',
+        properties: {
+          _txs_by_external_index: 'string', // stringified json
+          _txs_by_internal_index: 'string', // stringified json
+        },
+      },
+    ];
+    return Realm.open({
+      schema,
+      path,
+      encryptionKey,
+    });
+  }
+
+  hashIt = (s: string) => {
+    return createHash('sha256').update(s).digest().toString('hex');
+  };
+
   async loadWalletFromDisk(password: string): Promise<AbstractWallet | null> {
     try {
       let data = await this.getItem('data');
       data = encryption.decrypt(JSON.parse(data), password);
-
+      if (data) {
+        // password is good, cache it
+        this.cachedPassword = password;
+      }
       if (data !== null) {
-        // const realm = await this.getRealm();
+        const realm = await this.getRealm();
         data = JSON.parse(data);
         if (!data.wallet) {
           return null;
@@ -73,12 +117,12 @@ export class AppStorage {
         const wallet = data.wallet;
         let unserializedWallet = FiroWallet.fromJson(wallet);
 
-        // this.inflateWalletFromRealm(realm, unserializedWallet);
+        this.inflateTransactionsFromRealm(realm, unserializedWallet);
 
         // done
         // this.tx_metadata = data.tx_metadata;
 
-        // realm.close();
+        realm.close();
         console.log('load wallet', unserializedWallet);
         return unserializedWallet;
       } else {
@@ -99,25 +143,15 @@ export class AppStorage {
     password: string,
     wallet: AbstractWallet,
   ): Promise<any> {
-    // const realm = await this.getRealm();
-    // wallet.prepareForSerialization();
-    // delete wallet.current;
+    const realm = await this.getRealm();
     const keyCloned = Object.assign({}, wallet); // stripped-down version of a wallet to save to secure keystore
-    // if (wallet._hdWalletInstance) {
-    //   keyCloned._hdWalletInstance = Object.assign({}, wallet._hdWalletInstance);
-    // }
-    // // this.offloadWalletToRealm(realm, wallet);
-    // // stripping down:
-    // if (wallet._txs_by_external_index) {
-    //   keyCloned._txs_by_external_index = {};
-    //   keyCloned._txs_by_internal_index = {};
-    // }
-    // if (wallet._hdWalletInstance) {
-    //   keyCloned._hdWalletInstance._txs_by_external_index = {};
-    //   keyCloned._hdWalletInstance._txs_by_internal_index = {};
-    // }
+    console.log('keyCloned', keyCloned);
+    // stripping down:
+    keyCloned.prepareForSerialization();
+
+    this.offloadWalletToRealm(realm, wallet);
     let walletToSave = JSON.stringify(keyCloned);
-    // realm.close();
+    realm.close();
     let data = {
       wallet: walletToSave,
       // tx_metadata: this.tx_metadata,
@@ -129,6 +163,42 @@ export class AppStorage {
       return await this.setItem('data', JSON.stringify(newData));
     } catch (error) {
       console.warn(error.message);
+    }
+  }
+
+  inflateTransactionsFromRealm(realm: typeof Realm, wallet: FiroWallet) {
+    const realmTxData = realm.objects('Transaction');
+    try {
+      if (realmTxData._txs_by_external_index) {
+        const txsByExternalIndex = JSON.parse(
+          realmTxData._txs_by_external_index,
+        );
+        const txsByInternalIndex = JSON.parse(
+          realmTxData._txs_by_internal_index,
+        );
+
+        wallet._txs_by_external_index = txsByExternalIndex;
+        wallet._txs_by_internal_index = txsByInternalIndex;
+      }
+    } catch (error) {
+      console.warn(error.message);
+    }
+  }
+
+  offloadWalletToRealm(realm: typeof Realm, wallet: AbstractWallet) {
+    if (wallet._txs_by_external_index) {
+      realm.write(() => {
+        const j1 = JSON.stringify(wallet._txs_by_external_index);
+        const j2 = JSON.stringify(wallet._txs_by_internal_index);
+        realm.create(
+          'Transaction',
+          {
+            _txs_by_external_index: j1,
+            _txs_by_internal_index: j2,
+          },
+          Realm.UpdateMode.Modified,
+        );
+      });
     }
   }
 

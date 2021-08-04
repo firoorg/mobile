@@ -23,28 +23,35 @@ const MyWalletScreen = () => {
       throw new Error('wallet not created');
     }
 
-    const address = await wallet.address();
+    const address = await wallet.getExternalAddressByIndex(0);
     console.log('address', address);
     setWalletAddress(address);
   };
 
   const getBalance = async () => {
     const elBalance = await firoElectrum.getBalanceByAddress(walletAddress);
+    console.log('elBalance', elBalance);
+    const listUnspent = await firoElectrum.getUnspendTransactionsByAddress(
+      walletAddress,
+    );
+    console.log('listUnspent', listUnspent);
     setBalance(elBalance.confirmed / 100000000);
   };
+
   const getTransactionList = async () => {
     const fullTxs = await firoElectrum.getTransactionsFullByAddress(
       walletAddress,
     );
     const txList = new Array<TransactionItem>();
     fullTxs.forEach(tx => {
+      console.log(tx);
       let transactionItem = new TransactionItem();
       transactionItem.address = tx.address;
       transactionItem.date = new Date(tx.time * 1000);
       transactionItem.transactionId = tx.txid;
       tx.outputs.forEach(vout => {
         if (vout.addresses.includes(walletAddress)) {
-          transactionItem.firo += vout.value;
+          transactionItem.value += vout.value;
         }
       });
       txList.push(transactionItem);

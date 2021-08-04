@@ -69,6 +69,8 @@ export default class FiroElectrum implements AbstractElectrum {
   latestBlockheight = false;
   latestBlockheightTimestamp: number = 0;
 
+  txhashHeightCache: Map<string, number> = new Map();
+
   async connectMain() {
     let peer = await getSavedPeer();
     if (peer === null) {
@@ -150,7 +152,6 @@ export default class FiroElectrum implements AbstractElectrum {
     const balance = await this.mainClient.blockchainScripthash_getBalance(
       reversedHash.toString('hex'),
     );
-    balance.addr = address;
     return balance;
   }
 
@@ -178,6 +179,7 @@ export default class FiroElectrum implements AbstractElectrum {
     address: string,
   ): Promise<Array<FullTransactionModel>> {
     const txs = await this.getTransactionsByAddress(address);
+    console.log('history', txs);
     const ret = [];
     for (const tx of txs) {
       const full = await this.mainClient.blockchainTransaction_get(
@@ -225,9 +227,163 @@ export default class FiroElectrum implements AbstractElectrum {
     return ret;
   }
 
+  async multiGetBalanceByAddress(
+    addresses: Array<string>,
+    batchsize: number = 200,
+  ): Promise<BalanceModel> {
+    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
+      throw new Error('Electrum client is not connected');
+    }
+
+    const ret = new BalanceModel();
+
+    const chunks = splitIntoChunks(addresses, batchsize);
+    for (const chunk of chunks) {
+      const scripthashes = [];
+      const scripthash2addr: Map<string, string> = new Map();
+      for (const addr of chunk) {
+        const script = bitcoin.address.toOutputScript(addr);
+        const hash = bitcoin.crypto.sha256(script);
+        let reversedHash = Buffer.from(reverse(hash));
+        let reversedHashHex = reversedHash.toString('hex');
+        scripthashes.push(reversedHashHex);
+        scripthash2addr.set(reversedHashHex, addr);
+      }
+
+      let balances = [];
+
+      balances = await this.mainClient.blockchainScripthash_getBalanceBatch(
+        scripthashes,
+      );
+
+      for (const bal of balances) {
+        if (bal.error) {
+          console.warn('multiGetBalanceByAddress():', bal.error);
+        }
+        ret.confirmed += +bal.result.confirmed;
+        ret.unconfirmed += +bal.result.unconfirmed;
+        ret.addresses.set(scripthash2addr.get(bal.param)!, bal.result);
+      }
+    }
+
+    return ret;
+  }
+
+  async multiGetHistoryByAddress(
+    addresses: Array<string>,
+    batchsize: number = 100,
+  ): Promise<Map<string, Array<FullTransactionModel>>> {
+    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
+      throw new Error('Electrum client is not connected');
+    }
+    const ret: Map<string, Array<FullTransactionModel>> = new Map();
+
+    const chunks = splitIntoChunks(addresses, batchsize);
+    for (const chunk of chunks) {
+      const scripthashes = [];
+      const scripthash2addr: Map<string, string> = new Map();
+      for (const addr of chunk) {
+        const script = bitcoin.address.toOutputScript(addr);
+        const hash = bitcoin.crypto.sha256(script);
+        let reversedHash = Buffer.from(reverse(hash));
+        let reversedHashHex = reversedHash.toString('hex');
+        scripthashes.push(reversedHashHex);
+        scripthash2addr.set(reversedHashHex, addr);
+      }
+
+      let results = [];
+
+      results = await this.mainClient.blockchainScripthash_getHistoryBatch(
+        scripthashes,
+      );
+
+      for (const history of results) {
+        if (history.error) {
+          console.warn('multiGetHistoryByAddress():', history.error);
+        }
+        ret.set(scripthash2addr.get(history.param)!, history.result || []);
+        for (const result of history.result || []) {
+          if (result.tx_hash) {
+            this.txhashHeightCache.set(result.tx_hash, result.height); // cache tx height
+          }
+        }
+
+        for (const hist of ret.get(scripthash2addr.get(history.param)!) || []) {
+          hist.address = scripthash2addr.get(history.param) || '';
+        }
+      }
+    }
+
+    return ret;
+  }
+
+  async multiGetTransactionByTxid(
+    txids: Array<string>,
+    batchsize: number = 45,
+    verbose: boolean,
+  ): Promise<Map<string, FullTransactionModel>> {
+    // this value is fine-tuned so althrough wallets in test suite will occasionally
+    // throw 'response too large (over 1,000,000 bytes', test suite will pass
+    verbose = verbose !== false;
+    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
+      throw new Error('Electrum client is not connected');
+    }
+    const ret: Map<string, FullTransactionModel> = new Map();
+    txids = [...new Set(txids)]; // deduplicate just for any case
+
+    const chunks = splitIntoChunks(txids, batchsize);
+    for (const chunk of chunks) {
+      let results = [];
+
+      results = await this.mainClient.blockchainTransaction_getBatch(
+        chunk,
+        verbose,
+      );
+
+      for (const txdata of results) {
+        if (txdata.error && txdata.error.code === -32600) {
+          // response too large
+          // lets do single call, that should go through okay:
+          txdata.result = await this.mainClient.blockchainTransaction_get(
+            txdata.param,
+            verbose,
+          );
+        }
+        ret.set(txdata.param, txdata.result);
+      }
+    }
+
+    return ret;
+  }
+
+  async getUnspendTransactionsByAddress(
+    address: string,
+  ): Promise<Array<TransactionModel>> {
+    const script = bitcoin.address.toOutputScript(address, {pubKeyHash: 0x41});
+    const hash = bitcoin.crypto.sha256(script);
+    // eslint-disable-next-line no-undef
+    const reversedHash = Buffer.from(reverse(hash));
+    const listUnspent = await this.mainClient.blockchainScripthash_listunspent(
+      reversedHash.toString('hex'),
+    );
+    return listUnspent;
+  }
+
   addressToScript(address: string): string {
     return bitcoin.address.toOutputScript(address, {pubKeyHash: 0x41});
   }
 }
+
+const splitIntoChunks = function (
+  arr: Array<string>,
+  chunkSize: number,
+): Array<string[]> {
+  const groups: Array<string[]> = [];
+  let i;
+  for (i = 0; i < arr.length; i += chunkSize) {
+    groups.push(arr.slice(i, i + chunkSize));
+  }
+  return groups;
+};
 
 export const firoElectrum: AbstractElectrum = new FiroElectrum();
