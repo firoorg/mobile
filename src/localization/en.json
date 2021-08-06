@@ -160,7 +160,23 @@
     "description_restore": "Restore existing Firo mobile wallet.",
     "title_fingerprint": "Fingerprint",
     "description_fingerprint": "Set up fingerprint configuration",
-    "button_done": "Done"
+    "button_done": "Done",
+    "title_change_currency": "Change Currency",
+    "title_passphrase_biometric": "Enter passphrase",
+    "description_passphrase_biometric": "Enter passphrase to enable fingerprint authentication",
+    "button_enable_biometric": "Enable Fingerprint",
+    "title_processing": "Processing...",
+    "description_verifying_passphrase": "Verifying passphrase",
+    "description_enabling_biometric": "Enabling fingerprint authentication",
+    "description_disabling_biometric": "Disabling fingerprint authentication",
+    "description_enabled_biometric": "You enabled your fingerprint authentication.",
+    "description_disable_biometric": "You disabled your fingerprint authentication.",
+    "error_invalid_passphrase": "Invalid passphrase",
+    "error_enabled_biometric": "Failed enabling fingerprint",
+    "error_disabled_biometric": "Failed disabling fingerprint",
+    "prompt_enable_biometric": "Enable Fingerprint",
+    "prompt_disable_biometric": "Disable Fingerprint",
+    "title_success": "Success!"
   },
 
   "currencies": {
@@ -172,6 +188,7 @@
   },
 
   "errors": {
-    "error": "Error"
+    "error": "Error",
+    "error_biometric_disabled": "Fingerprint authentication is not enabled"
   }
 }

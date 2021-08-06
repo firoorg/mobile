@@ -21,6 +21,7 @@ export class AppStorage {
   static DELETE_WALLET_AFTER_UNINSTALL = 'deleteWalletAfterUninstall';
   static ADDRESS_BOOK = 'address_book';
   static SETTINGS = 'settings';
+  static ENCRYPTED_PASSWORD = 'encrypted_password';
 
   private wallet: AbstractWallet | null = null;
   // private tx_metadata: Array<> = {};
@@ -132,6 +133,16 @@ export class AppStorage {
       console.warn(error.message);
       return null;
     }
+  }
+
+  async verifyPassword(password: string): Promise<boolean> {
+    if (this.cachedPassword == null) {
+      const wallet = await this.loadWalletFromDisk(password);
+      if (!wallet) {
+        return false;
+      }
+    }
+    return this.cachedPassword == password;
   }
 
   /**

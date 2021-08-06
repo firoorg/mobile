@@ -16,6 +16,7 @@ type FiroContextType = {
   getFiroRate: () => number;
   getSettings: () => CoreSettings;
   setSettings: (settings: CoreSettings, notPersist?: boolean) => Promise<void>;
+  verifyPassword: (password: string) => Promise<boolean>;
 };
 
 export const FiroContext = createContext<FiroContextType>({
@@ -29,7 +30,8 @@ export const FiroContext = createContext<FiroContextType>({
   getSettings: () => {
     return { notificationsEnabled: true, defaultCurrency: "usd" };
   },
-  setSettings: async (settings, notPersist) => { }
+  setSettings: async (settings, notPersist) => { },
+  verifyPassword: async (password) => { return false;}
 });
 
 export const FiroContextProvider: FC = props => {
@@ -85,6 +87,10 @@ export const FiroContextProvider: FC = props => {
     }
   };
 
+  const verifyPassword = async (password: string) => {
+    return appStorage.verifyPassword(password)
+  };
+
   return (
     <FiroContext.Provider
       value={{
@@ -96,7 +102,8 @@ export const FiroContextProvider: FC = props => {
         loadFromDisk,
         getFiroRate,
         getSettings,
-        setSettings
+        setSettings,
+        verifyPassword
       }}>
       {props.children}
     </FiroContext.Provider>

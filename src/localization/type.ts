@@ -164,6 +164,22 @@ export interface IString extends LocalizedStringsMethods {
     title_fingerprint: string;
     description_fingerprint: string;
     button_done: string;
+    title_change_currency: string;
+    title_passphrase_biometric: string;
+    description_passphrase_biometric: string;
+    button_enable_biometric: string;
+    title_processing: string;
+    title_success: string;
+    description_verifying_passphrase: string;
+    description_enabling_biometric: string;
+    description_disabling_biometric: string;
+    description_enabled_biometric: string;
+    description_disable_biometric: string;
+    error_invalid_passphrase: string;
+    error_enabled_biometric: string;
+    error_disabled_biometric: string;
+    prompt_disable_biometric: string;
+    prompt_enable_biometric: string;
   };
 
   currencies: {
@@ -176,5 +192,6 @@ export interface IString extends LocalizedStringsMethods {
 
   errors: {
     error: string;
+    error_biometric_disabled: string;
   };
 }
