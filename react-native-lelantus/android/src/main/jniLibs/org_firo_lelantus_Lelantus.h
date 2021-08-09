@@ -11,7 +11,7 @@ extern "C" {
 /*
 * Class:     org_firo_lelantus_Lelantus
 * Method:    jCreateMintCommitment
-* Signature: (JJJ)J
+* Signature: (JJJJ)J
 */
 JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateMintCommitment
         (JNIEnv *, jobject, jlong, jstring, jint, jstring);

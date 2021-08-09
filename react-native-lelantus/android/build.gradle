@@ -20,14 +20,14 @@ def safeExtGet(prop, fallback) {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
+apply plugin: 'kotlin-android'
 
 buildscript {
     // The Android Gradle plugin is only required when opening the android folder stand-alone.
     // This avoids unnecessary downloads and potential conflicts when the library is included as a
     // module dependency in an application project.
     // ref: https://docs.gradle.org/current/userguide/tutorial_using_tasks.html#sec:build_script_external_dependencies
-    ext.kotlin_version = "1.5.20"
+    ext.kotlin_version = "1.4.32"
     if (project == rootProject) {
         repositories {
             google()
@@ -35,7 +35,7 @@ buildscript {
         }
         dependencies {
             classpath 'com.android.tools.build:gradle:4.2.1'
-	    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+	        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         }
     }
 }
@@ -65,16 +65,16 @@ android {
 	}
     }
     externalNativeBuild {
-	cmake {
-		path "CMakeLists.txt"
-	}
+        cmake {
+            path "CMakeLists.txt"
+        }
     }
     compileOptions {
-	sourceCompatibility JavaVersion.VERSION_1_8
-	targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-	jvmTarget = '1.8'
+	    jvmTarget = '1.8'
     }
     packagingOptions {
 	pickFirst '**/*.so'
@@ -112,7 +112,7 @@ def configureReactNativePom(def pom) {
         name packageJson.title
         artifactId packageJson.name
         version = packageJson.version
-        group = "com.reactlibrary"
+        group = "org.firo.lelantus"
         description packageJson.description
         url packageJson.repository.baseUrl
 
@@ -121,13 +121,6 @@ def configureReactNativePom(def pom) {
                 name packageJson.license
                 url packageJson.repository.baseUrl + '/blob/master/' + packageJson.licenseFilename
                 distribution 'repo'
-            }
-        }
-
-        developers {
-            developer {
-                id packageJson.author.username
-                name packageJson.author.name
             }
         }
     }

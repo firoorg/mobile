@@ -2,7 +2,7 @@ package org.firo.lelantus
 
 class Lelantus {
 
-    fun CreateMintCommitment(value: Long, privateKey: String, index: Int, seed: String): String {
+    fun createMintCommitment(value: Long, privateKey: String, index: Int, seed: String): String {
         return jCreateMintCommitment(value, privateKey, index, seed)
     }
 

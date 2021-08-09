@@ -9,6 +9,10 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 
     private final ReactApplicationContext reactContext;
 
+    static {
+		System.loadLibrary("lelantus");
+	}
+
     public LelantusModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
@@ -16,12 +20,12 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "Lelantus";
+        return "RNLelantus";
     }
 
     @ReactMethod
-    public void sampleMethod(String stringArgument, int numberArgument, Callback callback) {
-        // TODO: Implement some actually useful functionality
-        callback.invoke("Received numberArgument: " + numberArgument + " stringArgument: " + stringArgument);
-    }
+	public void getMintCommitment(double value, String privateKey, int index, String seed, Callback callback) {
+		String commitment = new Lelantus().createMintCommitment((long) value, privateKey, index, seed);
+		callback.invoke(commitment);
+	}
 }

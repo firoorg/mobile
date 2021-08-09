@@ -8,8 +8,28 @@ import {FiroContext} from '../FiroContext';
 import {firoElectrum} from '../core/FiroElectrum';
 import {TransactionItem} from '../data/TransactionItem';
 import localization from '../localization';
+import RNLelantus from '../../react-native-lelantus';
 
 const {colors} = CurrentFiroTheme;
+
+function lelantusMint(
+  value: number,
+  privateKey: string,
+  index: number,
+  seed: String,
+) {
+  return new Promise<string>(resolve => {
+    RNLelantus.getMintCommitment(
+      value,
+      privateKey,
+      index,
+      seed,
+      (commitment: string) => {
+        resolve(commitment);
+      },
+    );
+  });
+}
 
 const MyWalletScreen = () => {
   const {getWallet} = useContext(FiroContext);
@@ -22,6 +42,14 @@ const MyWalletScreen = () => {
     if (wallet === undefined) {
       throw new Error('wallet not created');
     }
+
+    let commitment = await lelantusMint(
+      100000000,
+      'fb766cc0a77a2255f10d4e3bf5e2ea53ff425441ce488f51d99140c6280b414f',
+      0,
+      'f2402f6f0e7e5e999847b394563dc101398d2750',
+    );
+    console.log('commitment', commitment);
 
     const address = await wallet.getExternalAddressByIndex(0);
     console.log('address', address);

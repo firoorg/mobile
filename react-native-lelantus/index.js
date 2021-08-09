@@ -1,5 +1,5 @@
-import { NativeModules } from 'react-native';
+import {NativeModules} from 'react-native';
 
-const { Lelantus } = NativeModules;
+const {RNLelantus} = NativeModules;
 
-export default Lelantus;
+export default RNLelantus;
