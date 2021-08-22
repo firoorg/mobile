@@ -10,27 +10,43 @@ extern "C" {
 
 /*
 * Class:     org_firo_lelantus_Lelantus
-* Method:    jCreateMintCommitment
+* Method:    jCreateMintScript
 * Signature: (JJJJ)J
 */
-JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateMintCommitment
+JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateMintScript
         (JNIEnv *, jobject, jlong, jstring, jint, jstring);
 
 /*
 * Class:     org_firo_lelantus_Lelantus
-* Method:    jCreateSpendProof
-* Signature: (JJJJJ[JJJJ)J
+* Method:    jEstimateFee
+* Signature: (JJJJ)J
 */
-JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendProof
-        (JNIEnv *, jclass, jlong, jstring, jint, jobjectArray, jint, jstring, jstring);
+JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
+		(JNIEnv *, jobject, jlong, jboolean, jstring, jobject);
 
 /*
 * Class:     org_firo_lelantus_Lelantus
-* Method:    jGetSerialNumber
+* Method:    jGetMintKeyPath
 * Signature: (JJJ)J
 */
-JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetSerialNumber
-        (JNIEnv *, jclass, jlong, jstring, jint);
+JNIEXPORT jint JNICALL Java_org_firo_lelantus_Lelantus_jGetMintKeyPath
+		(JNIEnv *, jobject, jlong, jstring, jint);
+
+/*
+* Class:     org_firo_lelantus_Lelantus
+* Method:    jCreateJMintScript
+* Signature: (JJJJJ)J
+*/
+JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateJMintScript
+		(JNIEnv *, jobject, jlong, jstring, jint, jstring, jstring);
+
+/*
+* Class:     org_firo_lelantus_Lelantus
+* Method:    jCreateSpendScript
+* Signature: (JJJJJJJJ)J
+*/
+JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
+		(JNIEnv *, jobject, jlong, jboolean, jstring, jint, jobject, jstring, jobject, jobject);
 
 #ifdef __cplusplus
 }
