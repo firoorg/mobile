@@ -1,10 +1,16 @@
-import React from 'react';
+import React, {FC} from 'react';
 import {Text, Divider} from 'react-native-elements';
 import {View, StyleSheet, Image, TextInput} from 'react-native';
 import {FiroPrimaryGreenButton} from './Button';
 import localization from '../localization';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 
-export const CreateAddressCard = () => {
+type CreateAddressProp = {
+  address: string;
+  onClick: () => void;
+};
+
+export const CreateAddressCard: FC<CreateAddressProp> = props => {
   const onAddressSaveClick = () => {};
   return (
     <View style={styles.card}>
@@ -12,8 +18,13 @@ export const CreateAddressCard = () => {
         {localization.create_address_card.current_address}
       </Text>
       <View style={styles.currentAddress}>
-        <Text style={styles.address}>a7awi8VeyAJs...CbdqRs234sDFSAz2Kg</Text>
-        <Image style={styles.icon} source={require('../img/ic_refresh.png')} />
+        <Text style={styles.address}>{props.address}</Text>
+        <TouchableWithoutFeedback onPress={props.onClick}>
+          <Image
+            style={styles.icon}
+            source={require('../img/ic_refresh.png')}
+          />
+        </TouchableWithoutFeedback>
       </View>
       <TextInput
         style={styles.addressName}

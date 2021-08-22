@@ -1,6 +1,21 @@
 import {BalanceData} from '../data/BalanceData';
 import {TransactionItem} from '../data/TransactionItem';
 
+export type LelantusMintTxParams = {
+  utxos: {
+    txId: string;
+    txHex: string;
+    index: number;
+    value: number;
+    address: string;
+  }[];
+};
+
+export type FiroTxReturn = {
+  tx: string;
+  fee: number;
+};
+
 export interface AbstractWallet {
   secret: string | undefined; // private key or recovery phrase
   balance: number;
@@ -17,12 +32,14 @@ export interface AbstractWallet {
   setSecret(secret: string): void;
   getSecret(): string;
 
-  getExternalAddressByIndex(index: number): Promise<string>;
-  getInternalAddressByIndex(index: number): Promise<string>;
+  getAddressAsync(): Promise<string>;
+  getChangeAddressAsync(): Promise<string>;
 
   getBalance(): number;
   getUnconfirmedBalance(): number;
   getTransactions(): Promise<Array<TransactionItem>>;
 
   prepareForSerialization(): void;
+
+  createLelantusMintTx(params: LelantusMintTxParams): Promise<FiroTxReturn>;
 }

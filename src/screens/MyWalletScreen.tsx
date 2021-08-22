@@ -43,58 +43,100 @@ const MyWalletScreen = () => {
       throw new Error('wallet not created');
     }
 
-    let commitment = await lelantusMint(
-      100000000,
-      'fb766cc0a77a2255f10d4e3bf5e2ea53ff425441ce488f51d99140c6280b414f',
-      0,
-      'f2402f6f0e7e5e999847b394563dc101398d2750',
-    );
-    console.log('commitment', commitment);
-
-    const address = await wallet.getExternalAddressByIndex(0);
-    console.log('address', address);
-    setWalletAddress(address);
+    try {
+      const address = await wallet.getChangeAddressAsync();
+      setWalletAddress(address);
+    } catch (e) {
+      console.log('error when getting address', e);
+    }
   };
 
   const getBalance = async () => {
-    const elBalance = await firoElectrum.getBalanceByAddress(walletAddress);
-    console.log('elBalance', elBalance);
-    const listUnspent = await firoElectrum.getUnspendTransactionsByAddress(
-      walletAddress,
-    );
-    console.log('listUnspent', listUnspent);
-    setBalance(elBalance.confirmed / 100000000);
+    try {
+      const elBalance = await firoElectrum.getBalanceByAddress(walletAddress);
+      setBalance(elBalance.confirmed / 100000000);
+    } catch (e) {
+      console.log('error when getting balance', e);
+    }
+  };
+
+  const mintUnspendTransactions = async () => {
+    console.log('mint start');
+    const wallet = getWallet();
+    if (!wallet) {
+      return;
+    }
+
+    try {
+      const utxos = await firoElectrum.getUnspendTransactionsByAddress(
+        walletAddress,
+      );
+      const txIds = utxos.map(tx => tx.tx_hash);
+      const txs = await firoElectrum.multiGetTransactionByTxid(txIds);
+
+      const lelantusUtxos = utxos.map(utxo => {
+        const fTx = txs.get(utxo.tx_hash);
+        return {
+          txId: utxo.tx_hash,
+          txHex: fTx!!.hex,
+          index: utxo.tx_pos,
+          value: utxo.value,
+          address: walletAddress,
+        };
+      });
+
+      const mint = await wallet.createLelantusMintTx({
+        utxos: lelantusUtxos,
+      });
+      console.log('mintTx', mint);
+    } catch (e) {
+      console.log('error when creating mint transaction', e);
+    }
   };
 
   const getTransactionList = async () => {
-    const fullTxs = await firoElectrum.getTransactionsFullByAddress(
-      walletAddress,
-    );
-    const txList = new Array<TransactionItem>();
-    fullTxs.forEach(tx => {
-      console.log(tx);
-      let transactionItem = new TransactionItem();
-      transactionItem.address = tx.address;
-      transactionItem.date = new Date(tx.time * 1000);
-      transactionItem.transactionId = tx.txid;
-      tx.outputs.forEach(vout => {
-        if (vout.addresses.includes(walletAddress)) {
-          transactionItem.value += vout.value;
-        }
+    try {
+      const fullTxs = await firoElectrum.getTransactionsFullByAddress(
+        walletAddress,
+      );
+      const txList = new Array<TransactionItem>();
+      fullTxs.forEach(tx => {
+        let transactionItem = new TransactionItem();
+        transactionItem.address = tx.address;
+        transactionItem.date = new Date(tx.time * 1000);
+        transactionItem.transactionId = tx.txid;
+        tx.outputs.forEach(vout => {
+          if (vout.addresses && vout.addresses.includes(walletAddress)) {
+            transactionItem.value += vout.value;
+          }
+        });
+        txList.push(transactionItem);
       });
-      txList.push(transactionItem);
-    });
-    setTxHistory(txList);
+      setTxHistory(txList);
+    } catch (e) {
+      console.log('error when getting transaction list', e);
+    }
   };
-
   useEffect(() => {
     getAddress();
-  });
+  }, []);
   useEffect(() => {
+    if (walletAddress === '') {
+      return;
+    }
     getBalance();
   }, [walletAddress]);
   useEffect(() => {
+    if (walletAddress === '') {
+      return;
+    }
     getTransactionList();
+  }, [walletAddress]);
+  useEffect(() => {
+    if (walletAddress === '') {
+      return;
+    }
+    mintUnspendTransactions();
   }, [walletAddress]);
 
   return (

@@ -1,4 +1,8 @@
-import {AbstractWallet} from './AbstractWallet';
+import {
+  AbstractWallet,
+  FiroTxReturn,
+  LelantusMintTxParams,
+} from './AbstractWallet';
 import {network, Network} from './FiroNetwork';
 import BigNumber from 'bignumber.js';
 import {randomBytes} from '../utils/crypto';
@@ -7,6 +11,7 @@ import {BalanceData} from '../data/BalanceData';
 import {firoElectrum} from './FiroElectrum';
 import {FullTransactionModel} from './AbstractElectrum';
 import {BIP32Interface} from 'bip32/types/bip32';
+import {LelantusWrapper} from './LelantusWrapper';
 
 const bitcoin = require('bitcoinjs-lib');
 const bip32 = require('bip32');
@@ -14,6 +19,7 @@ const bip39 = require('bip39');
 
 const EXTERNAL_INDEX = 0;
 const INTERNAL_INDEX = 1;
+const MINT_INDEX = 2;
 
 export class FiroWallet implements AbstractWallet {
   secret: string | undefined = undefined;
@@ -27,22 +33,24 @@ export class FiroWallet implements AbstractWallet {
   _balances_by_internal_index: Array<BalanceData> = [];
   _txs_by_external_index: Array<Array<TransactionItem>> = [];
   _txs_by_internal_index: Array<Array<TransactionItem>> = [];
+  _address_to_wif_cache: {
+    [key: string]: string;
+  } = {};
 
   next_free_address_index = 0;
   next_free_change_address_index = 0;
-  internal_addresses_cache = {}; // index => address
-  external_addresses_cache = {}; // index => address
+  next_free_mint_index = 0;
+  internal_addresses_cache: {
+    [index: number]: string;
+  } = {};
+  external_addresses_cache: {
+    [index: number]: string;
+  } = {};
   _xPub: string = ''; // cache
+  _node0: BIP32Interface | undefined = undefined;
+  _node1: BIP32Interface | undefined = undefined;
   usedAddresses = [];
-  _address_to_wif_cache = {};
   gap_limit = 20;
-
-  private _changeNodes: {
-    [key: string]: any;
-  } = {};
-  private _indexAddress: {
-    [key: string]: any;
-  } = {};
 
   async generate(): Promise<void> {
     const buf = await randomBytes(32);
@@ -107,34 +115,208 @@ export class FiroWallet implements AbstractWallet {
     return this._xPub;
   }
 
-  async getExternalAddressByIndex(index: number): Promise<string> {
-    return this._getNodeAddressByIndex(EXTERNAL_INDEX, index);
+  async createLelantusMintTx(
+    params: LelantusMintTxParams,
+  ): Promise<FiroTxReturn> {
+    if (params.utxos.length == 0) {
+      throw Error('there are no any unspend transaction is empty');
+    }
+    const keyPairs: Array<BIP32Interface> = [];
+    let value: number = 0;
+
+    const tx = new bitcoin.Psbt({network: this.network});
+    tx.setVersion(2);
+
+    for (let index = 0; index < params.utxos.length; index++) {
+      const input = params.utxos[index];
+      const wif = await this._getWifForAddress(input.address);
+      const keyPair = await this._getKeyPairFromWIF(wif);
+      keyPairs[index] = keyPair;
+
+      value += input.value;
+
+      tx.addInput({
+        hash: input.txId,
+        index: input.index,
+        sequence: 4294967294,
+        // eslint-disable-next-line no-undef
+        nonWitnessUtxo: Buffer.from(input.txHex, 'hex'),
+      });
+    }
+
+    const mintKeyPair = await this._getNode(
+      MINT_INDEX,
+      this.next_free_mint_index,
+    );
+    console.log('value ctx', value);
+    const mintScript = await LelantusWrapper.getMintCommitment(
+      mintKeyPair,
+      this.next_free_mint_index,
+      value,
+    );
+
+    console.log('value ctx', value);
+    tx.addOutput({
+      // eslint-disable-next-line no-undef
+      script: Buffer.from(mintScript, 'hex'),
+      value,
+    });
+
+    keyPairs.forEach((keypair, index) => {
+      tx.signInput(index, keypair);
+      tx.validateSignaturesOfInput(index);
+    });
+    tx.finalizeAllInputs();
+
+    return {
+      tx: tx.extractTransaction().toHex(),
+      fee: 0,
+    };
   }
 
-  async getInternalAddressByIndex(index: number): Promise<string> {
+  async _getWifForAddress(address: string): Promise<string> {
+    if (this._address_to_wif_cache[address]) {
+      return this._address_to_wif_cache[address]; // cache hit
+    }
+
+    // fast approach, first lets iterate over all addressess we have in cache
+    for (const index of Object.keys(this.internal_addresses_cache)) {
+      const iAddress = await this._getInternalAddressByIndex(+index);
+      if (iAddress === address) {
+        return (this._address_to_wif_cache[
+          address
+        ] = await this._getInternalWIFByIndex(+index));
+      }
+    }
+
+    for (const index of Object.keys(this.external_addresses_cache)) {
+      const eAddress = await this._getExternalAddressByIndex(+index);
+      if (eAddress === address) {
+        return (this._address_to_wif_cache[
+          address
+        ] = await this._getExternalWIFByIndex(+index));
+      }
+    }
+
+    // no luck - lets iterate over all addresses we have up to first unused address index
+    for (
+      let c = 0;
+      c <= this.next_free_change_address_index + this.gap_limit;
+      c++
+    ) {
+      const possibleAddress = await this._getInternalAddressByIndex(c);
+      if (possibleAddress === address) {
+        return (this._address_to_wif_cache[
+          address
+        ] = await this._getInternalWIFByIndex(c));
+      }
+    }
+
+    for (let c = 0; c <= this.next_free_address_index + this.gap_limit; c++) {
+      const possibleAddress = await this._getExternalAddressByIndex(c);
+      if (possibleAddress === address) {
+        return (this._address_to_wif_cache[
+          address
+        ] = await this._getExternalWIFByIndex(c));
+      }
+    }
+
+    throw new Error('Could not find WIF for ' + address);
+  }
+
+  async _getKeyPairFromWIF(wif: string): Promise<BIP32Interface> {
+    return bitcoin.ECPair.fromWIF(wif, this.network);
+  }
+
+  async _getExternalWIFByIndex(index: number): Promise<string> {
+    return this._getWIFByIndex(EXTERNAL_INDEX, index);
+  }
+
+  async _getInternalWIFByIndex(index: number): Promise<string> {
+    return this._getWIFByIndex(INTERNAL_INDEX, index);
+  }
+
+  async _getMintWIFByIndex(index: number): Promise<string> {
+    return this._getWIFByIndex(MINT_INDEX, index);
+  }
+
+  async _getWIFByIndex(node: number, index: number): Promise<string> {
+    const child = await this._getNode(node, index);
+    return child.toWIF();
+  }
+
+  async _getNode(node: number, index: number): Promise<BIP32Interface> {
+    if (!this.secret) {
+      throw Error('illegal state secret is null');
+    }
+
+    const mnemonic = this.secret;
+    const seed = await bip39.mnemonicToSeed(mnemonic);
+    const root = bip32.fromSeed(seed, this.network);
+    const path = `m/44'/136'/0'/${node}/${index}`;
+    const child = root.derivePath(path);
+
+    return child;
+  }
+
+  async getAddressAsync(): Promise<string> {
+    return this._getExternalAddressByIndex(0);
+  }
+
+  async getChangeAddressAsync(): Promise<string> {
+    return this._getInternalAddressByIndex(0);
+  }
+
+  async _getInternalAddressByIndex(index: number): Promise<string> {
     return this._getNodeAddressByIndex(INTERNAL_INDEX, index);
   }
 
-  async _getNodeAddressByIndex(change: number, index: number): Promise<string> {
-    const addressKey = `${change}_${index}`;
-    const cacheAddress = this._indexAddress[addressKey];
-    if (cacheAddress !== undefined) {
-      return cacheAddress;
+  async _getExternalAddressByIndex(index: number): Promise<string> {
+    return this._getNodeAddressByIndex(EXTERNAL_INDEX, index);
+  }
+
+  async _getNodeAddressByIndex(node: number, index: number) {
+    index = index * 1; // cast to int
+    if (node === 0) {
+      if (this.external_addresses_cache[index]) {
+        return this.external_addresses_cache[index]; // cache hit]
+      }
     }
 
-    let node = this._changeNodes[change];
-    if (!node) {
+    if (node === 1) {
+      if (this.internal_addresses_cache[index]) {
+        return this.internal_addresses_cache[index]; // cache hit
+      }
+    }
+
+    if (node === 0 && !this._node0) {
       const xpub = await this.getXpub();
-      const root = bip32.fromBase58(xpub, this.network);
-      node = root.derive(change);
-
-      this._changeNodes[change] = node;
+      const hdNode = bip32.fromBase58(xpub, this.network);
+      this._node0 = hdNode.derive(node);
     }
 
-    const address = this._nodeToLegacyAddress(node!.derive(index));
-    this._indexAddress[addressKey] = address;
+    if (node === 1 && !this._node1) {
+      const xpub = await this.getXpub();
+      const hdNode = bip32.fromBase58(xpub, this.network);
+      this._node1 = hdNode.derive(node);
+    }
 
-    return address;
+    let address;
+    if (node === 0) {
+      address = this._nodeToLegacyAddress(this._node0!!.derive(index));
+    }
+
+    if (node === 1) {
+      address = this._nodeToLegacyAddress(this._node1!!.derive(index));
+    }
+
+    if (node === 0) {
+      return (this.external_addresses_cache[index] = address);
+    }
+
+    if (node === 1) {
+      return (this.internal_addresses_cache[index] = address);
+    }
   }
 
   _nodeToLegacyAddress(hdNode: BIP32Interface) {
@@ -172,7 +354,7 @@ export class FiroWallet implements AbstractWallet {
         this._txs_by_external_index[c].length === 0 ||
         this._balances_by_external_index[c].u !== 0
       ) {
-        addresses2fetch.push(await this.getExternalAddressByIndex(c));
+        addresses2fetch.push(await this._getExternalAddressByIndex(c));
       }
     }
 
@@ -194,7 +376,7 @@ export class FiroWallet implements AbstractWallet {
         this._txs_by_internal_index[c].length === 0 ||
         this._balances_by_internal_index[c].u !== 0
       ) {
-        addresses2fetch.push(await this.getInternalAddressByIndex(c));
+        addresses2fetch.push(await this._getInternalAddressByIndex(c));
       }
     }
 
@@ -266,7 +448,7 @@ export class FiroWallet implements AbstractWallet {
         for (const vin of tx.vin) {
           if (
             vin.addresses &&
-            vin.addresses.indexOf(this.getExternalAddressByIndex(c)) !== -1
+            vin.addresses.indexOf(this._getExternalAddressByIndex(c)) !== -1
           ) {
             // this TX is related to our address
             this._txs_by_external_index[c] =
@@ -294,7 +476,7 @@ export class FiroWallet implements AbstractWallet {
           if (
             vout.scriptPubKey.addresses &&
             vout.scriptPubKey.addresses.indexOf(
-              this.getExternalAddressByIndex(c),
+              this._getExternalAddressByIndex(c),
             ) !== -1
           ) {
             // this TX is related to our address
@@ -331,7 +513,7 @@ export class FiroWallet implements AbstractWallet {
         for (const vin of tx.vin) {
           if (
             vin.addresses &&
-            vin.addresses.indexOf(this.getInternalAddressByIndex(c)) !== -1
+            vin.addresses.indexOf(this._getInternalAddressByIndex(c)) !== -1
           ) {
             // this TX is related to our address
             this._txs_by_internal_index[c] =
@@ -359,7 +541,7 @@ export class FiroWallet implements AbstractWallet {
           if (
             vout.scriptPubKey.addresses &&
             vout.scriptPubKey.addresses.indexOf(
-              this.getInternalAddressByIndex(c),
+              this._getInternalAddressByIndex(c),
             ) !== -1
           ) {
             // this TX is related to our address
@@ -408,10 +590,10 @@ export class FiroWallet implements AbstractWallet {
     // iterates over all addresses in hierarchy
     const ownedAddressesHashmap: Map<string, boolean> = new Map();
     for (let c = 0; c < this.next_free_address_index + 1; c++) {
-      ownedAddressesHashmap.set(await this.getExternalAddressByIndex(c), true);
+      ownedAddressesHashmap.set(await this._getExternalAddressByIndex(c), true);
     }
     for (let c = 0; c < this.next_free_change_address_index + 1; c++) {
-      ownedAddressesHashmap.set(await this.getInternalAddressByIndex(c), true);
+      ownedAddressesHashmap.set(await this._getInternalAddressByIndex(c), true);
     }
 
     const ret = [];
@@ -471,17 +653,23 @@ export class FiroWallet implements AbstractWallet {
   prepareForSerialization(): void {
     this._txs_by_external_index = [];
     this._txs_by_internal_index = [];
-    this._changeNodes = {};
-    this._indexAddress = {};
+
+    this.internal_addresses_cache = {};
+    this.external_addresses_cache = {};
+
+    delete this._node0;
+    delete this._node1;
   }
 
   static fromJson(obj: string): FiroWallet {
     const obj2 = JSON.parse(obj);
-    const temp = new this();
+    const temp: {
+      [key: string]: any;
+    } = new this();
     for (const key2 of Object.keys(obj2)) {
       temp[key2] = obj2[key2];
     }
 
-    return temp;
+    return temp as FiroWallet;
   }
 }

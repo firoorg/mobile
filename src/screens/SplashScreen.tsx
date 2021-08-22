@@ -38,7 +38,7 @@ const SplashScreen = () => {
   useEffect(() => {
     firoElectrum.connectMain();
     replaceStackNavigation();
-  });
+  }, []);
 
   return (
     <View style={styles.root}>

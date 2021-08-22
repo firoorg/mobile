@@ -7,6 +7,8 @@ export class BalanceModel {
 export class TransactionModel {
   tx_hash: string = '';
   height: number = 0;
+  tx_pos: number = 0;
+  value: number = 0;
 }
 
 export type VIn = {

@@ -4,7 +4,8 @@ import {
   BalanceModel,
   TransactionModel,
   FullTransactionModel,
-} from './AbstractElectrum';
+} from './AbstractElectrum'
+import {network} from './FiroNetwork';;
 import AsyncStorage from '@react-native-community/async-storage';
 import {AppStorage} from '../app-storage';
 import DefaultPreference from 'react-native-default-preference';
@@ -145,7 +146,7 @@ export default class FiroElectrum implements AbstractElectrum {
     if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
       throw new Error('Electrum client is not connected');
     }
-    const script = bitcoin.address.toOutputScript(address, {pubKeyHash: 0x41});
+    const script = bitcoin.address.toOutputScript(address, network);
     const hash = bitcoin.crypto.sha256(script);
     // eslint-disable-next-line no-undef
     const reversedHash = Buffer.from(reverse(hash));
@@ -179,7 +180,6 @@ export default class FiroElectrum implements AbstractElectrum {
     address: string,
   ): Promise<Array<FullTransactionModel>> {
     const txs = await this.getTransactionsByAddress(address);
-    console.log('history', txs);
     const ret = [];
     for (const tx of txs) {
       const full = await this.mainClient.blockchainTransaction_get(
@@ -242,7 +242,7 @@ export default class FiroElectrum implements AbstractElectrum {
       const scripthashes = [];
       const scripthash2addr: Map<string, string> = new Map();
       for (const addr of chunk) {
-        const script = bitcoin.address.toOutputScript(addr);
+        const script = bitcoin.address.toOutputScript(addr, network);
         const hash = bitcoin.crypto.sha256(script);
         let reversedHash = Buffer.from(reverse(hash));
         let reversedHashHex = reversedHash.toString('hex');
@@ -283,7 +283,7 @@ export default class FiroElectrum implements AbstractElectrum {
       const scripthashes = [];
       const scripthash2addr: Map<string, string> = new Map();
       for (const addr of chunk) {
-        const script = bitcoin.address.toOutputScript(addr);
+        const script = bitcoin.address.toOutputScript(addr, network);
         const hash = bitcoin.crypto.sha256(script);
         let reversedHash = Buffer.from(reverse(hash));
         let reversedHashHex = reversedHash.toString('hex');
@@ -359,7 +359,7 @@ export default class FiroElectrum implements AbstractElectrum {
   async getUnspendTransactionsByAddress(
     address: string,
   ): Promise<Array<TransactionModel>> {
-    const script = bitcoin.address.toOutputScript(address, {pubKeyHash: 0x41});
+    const script = bitcoin.address.toOutputScript(address, network);
     const hash = bitcoin.crypto.sha256(script);
     // eslint-disable-next-line no-undef
     const reversedHash = Buffer.from(reverse(hash));
@@ -370,7 +370,7 @@ export default class FiroElectrum implements AbstractElectrum {
   }
 
   addressToScript(address: string): string {
-    return bitcoin.address.toOutputScript(address, {pubKeyHash: 0x41});
+    return bitcoin.address.toOutputScript(address, network);
   }
 }
 

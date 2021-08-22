@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {CreateAddressCard} from '../components/CreateAddressCard';
 import {FiroTextBig} from '../components/Texts';
@@ -8,11 +8,22 @@ import {FiroSelectFromSavedAddress} from '../components/Button';
 import {ReceiveAmountInputCard} from '../components/AmountInput';
 import QRCode from 'react-native-qrcode-svg';
 import localization from '../localization';
+import {FiroContext} from '../FiroContext';
 
 const {colors} = CurrentFiroTheme;
 
 const ReceiveScreen = () => {
-  const onClickSelectFromAddress = () => {};
+  const {getWallet} = useContext(FiroContext);
+  const [address, setAddress] = useState('empty');
+  const onClickSelectFromAddress = async () => {};
+  const onClickCreateAddress = async () => {
+    const wallet = getWallet();
+    if (wallet) {
+      const addr = await wallet?.getAddressAsync();
+      setAddress(addr);
+      console.log(addr);
+    }
+  };
   return (
     <View style={styles.root}>
       <FiroToolbarWithoutBack title={localization.receive_screen.title} />
@@ -23,14 +34,14 @@ const ReceiveScreen = () => {
         />
         <View style={styles.qr}>
           <QRCode
-            value={'TODO'}
+            value={address}
             size={226}
             color="#000000"
             backgroundColor="#F7F9FB"
             ecl="H"
           />
         </View>
-        <CreateAddressCard />
+        <CreateAddressCard address={address} onClick={onClickCreateAddress} />
         <FiroSelectFromSavedAddress
           onClick={onClickSelectFromAddress}
           buttonStyle={styles.savedAddress}
