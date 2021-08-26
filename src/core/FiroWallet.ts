@@ -149,7 +149,7 @@ export class FiroWallet implements AbstractWallet {
       this.next_free_mint_index,
     );
     console.log('value ctx', value);
-    const mintScript = await LelantusWrapper.getMintCommitment(
+    const mintScript = await LelantusWrapper.lelantusMint(
       mintKeyPair,
       this.next_free_mint_index,
       value,
