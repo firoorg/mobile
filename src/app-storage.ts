@@ -155,10 +155,11 @@ export class AppStorage {
     wallet: AbstractWallet,
   ): Promise<any> {
     const realm = await this.getRealm();
+    // stripping down:
+    wallet.prepareForSerialization();
+
     const keyCloned = Object.assign({}, wallet); // stripped-down version of a wallet to save to secure keystore
     console.log('keyCloned', keyCloned);
-    // stripping down:
-    keyCloned.prepareForSerialization();
 
     this.offloadWalletToRealm(realm, wallet);
     let walletToSave = JSON.stringify(keyCloned);
