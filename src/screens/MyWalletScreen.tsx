@@ -9,6 +9,7 @@ import {firoElectrum} from '../core/FiroElectrum';
 import {TransactionItem} from '../data/TransactionItem';
 import localization from '../localization';
 import RNLelantus from '../../react-native-lelantus';
+import {LelantusEntry} from '../data/LelantusEntry';
 
 const {colors} = CurrentFiroTheme;
 
@@ -19,13 +20,53 @@ function lelantusMint(
   seed: String,
 ) {
   return new Promise<string>(resolve => {
-    RNLelantus.getMintCommitment(
+    RNLelantus.getMintScript(
       value,
       privateKey,
       index,
       seed,
-      (commitment: string) => {
-        resolve(commitment);
+      (script: string) => {
+        resolve(script);
+      },
+    );
+  });
+}
+
+function estimateJoinSplitFee(
+  spendAmount: number,
+  subtractFeeFromAmount: boolean,
+  privateKey: String,
+  coins: LelantusEntry[],
+) {
+  return new Promise<{fee: number; chageToMint: number}>(resolve => {
+    RNLelantus.estimateJoinSplitFee(
+      spendAmount,
+      subtractFeeFromAmount,
+      privateKey,
+      coins,
+      (fee: number, chageToMint: number) => {
+        resolve({fee, chageToMint});
+      },
+    );
+  });
+}
+
+function lelantusJMint(
+  value: number,
+  privateKey: string,
+  index: number,
+  seed: String,
+  privateKeyAES: String,
+) {
+  return new Promise<string>(resolve => {
+    RNLelantus.getJMintScript(
+      value,
+      privateKey,
+      index,
+      seed,
+      privateKeyAES,
+      (script: string) => {
+        resolve(script);
       },
     );
   });
