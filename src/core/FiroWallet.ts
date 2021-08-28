@@ -476,7 +476,11 @@ export class FiroWallet implements AbstractWallet {
     }
 
     // next internal addresses
-    for (let c = 0; c < this.next_free_address_index + this.gap_limit; c++) {
+    for (
+      let c = 0;
+      c < this.next_free_change_address_index + this.gap_limit;
+      c++
+    ) {
       const intAddr = await this._getInternalAddressByIndex(c);
       address2Fetch.push(intAddr);
     }
