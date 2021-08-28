@@ -178,6 +178,7 @@ export class AppStorage {
 
     let newData = encryption.encrypt(JSON.stringify(data), password);
     try {
+      this.cachedPassword = password;
       await this.setItem(AppStorage.FLAG_ENCRYPTED, '1');
       return await this.setItem('data', JSON.stringify(newData));
     } catch (error) {

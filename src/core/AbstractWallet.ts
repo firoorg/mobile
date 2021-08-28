@@ -12,7 +12,9 @@ export type LelantusMintTxParams = {
 };
 
 export type FiroTxReturn = {
-  tx: string;
+  txId: string;
+  txHex: string;
+  value: number;
   fee: number;
 };
 
@@ -40,4 +42,5 @@ export interface AbstractWallet {
   prepareForSerialization(): void;
 
   createLelantusMintTx(params: LelantusMintTxParams): Promise<FiroTxReturn>;
+  addLelantusMintToCache(txId: string, value: number): Promise<void>;
 }

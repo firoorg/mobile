@@ -27,7 +27,9 @@ export class FiroWallet implements AbstractWallet {
   network: Network = network;
   balance: number = 0;
   unconfirmed_balance: number = 0;
-  lelantusCoins: Array<LelantusCoin> = [];
+  _lelantus_coins: {
+    [txId: string]: LelantusCoin;
+  } = {};
   utxo: Array<TransactionItem> = [];
   _lastTxFetch: number = 0;
   _lastBalanceFetch: Date = new Date();
@@ -71,7 +73,8 @@ export class FiroWallet implements AbstractWallet {
   }
 
   getBalance() {
-    return this.lelantusCoins.reduce<number>(
+    const coins = [...Object.values(this._lelantus_coins)];
+    return coins.reduce<number>(
       (previousValue: number, currentValue: LelantusCoin): number => {
         if (!currentValue.isUsed && currentValue.isConfirmed) {
           return previousValue + currentValue.value;
@@ -80,17 +83,6 @@ export class FiroWallet implements AbstractWallet {
       },
       0,
     );
-    // let ret = 0;
-    // for (const bal of Object.values(this._balances_by_external_index)) {
-    //   ret += bal.c;
-    // }
-    // for (const bal of Object.values(this._balances_by_internal_index)) {
-    //   ret += bal.c;
-    // }
-    // return (
-    //   ret +
-    //   (this.getUnconfirmedBalance() < 0 ? this.getUnconfirmedBalance() : 0)
-    // );
   }
 
   getUnconfirmedBalance() {
@@ -133,7 +125,8 @@ export class FiroWallet implements AbstractWallet {
       throw Error('there are no any unspend transaction is empty');
     }
     const keyPairs: Array<BIP32Interface> = [];
-    let value: number = 0;
+    const fee = 500000;
+    let value: number = -fee;
 
     const tx = new bitcoin.Psbt({network: this.network});
     tx.setVersion(2);
@@ -159,7 +152,6 @@ export class FiroWallet implements AbstractWallet {
       MINT_INDEX,
       this.next_free_mint_index,
     );
-    console.log('value ctx', value);
     const mintScript = await LelantusWrapper.lelantusMint(
       mintKeyPair,
       this.next_free_mint_index,
@@ -167,6 +159,7 @@ export class FiroWallet implements AbstractWallet {
     );
 
     console.log('value ctx', value);
+    console.log('mintScript', mintScript);
     tx.addOutput({
       // eslint-disable-next-line no-undef
       script: Buffer.from(mintScript, 'hex'),
@@ -179,10 +172,30 @@ export class FiroWallet implements AbstractWallet {
     });
     tx.finalizeAllInputs();
 
+    const extractedTx = tx.extractTransaction();
     return {
-      tx: tx.extractTransaction().toHex(),
-      fee: 0,
+      txId: extractedTx.getId(),
+      txHex: extractedTx.toHex(),
+      value: value,
+      fee: fee,
     };
+  }
+
+  async addLelantusMintToCache(txId: string, value: number): Promise<void> {
+
+    if (this._lelantus_coins[txId]) {
+      return;
+    }
+    this._lelantus_coins[txId] = {
+      index: this.next_free_mint_index,
+      value: value,
+      isConfirmed: false,
+      txId: txId,
+      height: -1,
+      anonymitySetId: '',
+      isUsed: false,
+    };
+    this.next_free_mint_index += 1;
   }
 
   async _getWifForAddress(address: string): Promise<string> {

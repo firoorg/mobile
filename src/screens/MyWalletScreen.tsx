@@ -40,9 +40,6 @@ const MyWalletScreen = () => {
       } else {
         setBalance(0);
       }
-
-      const elBalance = await firoElectrum.getBalanceByAddress(walletAddress);
-      console.log('balance is ', elBalance.confirmed / 100000000);
     } catch (e) {
       console.log('error when getting balance', e);
     }
@@ -54,7 +51,6 @@ const MyWalletScreen = () => {
     if (!wallet) {
       return;
     }
-
     try {
       const utxos = await firoElectrum.getUnspendTransactionsByAddress(
         walletAddress,
@@ -75,12 +71,22 @@ const MyWalletScreen = () => {
           address: walletAddress,
         };
       });
+      if (lelantusUtxos.length === 0) {
+        return;
+      }
 
-      if (lelantusUtxos.length > 0) {
-        const mint = await wallet.createLelantusMintTx({
-          utxos: lelantusUtxos,
-        });
-        console.log('mintTx', mint);
+      const mint = await wallet.createLelantusMintTx({
+        utxos: lelantusUtxos,
+      });
+      console.log('mintTx', mint);
+
+      const txId = await firoElectrum.broadcast(mint.txHex);
+      console.log(`broadcast tx: ${txId}`);
+
+      if (txId === mint.txId) {
+        wallet.addLelantusMintToCache(txId, mint.value);
+        await saveToDisk();
+        console.log(`saved to disk: ${txId}`);
       }
     } catch (e) {
       console.log('error when creating mint transaction', e);
