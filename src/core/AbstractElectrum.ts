@@ -79,4 +79,6 @@ export interface AbstractElectrum {
   getUnspendTransactionsByAddress(
     address: string,
   ): Promise<Array<TransactionModel>>;
+
+  broadcast(hex: string): Promise<string>;
 }

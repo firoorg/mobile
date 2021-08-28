@@ -4,8 +4,8 @@ import {
   BalanceModel,
   TransactionModel,
   FullTransactionModel,
-} from './AbstractElectrum'
-import {network} from './FiroNetwork';;
+} from './AbstractElectrum';
+import {network} from './FiroNetwork';
 import AsyncStorage from '@react-native-community/async-storage';
 import {AppStorage} from '../app-storage';
 import DefaultPreference from 'react-native-default-preference';
@@ -243,6 +243,7 @@ export default class FiroElectrum implements AbstractElectrum {
       for (const addr of chunk) {
         const script = bitcoin.address.toOutputScript(addr, network);
         const hash = bitcoin.crypto.sha256(script);
+        // eslint-disable-next-line no-undef
         let reversedHash = Buffer.from(reverse(hash));
         let reversedHashHex = reversedHash.toString('hex');
         scripthashes.push(reversedHashHex);
@@ -284,6 +285,7 @@ export default class FiroElectrum implements AbstractElectrum {
       for (const addr of chunk) {
         const script = bitcoin.address.toOutputScript(addr, network);
         const hash = bitcoin.crypto.sha256(script);
+        // eslint-disable-next-line no-undef
         let reversedHash = Buffer.from(reverse(hash));
         let reversedHashHex = reversedHash.toString('hex');
         scripthashes.push(reversedHashHex);
@@ -366,6 +368,20 @@ export default class FiroElectrum implements AbstractElectrum {
       reversedHash.toString('hex'),
     );
     return listUnspent;
+  }
+
+  async broadcast(hex: string): Promise<string> {
+    if (!this.mainClient) {
+      throw new Error('Electrum client is not connected');
+    }
+    try {
+      const broadcast = await this.mainClient.blockchainTransaction_broadcast(
+        hex,
+      );
+      return broadcast;
+    } catch (error) {
+      return error;
+    }
   }
 
   addressToScript(address: string): string {
