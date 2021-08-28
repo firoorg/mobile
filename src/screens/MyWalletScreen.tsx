@@ -58,70 +58,79 @@ const MyWalletScreen = () => {
     if (!wallet) {
       return;
     }
-    try {
-      const utxos = await firoElectrum.getUnspendTransactionsByAddress(
-        walletAddress,
-      );
-      if (utxos && utxos.length === 0) {
-        return;
+    const address2Check = await wallet.getTransactionsAddresses();
+    for (const address of address2Check) {
+      try {
+        const utxos = await firoElectrum.getUnspendTransactionsByAddress(
+          address,
+        );
+        if (utxos && utxos.length === 0) {
+          continue;
+        }
+        console.log(`trying to mint address ${address}`);
+        const txIds = utxos.map(tx => tx.tx_hash);
+        const txs = await firoElectrum.multiGetTransactionByTxid(txIds);
+
+        const lelantusUtxos = utxos.map(utxo => {
+          const fTx = txs.get(utxo.tx_hash);
+          return {
+            txId: utxo.tx_hash,
+            txHex: fTx!!.hex,
+            index: utxo.tx_pos,
+            value: utxo.value,
+            address: address,
+          };
+        });
+        if (lelantusUtxos.length === 0) {
+          continue;
+        }
+
+        const mint = await wallet.createLelantusMintTx({
+          utxos: lelantusUtxos,
+        });
+
+        const txId = await firoElectrum.broadcast(mint.txHex);
+        console.log(`broadcast tx: ${txId}`);
+
+        if (txId === mint.txId) {
+          wallet.addLelantusMintToCache(txId, mint.value);
+          await saveToDisk();
+        }
+      } catch (e) {
+        console.log('error when creating mint transaction', e);
       }
-      const txIds = utxos.map(tx => tx.tx_hash);
-      const txs = await firoElectrum.multiGetTransactionByTxid(txIds);
-
-      const lelantusUtxos = utxos.map(utxo => {
-        const fTx = txs.get(utxo.tx_hash);
-        return {
-          txId: utxo.tx_hash,
-          txHex: fTx!!.hex,
-          index: utxo.tx_pos,
-          value: utxo.value,
-          address: walletAddress,
-        };
-      });
-      if (lelantusUtxos.length === 0) {
-        return;
-      }
-
-      const mint = await wallet.createLelantusMintTx({
-        utxos: lelantusUtxos,
-      });
-      console.log('mintTx', mint);
-
-      const txId = await firoElectrum.broadcast(mint.txHex);
-      console.log(`broadcast tx: ${txId}`);
-
-      if (txId === mint.txId) {
-        wallet.addLelantusMintToCache(txId, mint.value);
-        await saveToDisk();
-        console.log(`saved to disk: ${txId}`);
-      }
-    } catch (e) {
-      console.log('error when creating mint transaction', e);
     }
   };
 
   const getTransactionList = async () => {
-    try {
-      const fullTxs = await firoElectrum.getTransactionsFullByAddress(
-        walletAddress,
-      );
-      const txList = new Array<TransactionItem>();
-      fullTxs.forEach(tx => {
-        let transactionItem = new TransactionItem();
-        transactionItem.address = tx.address;
-        transactionItem.date = new Date(tx.time * 1000);
-        transactionItem.transactionId = tx.txid;
-        tx.outputs.forEach(vout => {
-          if (vout.addresses && vout.addresses.includes(walletAddress)) {
-            transactionItem.value += vout.value;
-          }
-        });
-        txList.push(transactionItem);
-      });
-      setTxHistory(txList);
-    } catch (e) {
-      console.log('error when getting transaction list', e);
+    const wallet = getWallet();
+    if (!wallet) {
+      return;
     }
+    const address2Check = await wallet.getTransactionsAddresses();
+    const txList: TransactionItem[] = [];
+    for (const address of address2Check) {
+      try {
+        const fullTxs = await firoElectrum.getTransactionsFullByAddress(
+          address,
+        );
+        fullTxs.forEach(tx => {
+          let transactionItem = new TransactionItem();
+          transactionItem.address = tx.address;
+          transactionItem.date = new Date(tx.time * 1000);
+          transactionItem.transactionId = tx.txid;
+          tx.outputs.forEach(vout => {
+            if (vout.addresses && vout.addresses.includes(address)) {
+              transactionItem.value += vout.value;
+            }
+          });
+          txList.push(transactionItem);
+        });
+      } catch (e) {
+        console.log('error when getting transaction list', e);
+      }
+    }
+    setTxHistory(txList);
   };
   useEffect(() => {
     getAddress();

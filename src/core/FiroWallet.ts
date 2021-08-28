@@ -89,14 +89,16 @@ export class FiroWallet implements AbstractWallet {
   }
 
   getUnconfirmedBalance() {
-    let ret = 0;
-    for (const bal of Object.values(this._balances_by_external_index)) {
-      ret += bal.u;
-    }
-    for (const bal of Object.values(this._balances_by_internal_index)) {
-      ret += bal.u;
-    }
-    return ret;
+    const coins = [...Object.values(this._lelantus_coins)];
+    return coins.reduce<number>(
+      (previousValue: number, currentValue: LelantusCoin): number => {
+        if (!currentValue.isUsed && !currentValue.isConfirmed) {
+          return previousValue + currentValue.value / 100000000;
+        }
+        return previousValue;
+      },
+      0,
+    );
   }
 
   async getXpub(): Promise<string> {
@@ -463,6 +465,23 @@ export class FiroWallet implements AbstractWallet {
       pubkey: hdNode.publicKey,
       network: this.network,
     }).address;
+  }
+
+  async getTransactionsAddresses(): Promise<Array<string>> {
+    const address2Fetch = [];
+    // external addresses first
+    for (let c = 0; c < this.next_free_address_index + this.gap_limit; c++) {
+      const extAddr = await this._getExternalAddressByIndex(c);
+      address2Fetch.push(extAddr);
+    }
+
+    // next internal addresses
+    for (let c = 0; c < this.next_free_address_index + this.gap_limit; c++) {
+      const intAddr = await this._getInternalAddressByIndex(c);
+      address2Fetch.push(intAddr);
+    }
+
+    return address2Fetch;
   }
 
   async fetchTransactions() {

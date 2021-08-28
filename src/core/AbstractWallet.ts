@@ -35,6 +35,8 @@ export interface AbstractWallet {
   getAddressAsync(): Promise<string>;
   getChangeAddressAsync(): Promise<string>;
 
+  getTransactionsAddresses(): Promise<Array<string>>;
+
   getBalance(): number;
   getUnconfirmedBalance(): number;
   getTransactions(): Promise<Array<TransactionItem>>;
