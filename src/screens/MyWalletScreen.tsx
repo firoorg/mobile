@@ -44,9 +44,16 @@ const MyWalletScreen = () => {
       console.log('error when getting balance', e);
     }
   };
+  const syncLelantusCoins = async () => {
+    const wallet = getWallet();
+    if (!wallet) {
+      return;
+    }
+    await wallet.checkIsMintConfirmed();
+    await saveToDisk();
+  };
 
   const mintUnspendTransactions = async () => {
-    console.log('mint start');
     const wallet = getWallet();
     if (!wallet) {
       return;
@@ -132,6 +139,9 @@ const MyWalletScreen = () => {
     }
     getTransactionList();
   }, [walletAddress]);
+  useEffect(() => {
+    syncLelantusCoins();
+  }, []);
   useEffect(() => {
     if (walletAddress === '') {
       return;

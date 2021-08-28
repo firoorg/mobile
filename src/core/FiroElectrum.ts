@@ -67,10 +67,14 @@ export default class FiroElectrum implements AbstractElectrum {
   serverName = false;
   disableBatching = false;
 
-  latestBlockheight = false;
+  latestBlockheight: number | false = false;
   latestBlockheightTimestamp: number = 0;
 
   txhashHeightCache: Map<string, number> = new Map();
+
+  getLatestBlockHeight(): number {
+    return this.latestBlockheight === false ? -1 : this.latestBlockheight;
+  }
 
   async connectMain() {
     let peer = await getSavedPeer();

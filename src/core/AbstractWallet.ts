@@ -43,4 +43,5 @@ export interface AbstractWallet {
 
   createLelantusMintTx(params: LelantusMintTxParams): Promise<FiroTxReturn>;
   addLelantusMintToCache(txId: string, value: number): Promise<void>;
+  checkIsMintConfirmed(): Promise<void>;
 }

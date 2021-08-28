@@ -22,6 +22,8 @@ const EXTERNAL_INDEX = 0;
 const INTERNAL_INDEX = 1;
 const MINT_INDEX = 2;
 
+const HEIGHT_NOT_SET = -1;
+
 export class FiroWallet implements AbstractWallet {
   secret: string | undefined = undefined;
   network: Network = network;
@@ -55,6 +57,7 @@ export class FiroWallet implements AbstractWallet {
   _node1: BIP32Interface | undefined = undefined;
   usedAddresses = [];
   gap_limit = 20;
+  confirm_block_count = 2;
 
   async generate(): Promise<void> {
     const buf = await randomBytes(32);
@@ -77,7 +80,7 @@ export class FiroWallet implements AbstractWallet {
     return coins.reduce<number>(
       (previousValue: number, currentValue: LelantusCoin): number => {
         if (!currentValue.isUsed && currentValue.isConfirmed) {
-          return previousValue + currentValue.value;
+          return previousValue + currentValue.value / 100000000;
         }
         return previousValue;
       },
@@ -102,13 +105,9 @@ export class FiroWallet implements AbstractWallet {
     }
 
     const secret = this.getSecret();
-    // const secret = "salt theme sheriff summer slab travel sheriff dress quarter silly below grunt girl salon method design rug blanket throw comfort icon select trophy exclude";
     const seed = await bip39.mnemonicToSeed(secret);
     const root = bitcoin.bip32.fromSeed(seed, this.network);
     console.log('mnemonic:', secret);
-    // const privateKey = root.derivePath("m/44'/136'/0'/2/0");
-    // console.log('indentifier:', privateKey.identifier.reverse().toString('hex'));
-    // console.log('privateKey:', privateKey.privateKey.toString('hex'));
     this._xPub = root
       .deriveHardened(44)
       .deriveHardened(136)
@@ -182,7 +181,6 @@ export class FiroWallet implements AbstractWallet {
   }
 
   async addLelantusMintToCache(txId: string, value: number): Promise<void> {
-
     if (this._lelantus_coins[txId]) {
       return;
     }
@@ -191,11 +189,62 @@ export class FiroWallet implements AbstractWallet {
       value: value,
       isConfirmed: false,
       txId: txId,
-      height: -1,
+      height: HEIGHT_NOT_SET,
       anonymitySetId: '',
       isUsed: false,
     };
     this.next_free_mint_index += 1;
+  }
+
+  async checkIsMintConfirmed(): Promise<void> {
+    await this._updateLelantusCoinsHeight();
+    // get unconfirmed coins from updated cache 
+    const ucCoins = this._getUnconfirmedLelantusCoins();
+
+    for (const coin of ucCoins) {
+      if (
+        coin.height !== HEIGHT_NOT_SET &&
+        coin.height + this.confirm_block_count <
+          firoElectrum.getLatestBlockHeight()
+      ) {
+        this._lelantus_coins[coin.txId].isConfirmed = true;
+      } else {
+        this._lelantus_coins[coin.txId].isConfirmed = false;
+      }
+    }
+  }
+
+  async _updateLelantusCoinsHeight(): Promise<void> {
+    const unconfirmedCoins = this._getUnconfirmedLelantusCoins();
+    const noHeightTxIds = unconfirmedCoins
+      .filter(coin => {
+        return coin.height === HEIGHT_NOT_SET;
+      })
+      .map(coin => {
+        return coin.txId;
+      });
+
+    console.log(`height no txs id: ${JSON.stringify(noHeightTxIds)}`);
+
+    const result = await firoElectrum.multiGetTransactionByTxid(noHeightTxIds);
+
+    for (const res of result) {
+      const txId = res[0];
+      const tx = res[1];
+      if (tx.height) {
+        // update tx block height in cache
+        this._lelantus_coins[txId].height = tx.height;
+      }
+    }
+  }
+
+  _getUnconfirmedLelantusCoins(): LelantusCoin[] {
+    const coins = Object.values(this._lelantus_coins);
+    return coins.filter(coin => {
+      if (!coin.isConfirmed) {
+        return coin;
+      }
+    });
   }
 
   async _getWifForAddress(address: string): Promise<string> {

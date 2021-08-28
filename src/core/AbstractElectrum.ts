@@ -52,6 +52,8 @@ export class FullTransactionModel {
 export interface AbstractElectrum {
   connectMain(): Promise<void>;
 
+  getLatestBlockHeight(): number;
+
   getBalanceByAddress(address: string): Promise<BalanceModel>;
 
   getTransactionsByAddress(address: string): Promise<Array<TransactionModel>>;
