@@ -260,11 +260,77 @@ export class FiroWallet implements AbstractWallet {
   }
 
   async getAddressAsync(): Promise<string> {
-    return this._getExternalAddressByIndex(0);
+    // looking for free external address
+    let freeAddress = '';
+    let c;
+    for (c = 0; c < this.gap_limit + 1; c++) {
+      if (this.next_free_address_index + c < 0) {
+        continue;
+      }
+      const address = await this._getExternalAddressByIndex(
+        this.next_free_address_index + c,
+      );
+      this.external_addresses_cache[this.next_free_address_index + c] = address; // updating cache just for any case
+      let txs = [];
+      try {
+        txs = await firoElectrum.getTransactionsByAddress(address);
+      } catch (Err) {
+        console.warn('FiroElectrum.getTransactionsByAddress()', Err.message);
+      }
+      if (txs.length === 0) {
+        // found free address
+        freeAddress = address;
+        this.next_free_address_index += c; // now points to _this one_
+        break;
+      }
+    }
+
+    if (!freeAddress) {
+      // could not find in cycle above, give up
+      freeAddress = await this._getExternalAddressByIndex(
+        this.next_free_address_index + c,
+      ); // we didnt check this one, maybe its free
+      this.next_free_address_index += c; // now points to this one
+    }
+    return freeAddress;
   }
 
   async getChangeAddressAsync(): Promise<string> {
-    return this._getInternalAddressByIndex(0);
+    // looking for free internal address
+    let freeAddress = '';
+    let c;
+    for (c = 0; c < this.gap_limit + 1; c++) {
+      if (this.next_free_change_address_index + c < 0){
+        continue;
+      }
+      const address = await this._getInternalAddressByIndex(
+        this.next_free_change_address_index + c,
+      );
+      this.internal_addresses_cache[
+        this.next_free_change_address_index + c
+      ] = address; // updating cache just for any case
+      let txs = [];
+      try {
+        txs = await firoElectrum.getTransactionsByAddress(address);
+      } catch (Err) {
+        console.warn('FiroElectrum.getTransactionsByAddress()', Err.message);
+      }
+      if (txs.length === 0) {
+        // found free address
+        freeAddress = address;
+        this.next_free_change_address_index += c; // now points to _this one_
+        break;
+      }
+    }
+
+    if (!freeAddress) {
+      // could not find in cycle above, give up
+      freeAddress = await this._getInternalAddressByIndex(
+        this.next_free_change_address_index + c,
+      ); // we didnt check this one, maybe its free
+      this.next_free_change_address_index += c; // now points to this one
+    }
+    return freeAddress;
   }
 
   async _getInternalAddressByIndex(index: number): Promise<string> {
