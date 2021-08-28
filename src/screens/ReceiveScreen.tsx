@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {CreateAddressCard} from '../components/CreateAddressCard';
 import {FiroTextBig} from '../components/Texts';
@@ -14,7 +14,7 @@ const {colors} = CurrentFiroTheme;
 
 const ReceiveScreen = () => {
   const {getWallet} = useContext(FiroContext);
-  const [address, setAddress] = useState('empty');
+  const [address, setAddress] = useState('loading...');
   const onClickSelectFromAddress = async () => {};
   const onClickCreateAddress = async () => {
     const wallet = getWallet();
@@ -24,6 +24,11 @@ const ReceiveScreen = () => {
       console.log(addr);
     }
   };
+
+  useEffect(() => {
+    onClickCreateAddress();
+  }, []);
+
   return (
     <View style={styles.root}>
       <FiroToolbarWithoutBack title={localization.receive_screen.title} />

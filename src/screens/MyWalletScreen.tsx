@@ -8,28 +8,8 @@ import {FiroContext} from '../FiroContext';
 import {firoElectrum} from '../core/FiroElectrum';
 import {TransactionItem} from '../data/TransactionItem';
 import localization from '../localization';
-import RNLelantus from '../../react-native-lelantus';
 
 const {colors} = CurrentFiroTheme;
-
-function lelantusMint(
-  value: number,
-  privateKey: string,
-  index: number,
-  seed: String,
-) {
-  return new Promise<string>(resolve => {
-    RNLelantus.getMintCommitment(
-      value,
-      privateKey,
-      index,
-      seed,
-      (commitment: string) => {
-        resolve(commitment);
-      },
-    );
-  });
-}
 
 const MyWalletScreen = () => {
   const {getWallet} = useContext(FiroContext);
@@ -44,7 +24,7 @@ const MyWalletScreen = () => {
     }
 
     try {
-      const address = await wallet.getChangeAddressAsync();
+      const address = await wallet.getAddressAsync();
       setWalletAddress(address);
     } catch (e) {
       console.log('error when getting address', e);
@@ -71,6 +51,9 @@ const MyWalletScreen = () => {
       const utxos = await firoElectrum.getUnspendTransactionsByAddress(
         walletAddress,
       );
+      if (utxos && utxos.length === 0) {
+        return;
+      }
       const txIds = utxos.map(tx => tx.tx_hash);
       const txs = await firoElectrum.multiGetTransactionByTxid(txIds);
 

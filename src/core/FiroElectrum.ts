@@ -93,7 +93,6 @@ export default class FiroElectrum implements AbstractElectrum {
         peer.host,
         peer.ssl ? 'tls' : 'tcp',
       );
-      console.log('mainClient:', this.mainClient);
       this.mainClient.onError = function () {
         if (Platform.OS === 'android' && this.mainConnected) {
           // android sockets are buggy and dont always issue CLOSE event, which actually makes the persistence code to reconnect.
