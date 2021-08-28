@@ -151,14 +151,21 @@ export class AppStorage {
    * @returns {Promise} Result of storage save
    */
   async saveWalletToDisk(
-    password: string,
+    password: string | null,
     wallet: AbstractWallet,
   ): Promise<any> {
+    if (password == null) {
+      password = this.cachedPassword;
+    }
+    if (password == null) {
+      throw Error('No password');
+    }
     const realm = await this.getRealm();
-    // stripping down:
-    wallet.prepareForSerialization();
 
-    const keyCloned = Object.assign({}, wallet); // stripped-down version of a wallet to save to secure keystore
+    // stripping down:
+    const walletJson = JSON.stringify(wallet);
+    const keyCloned = FiroWallet.fromJson(walletJson);
+    keyCloned.prepareForSerialization();
     console.log('keyCloned', keyCloned);
 
     this.offloadWalletToRealm(realm, wallet);

@@ -9,9 +9,9 @@ const appStorage = new AppStorage();
 type FiroContextType = {
   setWallet: (wallet: AbstractWallet) => void;
   getWallet: () => AbstractWallet | undefined;
-  encryptStorage: (password: string) => Promise<void>;
   isStorageEncrypted: () => Promise<boolean>;
-  saveToDisk: (password: string) => Promise<void>;
+  encryptStorage: (password: string) => Promise<void>;
+  saveToDisk: () => Promise<void>;
   loadFromDisk: (password: string) => Promise<boolean>;
   getFiroRate: () => number;
   getSettings: () => CoreSettings;
@@ -20,24 +20,29 @@ type FiroContextType = {
 };
 
 export const FiroContext = createContext<FiroContextType>({
-  setWallet: () => { },
+  setWallet: () => {},
   getWallet: () => undefined,
-  encryptStorage: async () => { },
   isStorageEncrypted: async () => false,
-  saveToDisk: async () => { },
+  encryptStorage: async () => {},
+  saveToDisk: async () => {},
   loadFromDisk: async () => false,
   getFiroRate: () => 0,
   getSettings: () => {
-    return { notificationsEnabled: true, defaultCurrency: "usd" };
+    return {notificationsEnabled: true, defaultCurrency: 'usd'};
   },
-  setSettings: async (settings, notPersist) => { },
-  verifyPassword: async (password) => { return false;}
+  setSettings: async (settings, notPersist) => {},
+  verifyPassword: async password => {
+    return false;
+  },
 });
 
 export const FiroContextProvider: FC = props => {
   const [walletState, setWalletState] = useState<AbstractWallet>();
   const [firoRate, changeFiroRate] = useState<number>(Currency.firoToFiat(1));
-  const [settings, changeSettings] = useState<CoreSettings>({ notificationsEnabled: true, defaultCurrency: "usd" });
+  const [settings, changeSettings] = useState<CoreSettings>({
+    notificationsEnabled: true,
+    defaultCurrency: 'usd',
+  });
   Currency.setUpdateContextRate(changeFiroRate);
   const setWallet = (wallet: AbstractWallet) => {
     setWalletState(wallet);
@@ -47,16 +52,21 @@ export const FiroContextProvider: FC = props => {
     return walletState;
   };
 
-  const encryptStorage = async () => {};
-
   const isStorageEncrypted = async () => {
     return await appStorage.hasSavedWallet();
   };
 
-  const saveToDisk = async (password: string) => {
+  const encryptStorage = async (password: string) => {
     let wallet = getWallet();
     if (typeof wallet !== 'undefined') {
       appStorage.saveWalletToDisk(password, wallet);
+    }
+  };
+
+  const saveToDisk = async () => {
+    let wallet = getWallet();
+    if (typeof wallet !== 'undefined') {
+      appStorage.saveWalletToDisk(null, wallet);
     }
   };
 
@@ -77,18 +87,24 @@ export const FiroContextProvider: FC = props => {
     return settings;
   };
 
-  const setSettings = async (newSettings: CoreSettings, notPersist?: boolean) => {
+  const setSettings = async (
+    newSettings: CoreSettings,
+    notPersist?: boolean,
+  ) => {
     if (!newSettings) {
       return;
     }
     changeSettings(newSettings);
     if (!notPersist) {
-      await appStorage.setItem(AppStorage.SETTINGS, JSON.stringify(newSettings));
+      await appStorage.setItem(
+        AppStorage.SETTINGS,
+        JSON.stringify(newSettings),
+      );
     }
   };
 
   const verifyPassword = async (password: string) => {
-    return appStorage.verifyPassword(password)
+    return appStorage.verifyPassword(password);
   };
 
   return (
@@ -96,14 +112,14 @@ export const FiroContextProvider: FC = props => {
       value={{
         setWallet,
         getWallet,
-        encryptStorage,
         isStorageEncrypted,
+        encryptStorage,
         saveToDisk,
         loadFromDisk,
         getFiroRate,
         getSettings,
         setSettings,
-        verifyPassword
+        verifyPassword,
       }}>
       {props.children}
     </FiroContext.Provider>

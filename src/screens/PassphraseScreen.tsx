@@ -15,7 +15,7 @@ const {colors} = CurrentFiroTheme;
 const PassphraseScreen = () => {
   const [creating, setCreating] = useState(false);
   const [password, setPassword] = useState('');
-  const {saveToDisk, encryptStorage} = useContext(FiroContext);
+  const {encryptStorage} = useContext(FiroContext);
   const btnCreateText = creating
     ? localization.passphrase_screen.creating
     : localization.passphrase_screen.create;
@@ -25,7 +25,6 @@ const PassphraseScreen = () => {
     setCreating(true);
     try {
       await encryptStorage(password);
-      await saveToDisk(password);
       jobDone = true;
 
       NavigationService.dispatch(StackActions.replace('MainScreen', undefined));

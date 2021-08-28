@@ -1,68 +1,143 @@
 
 #include "Utils.h"
-#include "CoreJni.h"
 #include "org_firo_lelantus_Lelantus.h"
 #include <android/log.h>
 
 extern "C" {
-JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateMintCommitment
-        (JNIEnv *env, jobject thisClass, jlong value,
-         jstring jPrivateKey, jint index, jstring jSeed) {
-	auto* privateKey = hex2bin(env->GetStringUTFChars(jPrivateKey, nullptr));
-
-	auto* seed = hex2bin(env->GetStringUTFChars(jSeed, nullptr));
-	std::vector<unsigned char> seedVector(seed, seed + 20);
-
-	__android_log_print(ANDROID_LOG_INFO, "Tag", "value = %i", (int) value);
-	__android_log_print(ANDROID_LOG_INFO, "Tag", "index = %d", index);
-	for (int i = 0; i < 32; i++) {
-		__android_log_print(ANDROID_LOG_INFO, "Tag", "privateKey = %i", (int) privateKey[i]);
-	}
-	for (int i = 0; i < 20; i++) {
-		__android_log_print(ANDROID_LOG_INFO, "Tag", "seedVector = %i", (int) seedVector[i]);
-	}
-
-    const char* commitment = CreateMintCommitment(value, privateKey, index, uint160(seedVector));
-
-    return env->NewStringUTF(commitment);
+JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateMintScript
+		(JNIEnv *env, jobject thisClass, jlong value,
+		 jstring jPrivateKey, jint index, jstring jSeed) {
+	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
+	auto *seed = env->GetStringUTFChars(jSeed, nullptr);
+	const char *script = CreateMintScript(value, privateKey, index, seed);
+	return env->NewStringUTF(script);
 }
 
-JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendProof
-        (JNIEnv *env, jclass thisClass, jlong denominationValue, jstring jPrivateKey, jint index,
-                jobjectArray jAnonymitySet, jint groupId, jstring jBlockHash, jstring jTxHash) {
-//    sigma::CoinDenomination coinDenomination;
-//    sigma::IntegerToDenomination((int64_t) denominationValue, coinDenomination);
-//
-//    const char *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
-//
-//    std::vector<const char *> anonymitySet;
-//    int anonymitySetSize = env->GetArrayLength(jAnonymitySet);
-//    for (int i = 0; i < anonymitySetSize; i++) {
-//        auto string = (jstring) (env->GetObjectArrayElement(jAnonymitySet, i));
-//        const char *rawString = env->GetStringUTFChars(string, nullptr);
-//        anonymitySet.push_back(rawString);
-//    }
-//
-//    const char *blockHash = env->GetStringUTFChars(jBlockHash, nullptr);
-//    const char *txHash = env->GetStringUTFChars(jTxHash, nullptr);
-//
-//    const char *spendProof = CreateSpendProof(coinDenomination, privateKey, index,
-//                                                anonymitySet, groupId, blockHash, txHash);
-//
-//    return env->NewStringUTF(spendProof);
+JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
+		(JNIEnv *env, jobject thisClass, jlong spendAmount,
+		 jboolean subtractFeeFromAmount, jstring jPrivateKey,
+		 jobject jLelantusEntryList) {
+	jclass alCls = env->FindClass("java/util/List");
+	jclass leCls = env->FindClass("org/firo/lelantus/LelantusEntry");
+	jclass jsdCls = env->FindClass("org/firo/lelantus/JoinSplitData");
+
+	if (alCls == nullptr || leCls == nullptr || jsdCls == nullptr) {
+		return nullptr;
+	}
+
+	jmethodID alGetId = env->GetMethodID(alCls, "get", "(I)Ljava/lang/Object;");
+	jmethodID alSizeId = env->GetMethodID(alCls, "size", "()I");
+	jmethodID leGetAmountId = env->GetMethodID(leCls, "getAmount", "()J");
+	jmethodID leGetIndexId = env->GetMethodID(leCls, "getIndex", "()I");
+	jmethodID leIsUsedId = env->GetMethodID(leCls, "isUsed", "()Z");
+	jmethodID leGetHeightId = env->GetMethodID(leCls, "getHeight", "()I");
+	jmethodID leGetAnonymitySetIdId = env->GetMethodID(leCls, "getAnonymitySetId", "()I");
+	jmethodID jsdConstructor = env->GetMethodID(jsdCls, "<init>", "(JJ)V");
+
+	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
+
+	int coinCount = static_cast<int>(env->CallIntMethod(jLelantusEntryList, alSizeId));
+
+	std::list<LelantusEntry> coins;
+	int index, height, anonymitySetId;
+	long amount;
+	bool isUsed;
+
+	for (int i = 0; i < coinCount; ++i) {
+		jobject mintCoin = env->CallObjectMethod(jLelantusEntryList, alGetId, i);
+		amount = static_cast<long>(env->CallLongMethod(mintCoin, leGetAmountId));
+		index = static_cast<int>(env->CallIntMethod(mintCoin, leGetIndexId));
+		isUsed = static_cast<bool>(env->CallBooleanMethod(mintCoin, leIsUsedId));
+		height = static_cast<bool>(env->CallIntMethod(mintCoin, leGetHeightId));
+		anonymitySetId = static_cast<bool>(env->CallIntMethod(mintCoin, leGetAnonymitySetIdId));
+		LelantusEntry lelantusEntry{isUsed, height, anonymitySetId, amount,
+									static_cast<uint32_t>(index)};
+		__android_log_print(ANDROID_LOG_INFO, "Tag", "isUsed = %d", isUsed);
+		coins.push_back(lelantusEntry);
+	}
+
+	uint64_t changeToMint;
+	uint64_t fee = EstimateFee(
+			spendAmount,
+			subtractFeeFromAmount,
+			privateKey,
+			coins,
+			changeToMint
+	);
+
+	jobject result = env->NewObject(jsdCls, jsdConstructor, (jlong) fee, (jlong) changeToMint);
+
+	return result;
 }
 
-JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetSerialNumber
-        (JNIEnv *env, jclass thisClass, jlong denominationValue,
-         jstring jPrivateKey, jint index) {
-//    sigma::CoinDenomination coinDenomination;
-//    sigma::IntegerToDenomination((int64_t) denominationValue, coinDenomination);
-//
-//    const char *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
-//
-//    const char *serialNumber = GetSerialNumber(coinDenomination, privateKey, index);
-//
-//    return env->NewStringUTF(serialNumber);
+JNIEXPORT jint JNICALL Java_org_firo_lelantus_Lelantus_jGetMintKeyPath
+		(JNIEnv *env, jobject thisClass, jlong value, jstring jPrivateKey, jint index) {
+	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
+	uint32_t keyPath = GetMintKeyPath(value, privateKey, index);
+	return keyPath;
+}
+
+JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateJMintScript
+		(JNIEnv *env, jobject thisClass, jlong value, jstring jPrivateKey,
+		 jint index, jstring jSeed, jstring jPrivateKeyAES) {
+	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
+	auto *privateKeyAES = env->GetStringUTFChars(jPrivateKeyAES, nullptr);
+	auto *seed = env->GetStringUTFChars(jSeed, nullptr);
+	const char *script = CreateJMintScript(value, privateKey, index, seed, privateKeyAES);
+	return env->NewStringUTF(script);
+}
+
+JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
+		(JNIEnv *env, jobject thisClass, jlong spendAmount, jboolean subtractFeeFromAmount,
+		 jstring jPrivateKey, jint index, jobject jLelantusEntryList,
+		 jstring jTxHash, jobject jAnonymitySet, jobject jBlockGroupHashes) {
+	jclass alCls = env->FindClass("java/util/List");
+	jclass leCls = env->FindClass("org/firo/lelantus/LelantusEntry");
+	jclass jsdCls = env->FindClass("org/firo/lelantus/JoinSplitData");
+
+	if (alCls == nullptr || leCls == nullptr || jsdCls == nullptr) {
+		return nullptr;
+	}
+
+	jmethodID alGetId = env->GetMethodID(alCls, "get", "(I)Ljava/lang/Object;");
+	jmethodID alSizeId = env->GetMethodID(alCls, "size", "()I");
+	jmethodID leGetAmountId = env->GetMethodID(leCls, "getAmount", "()J");
+	jmethodID leGetIndexId = env->GetMethodID(leCls, "getIndex", "()I");
+	jmethodID leIsUsedId = env->GetMethodID(leCls, "isUsed", "()Z");
+	jmethodID leGetHeightId = env->GetMethodID(leCls, "getHeight", "()I");
+	jmethodID leGetAnonymitySetIdId = env->GetMethodID(leCls, "getAnonymitySetId", "()I");
+
+	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
+	auto *txHash = env->GetStringUTFChars(jTxHash, nullptr);
+
+	int coinCount = static_cast<int>(env->CallIntMethod(jLelantusEntryList, alSizeId));
+
+	std::list<LelantusEntry> coins;
+	int coinIndex, height, anonymitySetId;
+	long amount;
+	bool isUsed;
+
+	for (int i = 0; i < coinCount; ++i) {
+		jobject mintCoin = env->CallObjectMethod(jLelantusEntryList, alGetId, i);
+		amount = static_cast<long>(env->CallLongMethod(mintCoin, leGetAmountId));
+		coinIndex = static_cast<int>(env->CallIntMethod(mintCoin, leGetIndexId));
+		isUsed = static_cast<bool>(env->CallBooleanMethod(mintCoin, leIsUsedId));
+		height = static_cast<bool>(env->CallIntMethod(mintCoin, leGetHeightId));
+		anonymitySetId = static_cast<bool>(env->CallIntMethod(mintCoin, leGetAnonymitySetIdId));
+		LelantusEntry lelantusEntry{isUsed, height, anonymitySetId, amount,
+									static_cast<uint32_t>(coinIndex)};
+		coins.push_back(lelantusEntry);
+	}
+
+	const char *script = CreateJoinSplitScript(
+			txHash,
+			spendAmount,
+			subtractFeeFromAmount,
+			privateKey,
+			index,
+			coins
+	);
+	return env->NewStringUTF(script);
 }
 
 }

@@ -12,6 +12,7 @@ import {firoElectrum} from './FiroElectrum';
 import {FullTransactionModel} from './AbstractElectrum';
 import {BIP32Interface} from 'bip32/types/bip32';
 import {LelantusWrapper} from './LelantusWrapper';
+import {LelantusCoin} from '../data/LelantusCoin';
 
 const bitcoin = require('bitcoinjs-lib');
 const bip32 = require('bip32');
@@ -26,6 +27,7 @@ export class FiroWallet implements AbstractWallet {
   network: Network = network;
   balance: number = 0;
   unconfirmed_balance: number = 0;
+  lelantusCoins: Array<LelantusCoin> = [];
   utxo: Array<TransactionItem> = [];
   _lastTxFetch: number = 0;
   _lastBalanceFetch: Date = new Date();
@@ -69,17 +71,26 @@ export class FiroWallet implements AbstractWallet {
   }
 
   getBalance() {
-    let ret = 0;
-    for (const bal of Object.values(this._balances_by_external_index)) {
-      ret += bal.c;
-    }
-    for (const bal of Object.values(this._balances_by_internal_index)) {
-      ret += bal.c;
-    }
-    return (
-      ret +
-      (this.getUnconfirmedBalance() < 0 ? this.getUnconfirmedBalance() : 0)
+    return this.lelantusCoins.reduce<number>(
+      (previousValue: number, currentValue: LelantusCoin): number => {
+        if (!currentValue.isUsed && currentValue.isConfirmed) {
+          return previousValue + currentValue.value;
+        }
+        return previousValue;
+      },
+      0,
     );
+    // let ret = 0;
+    // for (const bal of Object.values(this._balances_by_external_index)) {
+    //   ret += bal.c;
+    // }
+    // for (const bal of Object.values(this._balances_by_internal_index)) {
+    //   ret += bal.c;
+    // }
+    // return (
+    //   ret +
+    //   (this.getUnconfirmedBalance() < 0 ? this.getUnconfirmedBalance() : 0)
+    // );
   }
 
   getUnconfirmedBalance() {
@@ -118,7 +129,7 @@ export class FiroWallet implements AbstractWallet {
   async createLelantusMintTx(
     params: LelantusMintTxParams,
   ): Promise<FiroTxReturn> {
-    if (params.utxos.length == 0) {
+    if (params.utxos.length === 0) {
       throw Error('there are no any unspend transaction is empty');
     }
     const keyPairs: Array<BIP32Interface> = [];
@@ -149,7 +160,7 @@ export class FiroWallet implements AbstractWallet {
       this.next_free_mint_index,
     );
     console.log('value ctx', value);
-    const mintScript = await LelantusWrapper.getMintCommitment(
+    const mintScript = await LelantusWrapper.lelantusMint(
       mintKeyPair,
       this.next_free_mint_index,
       value,
@@ -720,8 +731,8 @@ export class FiroWallet implements AbstractWallet {
     this._txs_by_external_index = [];
     this._txs_by_internal_index = [];
 
-    this.internal_addresses_cache = {};
-    this.external_addresses_cache = {};
+    // this.internal_addresses_cache = {};
+    // this.external_addresses_cache = {};
 
     delete this._node0;
     delete this._node1;

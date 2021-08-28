@@ -18,8 +18,6 @@ export type FiroTxReturn = {
 
 export interface AbstractWallet {
   secret: string | undefined; // private key or recovery phrase
-  balance: number;
-  unconfirmed_balance: number;
   utxo: Array<TransactionItem>;
   _lastTxFetch: number;
   _lastBalanceFetch: Date;

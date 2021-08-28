@@ -16,6 +16,7 @@ const MyWalletScreen = () => {
   const [walletAddress, setWalletAddress] = useState('');
   const [balance, setBalance] = useState(0);
   const [txHistory, setTxHistory] = useState(new Array<TransactionItem>());
+  const {saveToDisk} = useContext(FiroContext);
 
   const getAddress = async () => {
     const wallet = getWallet();
@@ -31,10 +32,17 @@ const MyWalletScreen = () => {
     }
   };
 
-  const getBalance = async () => {
+  const updateBalance = async () => {
     try {
+      let walletBalance = getWallet()?.getBalance();
+      if (typeof walletBalance !== 'undefined') {
+        setBalance(walletBalance);
+      } else {
+        setBalance(0);
+      }
+
       const elBalance = await firoElectrum.getBalanceByAddress(walletAddress);
-      setBalance(elBalance.confirmed / 100000000);
+      console.log('balance is ', elBalance.confirmed / 100000000);
     } catch (e) {
       console.log('error when getting balance', e);
     }
@@ -68,10 +76,12 @@ const MyWalletScreen = () => {
         };
       });
 
-      const mint = await wallet.createLelantusMintTx({
-        utxos: lelantusUtxos,
-      });
-      console.log('mintTx', mint);
+      if (lelantusUtxos.length > 0) {
+        const mint = await wallet.createLelantusMintTx({
+          utxos: lelantusUtxos,
+        });
+        console.log('mintTx', mint);
+      }
     } catch (e) {
       console.log('error when creating mint transaction', e);
     }
@@ -107,7 +117,8 @@ const MyWalletScreen = () => {
     if (walletAddress === '') {
       return;
     }
-    getBalance();
+    updateBalance();
+    saveToDisk();
   }, [walletAddress]);
   useEffect(() => {
     if (walletAddress === '') {
