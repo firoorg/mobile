@@ -51,7 +51,7 @@ export class FullTransactionModel {
 
 export type MintMetadataModel = {
   height: number;
-  anonimitySetId: string;
+  anonimitySetId: number;
 };
 
 export interface AbstractElectrum {
@@ -83,7 +83,7 @@ export interface AbstractElectrum {
     verbose?: boolean,
   ): Promise<Map<string, FullTransactionModel>>;
 
-  getUnspendTransactionsByAddress(
+  getUnspentTransactionsByAddress(
     address: string,
   ): Promise<Array<TransactionModel>>;
 

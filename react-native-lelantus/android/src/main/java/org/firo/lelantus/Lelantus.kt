@@ -13,10 +13,9 @@ object Lelantus {
     fun estimateJoinSplitFee(
         spendAmount: Long,
         subtractFeeFromAmount: Boolean,
-        privateKey: String,
         coins: List<LelantusEntry>
     ): JoinSplitData {
-        return jEstimateJoinSplitFee(spendAmount, subtractFeeFromAmount, privateKey, coins)
+        return jEstimateJoinSplitFee(spendAmount, subtractFeeFromAmount, coins)
     }
 
     fun getMintKeyPath(value: Long, privateKey: String, index: Int): Int {
@@ -73,7 +72,6 @@ object Lelantus {
     external fun jEstimateJoinSplitFee(
         spendAmount: Long,
         subtractFeeFromAmount: Boolean,
-        privateKet: String,
         lelantusEntryList: List<LelantusEntry>
     ): JoinSplitData
 

@@ -5,6 +5,6 @@ export class LelantusCoin {
   isConfirmed: boolean = false;
   txId: string = '';
   height: number = 0;
-  anonymitySetId: string = '';
+  anonymitySetId: number = 0;
   isUsed: boolean = false;
 }

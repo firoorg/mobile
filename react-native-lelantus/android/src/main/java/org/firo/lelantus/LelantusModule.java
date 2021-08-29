@@ -47,7 +47,6 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 	public void estimateJoinSplitFee(
 			double spendAmount,
 			boolean subtractFeeFromAmount,
-			String privateKey,
 			ReadableArray coinsArray,
 			Callback callback
 	) {
@@ -56,6 +55,7 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 			ReadableMap lelantusEntryMap = coinsArray.getMap(i);
 			LelantusEntry lelantusEntry = new LelantusEntry(
 					(long) lelantusEntryMap.getDouble("amount"),
+					lelantusEntryMap.getString("privateKey"),
 					lelantusEntryMap.getInt("index"),
 					lelantusEntryMap.getBoolean("isUsed"),
 					lelantusEntryMap.getInt("height"),
@@ -66,7 +66,6 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 		JoinSplitData data = Lelantus.INSTANCE.estimateJoinSplitFee(
 				(long) spendAmount,
 				subtractFeeFromAmount,
-				privateKey,
 				coins
 		);
 		callback.invoke((double) data.getFee(), (double) data.getChangeToMint());
@@ -114,6 +113,7 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 			ReadableMap lelantusEntryMap = coinsArray.getMap(i);
 			LelantusEntry lelantusEntry = new LelantusEntry(
 					(long) lelantusEntryMap.getDouble("amount"),
+					lelantusEntryMap.getString("privateKey"),
 					lelantusEntryMap.getInt("index"),
 					lelantusEntryMap.getBoolean("isUsed"),
 					lelantusEntryMap.getInt("height"),

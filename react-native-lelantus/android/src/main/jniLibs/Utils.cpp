@@ -70,7 +70,6 @@ const char *GetPublicCoin(
 uint64_t EstimateFee(
 		uint64_t spendAmount,
 		bool subtractFeeFromAmount,
-		const char *keydata,
 		std::list<LelantusEntry> coins,
 		uint64_t &changeToMint
 ) {
@@ -80,7 +79,7 @@ uint64_t EstimateFee(
 		uint32_t keyPathOut;
 		lelantus::PrivateCoin coin = CreateMintPrivateCoin(
 				it->amount,
-				hex2bin(keydata),
+				hex2bin(it->keydata),
 				it->index,
 				keyPathOut
 		);

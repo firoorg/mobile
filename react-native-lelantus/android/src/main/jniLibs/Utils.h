@@ -15,6 +15,7 @@ struct LelantusEntry {
 	int anonymitySetId;
 	int64_t amount;
 	uint32_t index;
+	const char *keydata;
 };
 
 char const hexArray[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
@@ -44,7 +45,6 @@ const char *GetPublicCoin(
 uint64_t EstimateFee(
 		uint64_t spendAmount,
 		bool subtractFeeFromAmount,
-		const char *keydata,
 		std::list<LelantusEntry> coins,
 		uint64_t &changeToMint
 );

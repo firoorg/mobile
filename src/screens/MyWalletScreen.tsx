@@ -53,7 +53,7 @@ const MyWalletScreen = () => {
     await saveToDisk();
   };
 
-  const mintUnspendTransactions = async () => {
+  const mintUnspentTransactions = async () => {
     const wallet = getWallet();
     if (!wallet) {
       return;
@@ -61,7 +61,7 @@ const MyWalletScreen = () => {
     const address2Check = await wallet.getTransactionsAddresses();
     for (const address of address2Check) {
       try {
-        const utxos = await firoElectrum.getUnspendTransactionsByAddress(
+        const utxos = await firoElectrum.getUnspentTransactionsByAddress(
           address,
         );
         if (utxos && utxos.length === 0) {
@@ -170,14 +170,14 @@ const MyWalletScreen = () => {
     getTransactionList();
   }, [walletAddress]);
   useEffect(() => {
+    updateMintMetadata();
     syncLelantusCoins();
   }, []);
   useEffect(() => {
     if (walletAddress === '') {
       return;
     }
-    mintUnspendTransactions();
-    updateMintMetadata();
+    mintUnspentTransactions();
   }, [walletAddress]);
 
   return (

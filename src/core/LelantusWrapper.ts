@@ -25,17 +25,32 @@ export class LelantusWrapper {
   static async estimateJoinSplitFee(
     spendAmount: number,
     subtractFeeFromAmount: boolean,
-    keypair: BIP32Interface,
     coins: LelantusEntry[],
   ) {
     return new Promise<{fee: number; chageToMint: number}>(resolve => {
       RNLelantus.estimateJoinSplitFee(
         spendAmount,
         subtractFeeFromAmount,
-        keypair.privateKey?.toString('hex'),
         coins,
         (fee: number, chageToMint: number) => {
           resolve({fee, chageToMint});
+        },
+      );
+    });
+  }
+
+  static async getMintKeyPath(
+    value: number,
+    keypair: BIP32Interface,
+    index: number,
+  ) {
+    return new Promise<number>(resolve => {
+      RNLelantus.getMintKeyPath(
+        value,
+        keypair.privateKey?.toString('hex'),
+        index,
+        (keyPath: number) => {
+          resolve(keyPath);
         },
       );
     });

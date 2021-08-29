@@ -354,7 +354,7 @@ export default class FiroElectrum implements AbstractElectrum {
     return ret;
   }
 
-  async getUnspendTransactionsByAddress(
+  async getUnspentTransactionsByAddress(
     address: string,
   ): Promise<Array<TransactionModel>> {
     const script = bitcoin.address.toOutputScript(address, network);

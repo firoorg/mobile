@@ -27,10 +27,10 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetPublicCoin
 /*
 * Class:     org_firo_lelantus_Lelantus
 * Method:    jEstimateFee
-* Signature: (JJJJ)J
+* Signature: (JJJ)J
 */
 JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
-		(JNIEnv *, jobject, jlong, jboolean, jstring, jobject);
+		(JNIEnv *, jobject, jlong, jboolean, jobject);
 
 /*
 * Class:     org_firo_lelantus_Lelantus

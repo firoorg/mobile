@@ -1,7 +1,9 @@
 import {
   AbstractWallet,
-  FiroTxReturn,
+  FiroMintTxReturn,
+  FiroSpendTxReturn,
   LelantusMintTxParams,
+  LelantusSpendTxParams,
 } from './AbstractWallet';
 import {network, Network} from './FiroNetwork';
 import BigNumber from 'bignumber.js';
@@ -13,6 +15,7 @@ import {FullTransactionModel} from './AbstractElectrum';
 import {BIP32Interface} from 'bip32/types/bip32';
 import {LelantusWrapper} from './LelantusWrapper';
 import {LelantusCoin} from '../data/LelantusCoin';
+import {LelantusEntry} from '../data/LelantusEntry';
 
 const bitcoin = require('bitcoinjs-lib');
 const bip32 = require('bip32');
@@ -21,11 +24,15 @@ const bip39 = require('bip39');
 const EXTERNAL_INDEX = 0;
 const INTERNAL_INDEX = 1;
 const MINT_INDEX = 2;
+const JMINT_INDEX = 5;
 
 const HEIGHT_NOT_SET = -1;
 
+const TRANSACTION_LELANTUS = 8;
+
 export class FiroWallet implements AbstractWallet {
   secret: string | undefined = undefined;
+  seed: string | undefined = undefined;
   network: Network = network;
   balance: number = 0;
   unconfirmed_balance: number = 0;
@@ -62,6 +69,7 @@ export class FiroWallet implements AbstractWallet {
   async generate(): Promise<void> {
     const buf = await randomBytes(32);
     this.secret = bip39.entropyToMnemonic(buf);
+    this.seed = await bip39.mnemonicToSeed(this.secret);
   }
 
   setSecret(secret: string): void {
@@ -106,10 +114,7 @@ export class FiroWallet implements AbstractWallet {
       return this._xPub;
     }
 
-    const secret = this.getSecret();
-    const seed = await bip39.mnemonicToSeed(secret);
-    const root = bitcoin.bip32.fromSeed(seed, this.network);
-    console.log('mnemonic:', secret);
+    const root = bitcoin.bip32.fromSeed(this.seed, this.network);
     this._xPub = root
       .deriveHardened(44)
       .deriveHardened(136)
@@ -121,9 +126,9 @@ export class FiroWallet implements AbstractWallet {
 
   async createLelantusMintTx(
     params: LelantusMintTxParams,
-  ): Promise<FiroTxReturn> {
+  ): Promise<FiroMintTxReturn> {
     if (params.utxos.length === 0) {
-      throw Error('there are no any unspend transaction is empty');
+      throw Error('there are no any unspent transaction is empty');
     }
     const keyPairs: Array<BIP32Interface> = [];
     const fee = 500000;
@@ -149,10 +154,7 @@ export class FiroWallet implements AbstractWallet {
       });
     }
 
-    const mintKeyPair = await this._getNode(
-      MINT_INDEX,
-      this.next_free_mint_index,
-    );
+    const mintKeyPair = this._getNode(MINT_INDEX, this.next_free_mint_index);
     const mintData = await LelantusWrapper.lelantusMint(
       mintKeyPair,
       this.next_free_mint_index,
@@ -183,6 +185,109 @@ export class FiroWallet implements AbstractWallet {
     };
   }
 
+  async createLelantusSpendTx(
+    params: LelantusSpendTxParams,
+  ): Promise<FiroSpendTxReturn> {
+    let spendAmount = params.spendAmount;
+
+    const mintedCoins = await this.getMintedCoinList();
+    const lelantusEntries = mintedCoins.map<LelantusEntry>(coin => {
+      const keyPair = this._getNode(MINT_INDEX, this.next_free_mint_index);
+      if (typeof keyPair.privateKey === 'undefined') {
+        return new LelantusEntry(0, '', 0, true, 0, 0);
+      }
+      return new LelantusEntry(
+        coin.value,
+        keyPair.privateKey.toString('hex'),
+        coin.index,
+        coin.isUsed,
+        coin.height,
+        coin.anonymitySetId,
+      );
+    });
+
+    const tx = new bitcoin.Psbt({network: this.network});
+    tx.setVersion(2);
+
+    tx.addInput({
+      hash: '0000000000000000000000000000000000000000000000000000000000000000',
+      sequence: 0xffffffff,
+      finalScriptSig: 0xc9, // todo check Buffer.from('c9', 'hex')
+    });
+    tx.finalizeAllInputs();
+
+    const estimateFeeData = await LelantusWrapper.estimateJoinSplitFee(
+      spendAmount,
+      params.subtractFeeFromAmount,
+      lelantusEntries,
+    );
+
+    if (params.subtractFeeFromAmount) {
+      spendAmount -= estimateFeeData.fee;
+    }
+
+    const jmintKeyPair = this._getNode(MINT_INDEX, this.next_free_mint_index);
+
+    const keyPath = await LelantusWrapper.getMintKeyPath(
+      estimateFeeData.chageToMint,
+      jmintKeyPair,
+      this.next_free_mint_index,
+    );
+
+    const aesKeyPair = this._getNode(JMINT_INDEX, keyPath);
+    const aesPrivateKey = aesKeyPair.privateKey?.toString('hex');
+    if (typeof aesPrivateKey === 'undefined') {
+      throw Error("Can't generate aes private key");
+    }
+
+    const jmintScript = await LelantusWrapper.lelantusJMint(
+      estimateFeeData.chageToMint,
+      jmintKeyPair,
+      this.next_free_mint_index,
+      aesPrivateKey,
+    );
+
+    console.log('jmintScript', jmintScript);
+    tx.addOutput({
+      // eslint-disable-next-line no-undef
+      script: Buffer.from(jmintScript, 'hex'),
+      value: 0,
+      version: 3,
+      nType: TRANSACTION_LELANTUS,
+    });
+
+    tx.addOutput({
+      // eslint-disable-next-line no-undef
+      script: Buffer.from(params.address, 'hex'),
+      value: spendAmount,
+    });
+
+    const extractedTx = tx.extractTransaction();
+    const txHash = extractedTx.getId();
+
+    const spendScript = LelantusWrapper.lelantusSpend(
+      spendAmount,
+      params.subtractFeeFromAmount,
+      jmintKeyPair,
+      this.next_free_mint_index,
+      lelantusEntries,
+      txHash,
+      new Map(),
+      [],
+      new Map(),
+    );
+
+    let txHex = extractedTx.toHex();
+    txHex += spendScript;
+
+    return {
+      txId: txHash,
+      txHex: txHex,
+      value: spendAmount,
+      fee: estimateFeeData.fee,
+    };
+  }
+
   async addLelantusMintToCache(
     txId: string,
     value: number,
@@ -198,7 +303,7 @@ export class FiroWallet implements AbstractWallet {
       isConfirmed: false,
       txId: txId,
       height: HEIGHT_NOT_SET,
-      anonymitySetId: '',
+      anonymitySetId: 0,
       isUsed: false,
     };
     this.next_free_mint_index += 1;
@@ -214,6 +319,27 @@ export class FiroWallet implements AbstractWallet {
     }
     console.log('unconfirmed coins', unconfirmedCoins);
     return unconfirmedCoins;
+  }
+
+  async getMintedCoinList(): Promise<LelantusCoin[]> {
+    const unspentCoins = [];
+    for (var prop in this._lelantus_coins) {
+      const currentValue = this._lelantus_coins[prop];
+      unspentCoins.push(currentValue);
+    }
+    return unspentCoins;
+  }
+
+  async getUnspentMintCoins(): Promise<LelantusCoin[]> {
+    const unspentCoins = [];
+    for (var prop in this._lelantus_coins) {
+      const currentValue = this._lelantus_coins[prop];
+      if (!currentValue.isUsed && currentValue.isConfirmed) {
+        unspentCoins.push(currentValue);
+      }
+    }
+    console.log('unspent coins', unspentCoins);
+    return unspentCoins;
   }
 
   async checkIsMintConfirmed(): Promise<void> {
@@ -334,18 +460,16 @@ export class FiroWallet implements AbstractWallet {
   }
 
   async _getWIFByIndex(node: number, index: number): Promise<string> {
-    const child = await this._getNode(node, index);
+    const child = this._getNode(node, index);
     return child.toWIF();
   }
 
-  async _getNode(node: number, index: number): Promise<BIP32Interface> {
+  _getNode(node: number, index: number): BIP32Interface {
     if (!this.secret) {
       throw Error('illegal state secret is null');
     }
 
-    const mnemonic = this.secret;
-    const seed = await bip39.mnemonicToSeed(mnemonic);
-    const root = bip32.fromSeed(seed, this.network);
+    const root = bip32.fromSeed(this.seed, this.network);
     const path = `m/44'/136'/0'/${node}/${index}`;
     const child = root.derivePath(path);
 

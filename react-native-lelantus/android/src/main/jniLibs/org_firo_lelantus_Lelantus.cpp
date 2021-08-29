@@ -23,8 +23,7 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetPublicCoin
 
 JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 		(JNIEnv *env, jobject thisClass, jlong spendAmount,
-		 jboolean subtractFeeFromAmount, jstring jPrivateKey,
-		 jobject jLelantusEntryList) {
+		 jboolean subtractFeeFromAmount, jobject jLelantusEntryList) {
 	jclass alCls = env->FindClass("java/util/List");
 	jclass leCls = env->FindClass("org/firo/lelantus/LelantusEntry");
 	jclass jsdCls = env->FindClass("org/firo/lelantus/JoinSplitData");
@@ -36,30 +35,32 @@ JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 	jmethodID alGetId = env->GetMethodID(alCls, "get", "(I)Ljava/lang/Object;");
 	jmethodID alSizeId = env->GetMethodID(alCls, "size", "()I");
 	jmethodID leGetAmountId = env->GetMethodID(leCls, "getAmount", "()J");
+	jmethodID leGetPrivateKeyId = env->GetMethodID(leCls, "getPrivateKey", "()Ljava/lang/String;");
 	jmethodID leGetIndexId = env->GetMethodID(leCls, "getIndex", "()I");
 	jmethodID leIsUsedId = env->GetMethodID(leCls, "isUsed", "()Z");
 	jmethodID leGetHeightId = env->GetMethodID(leCls, "getHeight", "()I");
 	jmethodID leGetAnonymitySetIdId = env->GetMethodID(leCls, "getAnonymitySetId", "()I");
 	jmethodID jsdConstructor = env->GetMethodID(jsdCls, "<init>", "(JJ)V");
 
-	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
-
 	int coinCount = static_cast<int>(env->CallIntMethod(jLelantusEntryList, alSizeId));
 
 	std::list<LelantusEntry> coins;
 	int index, height, anonymitySetId;
+	jstring keydata;
 	long amount;
 	bool isUsed;
 
 	for (int i = 0; i < coinCount; ++i) {
 		jobject mintCoin = env->CallObjectMethod(jLelantusEntryList, alGetId, i);
 		amount = static_cast<long>(env->CallLongMethod(mintCoin, leGetAmountId));
+		keydata = (jstring) env->CallObjectMethod(mintCoin, leGetPrivateKeyId);
 		index = static_cast<int>(env->CallIntMethod(mintCoin, leGetIndexId));
 		isUsed = static_cast<bool>(env->CallBooleanMethod(mintCoin, leIsUsedId));
 		height = static_cast<bool>(env->CallIntMethod(mintCoin, leGetHeightId));
 		anonymitySetId = static_cast<bool>(env->CallIntMethod(mintCoin, leGetAnonymitySetIdId));
 		LelantusEntry lelantusEntry{isUsed, height, anonymitySetId, amount,
-									static_cast<uint32_t>(index)};
+									static_cast<uint32_t>(index),
+									env->GetStringUTFChars(keydata, nullptr)};
 		__android_log_print(ANDROID_LOG_INFO, "Tag", "isUsed = %d", isUsed);
 		coins.push_back(lelantusEntry);
 	}
@@ -68,7 +69,6 @@ JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 	uint64_t fee = EstimateFee(
 			spendAmount,
 			subtractFeeFromAmount,
-			privateKey,
 			coins,
 			changeToMint
 	);
