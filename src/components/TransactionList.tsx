@@ -10,14 +10,20 @@ import localization from '../localization';
 
 const {colors} = CurrentFiroTheme;
 
-var options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+var options = {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+};
 
 const keys = (_: TransactionItem, index: number) => index.toString();
 
 const renderItem: (
   item: TransactionItem,
   firoRate: number,
-  currentCurrency: string
+  currentCurrency: string,
 ) => React.ReactElement = (item, firoRate, currentCurrency) => {
   const onTransactionClick = () => {
     NavigationService.navigate('TransactionDetailsScreen', {item});
@@ -33,10 +39,11 @@ const renderItem: (
         <View style={styles.textContainer}>
           <View style={styles.row}>
             <Text style={styles.title}>
-              {item.firo} {localization.global.firo}
+              {item.value} {localization.global.firo}
             </Text>
             <Text style={styles.title}>
-              ${(item.firo * firoRate).toFixed(2)} {(localization.currencies as any)[currentCurrency]}
+              ${(item.value * firoRate).toFixed(2)}{' '}
+              {(localization.currencies as any)[currentCurrency]}
             </Text>
           </View>
           <View style={styles.row}>
@@ -60,13 +67,17 @@ type TransactionListProps = {
 };
 
 export const TransactionList: FC<TransactionListProps> = props => {
-  const { getFiroRate, getSettings } = useContext(FiroContext);
+  const {getFiroRate, getSettings} = useContext(FiroContext);
   return (
     <FlatList
       keyExtractor={keys}
       data={props.transactionList}
       renderItem={item => {
-        return renderItem(item.item, getFiroRate(), getSettings().defaultCurrency);
+        return renderItem(
+          item.item,
+          getFiroRate(),
+          getSettings().defaultCurrency,
+        );
       }}
     />
   );

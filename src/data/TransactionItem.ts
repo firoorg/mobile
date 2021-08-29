@@ -1,6 +1,6 @@
 export class TransactionItem {
   value: number = 0;
-  received: number = 0;
+  received: boolean = true;
   blocktime: number = 0;
   date: Date = new Date();
   status: number = 0;

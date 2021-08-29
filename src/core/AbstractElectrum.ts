@@ -27,6 +27,7 @@ export type VOut = {
 
 export type ScriptPubKey = {
   addresses: Array<string>;
+  type: string;
 };
 
 export class FullTransactionModel {

@@ -125,6 +125,12 @@ const MyWalletScreen = () => {
           tx.outputs.forEach(vout => {
             if (vout.addresses && vout.addresses.includes(address)) {
               transactionItem.value += vout.value;
+            } else if (
+              vout.scriptPubKey &&
+              vout.scriptPubKey.type === 'lelantusmint'
+            ) {
+              transactionItem.received = false;
+              transactionItem.value = vout.value;
             }
           });
           txList.push(transactionItem);
