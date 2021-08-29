@@ -7,7 +7,7 @@ export class LelantusWrapper {
     keypair: BIP32Interface,
     index: number,
     value: number,
-  ): Promise<string> {
+  ): Promise<{script: string; publicCoin: string}> {
     return new Promise(resolve => {
       console.log('value', value);
       RNLelantus.getMintScript(
@@ -15,8 +15,8 @@ export class LelantusWrapper {
         keypair.privateKey?.toString('hex'),
         index,
         keypair.fingerprint.toString('hex'),
-        (commitment: string) => {
-          resolve(commitment);
+        (script: string, publicCoin: string) => {
+          resolve({script, publicCoin});
         },
       );
     });

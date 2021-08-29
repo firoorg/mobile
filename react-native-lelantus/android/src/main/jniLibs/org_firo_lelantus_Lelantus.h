@@ -18,6 +18,14 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateMintScript
 
 /*
 * Class:     org_firo_lelantus_Lelantus
+* Method:    jCreateMintScript
+* Signature: (JJJ)J
+*/
+JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetPublicCoin
+		(JNIEnv *, jobject, jlong, jstring, jint);
+
+/*
+* Class:     org_firo_lelantus_Lelantus
 * Method:    jEstimateFee
 * Signature: (JJJJ)J
 */

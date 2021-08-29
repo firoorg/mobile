@@ -57,6 +57,16 @@ const char *CreateMintScript(
 	return bin2hex(script, MINT_SCRIPT_LENGTH);
 }
 
+const char *GetPublicCoin(
+		uint64_t value,
+		const char *keydata,
+		int32_t index) {
+	uint32_t keyPathOut;
+	lelantus::PrivateCoin privateCoin = CreateMintPrivateCoin(value, hex2bin(keydata), index, keyPathOut);
+	const lelantus::PublicCoin& publicCoin = privateCoin.getPublicCoin();
+	return bin2hex(publicCoin.getValue().getvch().data(), PUBLIC_COIN_LENGTH);
+}
+
 uint64_t EstimateFee(
 		uint64_t spendAmount,
 		bool subtractFeeFromAmount,

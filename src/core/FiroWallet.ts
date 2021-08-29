@@ -153,17 +153,17 @@ export class FiroWallet implements AbstractWallet {
       MINT_INDEX,
       this.next_free_mint_index,
     );
-    const mintScript = await LelantusWrapper.lelantusMint(
+    const mintData = await LelantusWrapper.lelantusMint(
       mintKeyPair,
       this.next_free_mint_index,
       value,
     );
 
     console.log('value ctx', value);
-    console.log('mintScript', mintScript);
+    console.log('mintScript', mintData.script);
     tx.addOutput({
       // eslint-disable-next-line no-undef
-      script: Buffer.from(mintScript, 'hex'),
+      script: Buffer.from(mintData.script, 'hex'),
       value,
     });
 
@@ -178,6 +178,7 @@ export class FiroWallet implements AbstractWallet {
       txId: extractedTx.getId(),
       txHex: extractedTx.toHex(),
       value: value,
+      publicCoin: mintData.publicCoin,
       fee: fee,
     };
   }

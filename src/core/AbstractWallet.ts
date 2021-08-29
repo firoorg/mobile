@@ -15,6 +15,7 @@ export type FiroTxReturn = {
   txId: string;
   txHex: string;
   value: number;
+  publicCoin: string;
   fee: number;
 };
 
