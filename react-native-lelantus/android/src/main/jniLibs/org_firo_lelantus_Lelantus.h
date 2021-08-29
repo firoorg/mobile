@@ -51,10 +51,10 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateJMintScript
 /*
 * Class:     org_firo_lelantus_Lelantus
 * Method:    jCreateSpendScript
-* Signature: (JJJJJJJJ)J
+* Signature: (JJJJJJJJJ)J
 */
 JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
-		(JNIEnv *, jobject, jlong, jboolean, jstring, jint, jobject, jstring, jobject, jobject);
+		(JNIEnv *, jobject, jlong, jboolean, jstring, jint, jobject, jstring, jobject, jobject, jobject);
 
 #ifdef __cplusplus
 }

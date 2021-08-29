@@ -25,14 +25,14 @@ export class LelantusWrapper {
   static async estimateJoinSplitFee(
     spendAmount: number,
     subtractFeeFromAmount: boolean,
-    privateKey: String,
+    keypair: BIP32Interface,
     coins: LelantusEntry[],
   ) {
     return new Promise<{fee: number; chageToMint: number}>(resolve => {
       RNLelantus.estimateJoinSplitFee(
         spendAmount,
         subtractFeeFromAmount,
-        privateKey,
+        keypair.privateKey?.toString('hex'),
         coins,
         (fee: number, chageToMint: number) => {
           resolve({fee, chageToMint});
@@ -43,18 +43,46 @@ export class LelantusWrapper {
 
   static async lelantusJMint(
     value: number,
-    privateKey: string,
+    keypair: BIP32Interface,
     index: number,
-    seed: String,
     privateKeyAES: String,
   ) {
     return new Promise<string>(resolve => {
       RNLelantus.getJMintScript(
         value,
-        privateKey,
+        keypair.privateKey?.toString('hex'),
         index,
-        seed,
+        keypair.fingerprint.toString('hex'),
         privateKeyAES,
+        (script: string) => {
+          resolve(script);
+        },
+      );
+    });
+  }
+
+  static async lelantusSpend(
+    value: number,
+    subtractFeeFromAmount: boolean,
+    keypair: BIP32Interface,
+    index: number,
+    coins: LelantusEntry[],
+    txHash: string,
+    anonymitySet: Map<number, any>,
+    anonymitySetHashes: [],
+    groupBlockHashes: Map<number, any>,
+  ) {
+    return new Promise<string>(resolve => {
+      RNLelantus.getSpendScript(
+        value,
+        subtractFeeFromAmount,
+        keypair.privateKey?.toString('hex'),
+        index,
+        coins,
+        txHash,
+        anonymitySet,
+        anonymitySetHashes,
+        groupBlockHashes,
         (script: string) => {
           resolve(script);
         },

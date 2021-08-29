@@ -41,6 +41,7 @@ object Lelantus {
         coins: List<LelantusEntry>,
         txHash: String,
         anonymitySet: Map<Int, String>,
+        anonymitySetHashes: List<List<String>>,
         groupBlockHashes: Map<Int, String>
     ): String {
         return jCreateSpendScript(
@@ -51,6 +52,7 @@ object Lelantus {
             coins,
             txHash,
             anonymitySet,
+            anonymitySetHashes,
             groupBlockHashes
         )
     }
@@ -93,6 +95,7 @@ object Lelantus {
         coins: List<LelantusEntry>,
         txHash: String,
         anonymitySet: Map<Int, String>,
+        anonymitySetHashes: List<List<String>>,
         groupBlockHashes: Map<Int, String>
     ): String
 }

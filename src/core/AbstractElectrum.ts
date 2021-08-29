@@ -90,4 +90,6 @@ export interface AbstractElectrum {
   broadcast(hex: string): Promise<string>;
 
   getMintMedata(serilizedCoins: string[]): Promise<MintMetadataModel[]>;
+
+  getAnonymitySet(setId: number): Promise<string[]>;
 }

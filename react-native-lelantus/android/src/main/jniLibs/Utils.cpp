@@ -193,10 +193,11 @@ const char *CreateJoinSplitScript(
 															  keyPathOut);
 
 	const std::map<uint32_t, std::vector<lelantus::PublicCoin>> anonymitySet;
+	const std::vector<std::vector<unsigned char>> anonymitySetHashes;
 	const std::map<uint32_t, uint256> groupBlockHashes; // todo
 
 	std::vector<unsigned char> script = std::vector<unsigned char>();
 	CreateJoinSplit(uint256S(txHash), privateCoin, spendAmount, fee, coinsToBeSpent, anonymitySet,
-					groupBlockHashes, script);
+					anonymitySetHashes, groupBlockHashes, script);
 	return bin2hex(script, MINT_SCRIPT_LENGTH);
 }

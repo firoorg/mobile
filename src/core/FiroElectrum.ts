@@ -409,6 +409,17 @@ export default class FiroElectrum implements AbstractElectrum {
     });
   }
 
+  async getAnonymitySet(setId: number): Promise<string[]> {
+    const param = [];
+    param.push(setId + '');
+    const result = await this.mainClient.request(
+      'sigma.getanonymityset',
+      param,
+    );
+    console.log('result', result);
+    return [];
+  }
+
   addressToScript(address: string): string {
     return bitcoin.address.toOutputScript(address, network);
   }

@@ -98,7 +98,8 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateJMintScript
 JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
 		(JNIEnv *env, jobject thisClass, jlong spendAmount, jboolean subtractFeeFromAmount,
 		 jstring jPrivateKey, jint index, jobject jLelantusEntryList,
-		 jstring jTxHash, jobject jAnonymitySet, jobject jBlockGroupHashes) {
+		 jstring jTxHash, jobject jAnonymitySet,
+		 jobject jAnonymitySetHashes, jobject jBlockGroupHashes) {
 	jclass alCls = env->FindClass("java/util/List");
 	jclass leCls = env->FindClass("org/firo/lelantus/LelantusEntry");
 	jclass jsdCls = env->FindClass("org/firo/lelantus/JoinSplitData");

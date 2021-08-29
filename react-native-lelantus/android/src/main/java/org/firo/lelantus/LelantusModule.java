@@ -8,7 +8,9 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LelantusModule extends ReactContextBaseJavaModule {
 
@@ -91,6 +93,44 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 			Callback callback
 	) {
 		String script = Lelantus.INSTANCE.createJMintScript((long) value, privateKey, index, seed, privateKeyAES);
+		callback.invoke(script);
+	}
+
+	@ReactMethod
+	public void getSpendScript(
+			double spendAmount,
+			boolean subtractFeeFromAmount,
+			String privateKey,
+			int index,
+			ReadableArray coinsArray,
+			String txHash,
+			ReadableMap anonymitySet,
+			ReadableArray anonymitySetHashes,
+			ReadableMap groupBlockHashes,
+			Callback callback
+	) {
+		List<LelantusEntry> coins = new ArrayList<>();
+		for (int i = 0; i < coinsArray.size(); i++) {
+			ReadableMap lelantusEntryMap = coinsArray.getMap(i);
+			LelantusEntry lelantusEntry = new LelantusEntry(
+					(long) lelantusEntryMap.getDouble("amount"),
+					lelantusEntryMap.getInt("index"),
+					lelantusEntryMap.getBoolean("isUsed"),
+					lelantusEntryMap.getInt("height"),
+					lelantusEntryMap.getInt("anonymitySetId")
+			);
+			coins.add(lelantusEntry);
+		}
+		String script = Lelantus.INSTANCE.createSpendScript(
+				(long) spendAmount,
+				subtractFeeFromAmount,
+				privateKey,
+				index,
+				coins,
+				txHash,
+				new HashMap<>(),
+				new ArrayList<>(),
+				new HashMap<>());
 		callback.invoke(script);
 	}
 }
