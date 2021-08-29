@@ -6,6 +6,10 @@ object Lelantus {
         return jCreateMintScript(value, privateKey, index, seed)
     }
 
+    fun getPublicCoin(value: Long, privateKey: String, index: Int): String {
+        return jGetPublicCoin(value, privateKey, index)
+    }
+
     fun estimateJoinSplitFee(
         spendAmount: Long,
         subtractFeeFromAmount: Boolean,
@@ -56,6 +60,12 @@ object Lelantus {
         privateKey: String,
         index: Int,
         seed: String
+    ): String
+
+    external fun jGetPublicCoin(
+        value: Long,
+        privateKey: String,
+        index: Int
     ): String
 
     external fun jEstimateJoinSplitFee(

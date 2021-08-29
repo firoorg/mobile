@@ -4,6 +4,7 @@ import {
   BalanceModel,
   TransactionModel,
   FullTransactionModel,
+  MintMetadataModel,
 } from './AbstractElectrum';
 import {network} from './FiroNetwork';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -65,7 +66,6 @@ export default class FiroElectrum implements AbstractElectrum {
   mainConnected = false;
   wasConnectedAtLeastOnce = false;
   serverName = false;
-  disableBatching = false;
 
   latestBlockheight: number | false = false;
   latestBlockheightTimestamp: number = 0;
@@ -119,13 +119,6 @@ export default class FiroElectrum implements AbstractElectrum {
         this.serverName = ver[0];
         this.mainConnected = true;
         this.wasConnectedAtLeastOnce = true;
-        if (
-          ver[0].startsWith('ElectrumPersonalServer') ||
-          ver[0].startsWith('electrs')
-        ) {
-          // TODO: once they release support for batching - disable batching only for lower versions
-          this.disableBatching = true;
-        }
         const header = await this.mainClient.blockchainHeaders_subscribe();
         if (header && header.height) {
           this.latestBlockheight = header.height;
@@ -386,6 +379,34 @@ export default class FiroElectrum implements AbstractElectrum {
     } catch (error) {
       return error;
     }
+  }
+
+  async getMintMedata(publicCoins: string[]): Promise<MintMetadataModel[]> {
+    const param = [];
+    param.push({});
+    const mints: {pubcoin: string}[] = [];
+    publicCoins.forEach(coin => {
+      mints.push({pubcoin: coin});
+    });
+    param[0].mints = mints;
+    const result = await this.mainClient.request(
+      'sigma.getmintmetadata',
+      param,
+    );
+    return result.map((info: {}, index: number) => {
+      const response = result[index];
+      let groupId = -1;
+      let height = -1;
+      try {
+        height = parseInt(Object.keys(response)[0], 10);
+        groupId = response[height];
+      } catch (e) {}
+
+      return {
+        height: height,
+        anonimitySetId: groupId,
+      };
+    });
   }
 
   addressToScript(address: string): string {

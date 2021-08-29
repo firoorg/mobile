@@ -153,17 +153,17 @@ export class FiroWallet implements AbstractWallet {
       MINT_INDEX,
       this.next_free_mint_index,
     );
-    const mintScript = await LelantusWrapper.lelantusMint(
+    const mintData = await LelantusWrapper.lelantusMint(
       mintKeyPair,
       this.next_free_mint_index,
       value,
     );
 
     console.log('value ctx', value);
-    console.log('mintScript', mintScript);
+    console.log('mintScript', mintData.script);
     tx.addOutput({
       // eslint-disable-next-line no-undef
-      script: Buffer.from(mintScript, 'hex'),
+      script: Buffer.from(mintData.script, 'hex'),
       value,
     });
 
@@ -178,17 +178,23 @@ export class FiroWallet implements AbstractWallet {
       txId: extractedTx.getId(),
       txHex: extractedTx.toHex(),
       value: value,
+      publicCoin: mintData.publicCoin,
       fee: fee,
     };
   }
 
-  async addLelantusMintToCache(txId: string, value: number): Promise<void> {
+  async addLelantusMintToCache(
+    txId: string,
+    value: number,
+    publicCoin: string,
+  ): Promise<void> {
     if (this._lelantus_coins[txId]) {
       return;
     }
     this._lelantus_coins[txId] = {
       index: this.next_free_mint_index,
       value: value,
+      publicCoin: publicCoin,
       isConfirmed: false,
       txId: txId,
       height: HEIGHT_NOT_SET,
@@ -198,9 +204,21 @@ export class FiroWallet implements AbstractWallet {
     this.next_free_mint_index += 1;
   }
 
+  async getUnconfirmedCoins(): Promise<LelantusCoin[]> {
+    const unconfirmedCoins = [];
+    for (var prop in this._lelantus_coins) {
+      const currentValue = this._lelantus_coins[prop];
+      if (!currentValue.isUsed && !currentValue.isConfirmed) {
+        unconfirmedCoins.push(currentValue);
+      }
+    }
+    console.log('unconfirmed coins', unconfirmedCoins);
+    return unconfirmedCoins;
+  }
+
   async checkIsMintConfirmed(): Promise<void> {
     await this._updateLelantusCoinsHeight();
-    // get unconfirmed coins from updated cache 
+    // get unconfirmed coins from updated cache
     const ucCoins = this._getUnconfirmedLelantusCoins();
 
     for (const coin of ucCoins) {
@@ -375,7 +393,7 @@ export class FiroWallet implements AbstractWallet {
     let freeAddress = '';
     let c;
     for (c = 0; c < this.gap_limit + 1; c++) {
-      if (this.next_free_change_address_index + c < 0){
+      if (this.next_free_change_address_index + c < 0) {
         continue;
       }
       const address = await this._getInternalAddressByIndex(

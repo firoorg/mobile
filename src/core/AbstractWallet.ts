@@ -1,4 +1,5 @@
 import {BalanceData} from '../data/BalanceData';
+import {LelantusCoin} from '../data/LelantusCoin';
 import {TransactionItem} from '../data/TransactionItem';
 
 export type LelantusMintTxParams = {
@@ -15,6 +16,7 @@ export type FiroTxReturn = {
   txId: string;
   txHex: string;
   value: number;
+  publicCoin: string;
   fee: number;
 };
 
@@ -44,6 +46,11 @@ export interface AbstractWallet {
   prepareForSerialization(): void;
 
   createLelantusMintTx(params: LelantusMintTxParams): Promise<FiroTxReturn>;
-  addLelantusMintToCache(txId: string, value: number): Promise<void>;
+  addLelantusMintToCache(
+    txId: string,
+    value: number,
+    publicCoin: string,
+  ): Promise<void>;
+  getUnconfirmedCoins(): Promise<LelantusCoin[]>;
   checkIsMintConfirmed(): Promise<void>;
 }

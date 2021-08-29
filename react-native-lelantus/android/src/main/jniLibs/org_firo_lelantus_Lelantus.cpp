@@ -13,6 +13,14 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateMintScript
 	return env->NewStringUTF(script);
 }
 
+JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetPublicCoin
+		(JNIEnv *env, jobject thisClass, jlong value,
+		 jstring jPrivateKey, jint index) {
+	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
+	const char *publicCoin = GetPublicCoin(value, privateKey, index);
+	return env->NewStringUTF(publicCoin);
+}
+
 JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 		(JNIEnv *env, jobject thisClass, jlong spendAmount,
 		 jboolean subtractFeeFromAmount, jstring jPrivateKey,

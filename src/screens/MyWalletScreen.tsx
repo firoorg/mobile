@@ -90,15 +90,36 @@ const MyWalletScreen = () => {
         });
 
         const txId = await firoElectrum.broadcast(mint.txHex);
-        console.log(`broadcast tx: ${txId}`);
+        console.log(`broadcast tx: ${JSON.stringify(txId)}`);
 
         if (txId === mint.txId) {
-          wallet.addLelantusMintToCache(txId, mint.value);
+          wallet.addLelantusMintToCache(txId, mint.value, mint.publicCoin);
           await saveToDisk();
         }
       } catch (e) {
         console.log('error when creating mint transaction', e);
       }
+    }
+  };
+
+  const updateMintMetadata = async () => {
+    const wallet = getWallet();
+    if (!wallet) {
+      return;
+    }
+
+    const unconfirmedCoins = await wallet.getUnconfirmedCoins();
+    if (unconfirmedCoins.length > 0) {
+      const publicCoinList = unconfirmedCoins.map(coin => {
+        return coin.publicCoin;
+      });
+      const mintMetadata = await firoElectrum.getMintMedata(publicCoinList);
+      console.log('mint metadata', mintMetadata);
+      mintMetadata.forEach((metadata, index) => {
+        unconfirmedCoins[index].height = metadata.height;
+        unconfirmedCoins[index].anonymitySetId = metadata.anonimitySetId;
+      });
+      await saveToDisk();
     }
   };
 
@@ -156,6 +177,7 @@ const MyWalletScreen = () => {
       return;
     }
     mintUnspendTransactions();
+    updateMintMetadata();
   }, [walletAddress]);
 
   return (

@@ -49,6 +49,11 @@ export class FullTransactionModel {
   confirmations: number = 0;
 }
 
+export type MintMetadataModel = {
+  height: number;
+  anonimitySetId: string;
+};
+
 export interface AbstractElectrum {
   connectMain(): Promise<void>;
 
@@ -83,4 +88,6 @@ export interface AbstractElectrum {
   ): Promise<Array<TransactionModel>>;
 
   broadcast(hex: string): Promise<string>;
+
+  getMintMedata(serilizedCoins: string[]): Promise<MintMetadataModel[]>;
 }

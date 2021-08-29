@@ -37,7 +37,8 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 			Callback callback
 	) {
 		String script = Lelantus.INSTANCE.createMintScript((long) value, privateKey, index, seed);
-		callback.invoke(script);
+		String publicCoin = Lelantus.INSTANCE.getPublicCoin((long) value, privateKey, index);
+		callback.invoke(script, publicCoin);
 	}
 
 	@ReactMethod
