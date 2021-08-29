@@ -32,7 +32,7 @@ const TRANSACTION_LELANTUS = 8;
 
 export class FiroWallet implements AbstractWallet {
   secret: string | undefined = undefined;
-  seed: string | undefined = undefined;
+  seed: string = '';
   network: Network = network;
   balance: number = 0;
   unconfirmed_balance: number = 0;
@@ -69,7 +69,7 @@ export class FiroWallet implements AbstractWallet {
   async generate(): Promise<void> {
     const buf = await randomBytes(32);
     this.secret = bip39.entropyToMnemonic(buf);
-    this.seed = await bip39.mnemonicToSeed(this.secret);
+    this.seed = (await bip39.mnemonicToSeed(this.secret)).toString('hex');
   }
 
   setSecret(secret: string): void {
@@ -190,10 +190,10 @@ export class FiroWallet implements AbstractWallet {
   ): Promise<FiroSpendTxReturn> {
     let spendAmount = params.spendAmount;
 
-    const mintedCoins = await this.getMintedCoinList();
-    const lelantusEntries = mintedCoins.map<LelantusEntry>(coin => {
+    const lelantusCoins = this._getUnspentCoins();
+    const lelantusEntries = lelantusCoins.map<LelantusEntry>(coin => {
       const keyPair = this._getNode(MINT_INDEX, this.next_free_mint_index);
-      if (typeof keyPair.privateKey === 'undefined') {
+      if (keyPair.privateKey === undefined) {
         return new LelantusEntry(0, '', 0, true, 0, 0);
       }
       return new LelantusEntry(
@@ -236,7 +236,7 @@ export class FiroWallet implements AbstractWallet {
 
     const aesKeyPair = this._getNode(JMINT_INDEX, keyPath);
     const aesPrivateKey = aesKeyPair.privateKey?.toString('hex');
-    if (typeof aesPrivateKey === 'undefined') {
+    if (aesPrivateKey === undefined) {
       throw Error("Can't generate aes private key");
     }
 
@@ -309,85 +309,49 @@ export class FiroWallet implements AbstractWallet {
     this.next_free_mint_index += 1;
   }
 
-  async getUnconfirmedCoins(): Promise<LelantusCoin[]> {
-    const unconfirmedCoins = [];
-    for (var prop in this._lelantus_coins) {
-      const currentValue = this._lelantus_coins[prop];
-      if (!currentValue.isUsed && !currentValue.isConfirmed) {
-        unconfirmedCoins.push(currentValue);
-      }
-    }
-    console.log('unconfirmed coins', unconfirmedCoins);
-    return unconfirmedCoins;
-  }
-
-  async getMintedCoinList(): Promise<LelantusCoin[]> {
-    const unspentCoins = [];
-    for (var prop in this._lelantus_coins) {
-      const currentValue = this._lelantus_coins[prop];
-      unspentCoins.push(currentValue);
-    }
-    return unspentCoins;
-  }
-
-  async getUnspentMintCoins(): Promise<LelantusCoin[]> {
-    const unspentCoins = [];
-    for (var prop in this._lelantus_coins) {
-      const currentValue = this._lelantus_coins[prop];
-      if (!currentValue.isUsed && currentValue.isConfirmed) {
-        unspentCoins.push(currentValue);
-      }
-    }
-    console.log('unspent coins', unspentCoins);
-    return unspentCoins;
-  }
-
-  async checkIsMintConfirmed(): Promise<void> {
-    await this._updateLelantusCoinsHeight();
-    // get unconfirmed coins from updated cache
-    const ucCoins = this._getUnconfirmedLelantusCoins();
-
-    for (const coin of ucCoins) {
-      if (
-        coin.height !== HEIGHT_NOT_SET &&
-        coin.height + this.confirm_block_count <
-          firoElectrum.getLatestBlockHeight()
-      ) {
-        this._lelantus_coins[coin.txId].isConfirmed = true;
-      } else {
-        this._lelantus_coins[coin.txId].isConfirmed = false;
-      }
-    }
-  }
-
-  async _updateLelantusCoinsHeight(): Promise<void> {
-    const unconfirmedCoins = this._getUnconfirmedLelantusCoins();
-    const noHeightTxIds = unconfirmedCoins
-      .filter(coin => {
-        return coin.height === HEIGHT_NOT_SET;
-      })
-      .map(coin => {
-        return coin.txId;
+  async updateMintMetadata(): Promise<boolean> {
+    const unconfirmedCoins = this._getUnconfirmedCoins();
+    if (unconfirmedCoins.length > 0) {
+      const publicCoinList = unconfirmedCoins.map(coin => {
+        return coin.publicCoin;
       });
+      const mintMetadata = await firoElectrum.getMintMedata(publicCoinList);
+      console.log('mint metadata', mintMetadata);
+      mintMetadata.forEach((metadata, index) => {
+        unconfirmedCoins[index].height = metadata.height;
+        unconfirmedCoins[index].anonymitySetId = metadata.anonimitySetId;
+        this._updateIsMintConfirmed(unconfirmedCoins[index]);
+      });
+      return true;
+    }
+    return false;
+  }
 
-    console.log(`height no txs id: ${JSON.stringify(noHeightTxIds)}`);
-
-    const result = await firoElectrum.multiGetTransactionByTxid(noHeightTxIds);
-
-    for (const res of result) {
-      const txId = res[0];
-      const tx = res[1];
-      if (tx.height) {
-        // update tx block height in cache
-        this._lelantus_coins[txId].height = tx.height;
-      }
+  _updateIsMintConfirmed(coin: LelantusCoin) {
+    if (
+      coin.height !== HEIGHT_NOT_SET &&
+      coin.height + this.confirm_block_count <
+        firoElectrum.getLatestBlockHeight()
+    ) {
+      this._lelantus_coins[coin.txId].isConfirmed = true;
+    } else {
+      this._lelantus_coins[coin.txId].isConfirmed = false;
     }
   }
 
-  _getUnconfirmedLelantusCoins(): LelantusCoin[] {
+  _getUnconfirmedCoins(): LelantusCoin[] {
     const coins = Object.values(this._lelantus_coins);
     return coins.filter(coin => {
       if (!coin.isConfirmed) {
+        return coin;
+      }
+    });
+  }
+
+  _getUnspentCoins(): LelantusCoin[] {
+    const coins = Object.values(this._lelantus_coins);
+    return coins.filter(coin => {
+      if (!coin.isUsed && coin.isConfirmed) {
         return coin;
       }
     });
@@ -469,7 +433,8 @@ export class FiroWallet implements AbstractWallet {
       throw Error('illegal state secret is null');
     }
 
-    const root = bip32.fromSeed(this.seed, this.network);
+    // eslint-disable-next-line no-undef
+    const root = bip32.fromSeed(Buffer.from(this.seed, 'hex'), this.network);
     const path = `m/44'/136'/0'/${node}/${index}`;
     const child = root.derivePath(path);
 

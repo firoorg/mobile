@@ -35,7 +35,7 @@ const MyWalletScreen = () => {
   const updateBalance = async () => {
     try {
       let walletBalance = getWallet()?.getBalance();
-      if (typeof walletBalance !== 'undefined') {
+      if (walletBalance !== undefined) {
         setBalance(walletBalance);
       } else {
         setBalance(0);
@@ -43,14 +43,6 @@ const MyWalletScreen = () => {
     } catch (e) {
       console.log('error when getting balance', e);
     }
-  };
-  const syncLelantusCoins = async () => {
-    const wallet = getWallet();
-    if (!wallet) {
-      return;
-    }
-    await wallet.checkIsMintConfirmed();
-    await saveToDisk();
   };
 
   const mintUnspentTransactions = async () => {
@@ -108,17 +100,7 @@ const MyWalletScreen = () => {
       return;
     }
 
-    const unconfirmedCoins = await wallet.getUnconfirmedCoins();
-    if (unconfirmedCoins.length > 0) {
-      const publicCoinList = unconfirmedCoins.map(coin => {
-        return coin.publicCoin;
-      });
-      const mintMetadata = await firoElectrum.getMintMedata(publicCoinList);
-      console.log('mint metadata', mintMetadata);
-      mintMetadata.forEach((metadata, index) => {
-        unconfirmedCoins[index].height = metadata.height;
-        unconfirmedCoins[index].anonymitySetId = metadata.anonimitySetId;
-      });
+    if (await wallet.updateMintMetadata()) {
       await saveToDisk();
     }
   };
@@ -161,7 +143,6 @@ const MyWalletScreen = () => {
       return;
     }
     updateBalance();
-    saveToDisk();
   }, [walletAddress]);
   useEffect(() => {
     if (walletAddress === '') {
@@ -171,7 +152,6 @@ const MyWalletScreen = () => {
   }, [walletAddress]);
   useEffect(() => {
     updateMintMetadata();
-    syncLelantusCoins();
   }, []);
   useEffect(() => {
     if (walletAddress === '') {

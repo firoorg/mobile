@@ -67,6 +67,5 @@ export interface AbstractWallet {
     value: number,
     publicCoin: string,
   ): Promise<void>;
-  getUnconfirmedCoins(): Promise<LelantusCoin[]>;
-  checkIsMintConfirmed(): Promise<void>;
+  updateMintMetadata(): Promise<boolean>;
 }
