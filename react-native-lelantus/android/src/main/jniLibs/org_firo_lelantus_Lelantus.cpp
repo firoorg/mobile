@@ -57,7 +57,6 @@ JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 		LelantusEntry lelantusEntry{isUsed, height, anonymitySetId, amount,
 									static_cast<uint32_t>(index),
 									env->GetStringUTFChars(keydata, nullptr)};
-		__android_log_print(ANDROID_LOG_INFO, "Tag", "isUsed = %d", isUsed);
 		coins.push_back(lelantusEntry);
 	}
 
@@ -103,16 +102,15 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
 	}
 
 	jmethodID leGetAmountId = env->GetMethodID(leCls, "getAmount", "()J");
+	jmethodID leGetPrivateKeyId = env->GetMethodID(leCls, "getPrivateKey", "()Ljava/lang/String;");
 	jmethodID leGetIndexId = env->GetMethodID(leCls, "getIndex", "()I");
 	jmethodID leIsUsedId = env->GetMethodID(leCls, "isUsed", "()Z");
 	jmethodID leGetHeightId = env->GetMethodID(leCls, "getHeight", "()I");
 	jmethodID leGetAnonymitySetIdId = env->GetMethodID(leCls, "getAnonymitySetId", "()I");
 
-	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
-	auto *txHash = env->GetStringUTFChars(jTxHash, nullptr);
-
 	std::list<LelantusEntry> coins;
 	int coinIndex, height, anonymitySetId;
+	jstring keydata;
 	long amount;
 	bool isUsed;
 
@@ -120,14 +118,19 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
 	for (int i = 0; i < coinCount; ++i) {
 		jobject mintCoin = env->GetObjectArrayElement(jLelantusEntryList, i);
 		amount = static_cast<long>(env->CallLongMethod(mintCoin, leGetAmountId));
+		keydata = (jstring) env->CallObjectMethod(mintCoin, leGetPrivateKeyId);
 		coinIndex = static_cast<int>(env->CallIntMethod(mintCoin, leGetIndexId));
 		isUsed = static_cast<bool>(env->CallBooleanMethod(mintCoin, leIsUsedId));
 		height = static_cast<bool>(env->CallIntMethod(mintCoin, leGetHeightId));
 		anonymitySetId = static_cast<bool>(env->CallIntMethod(mintCoin, leGetAnonymitySetIdId));
 		LelantusEntry lelantusEntry{isUsed, height, anonymitySetId, amount,
-									static_cast<uint32_t>(coinIndex)};
+									static_cast<uint32_t>(coinIndex),
+									env->GetStringUTFChars(keydata, nullptr)};
 		coins.push_back(lelantusEntry);
 	}
+
+	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
+	auto *txHash = env->GetStringUTFChars(jTxHash, nullptr);
 
 	std::vector<uint32_t> setIds;
 	std::vector<std::vector<const char *>> anonymitySets;
@@ -139,14 +142,13 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
 	for (int i = 0; i < setIdsSize; i++) {
 		setIds.push_back(idList[i]);
 
-		std::vector<const char *> anonymitySet;
-		anonymitySets.push_back(anonymitySet);
+		anonymitySets.push_back(std::vector<const char *>());
 		auto jAnonymitySet = (jobjectArray) (env->GetObjectArrayElement(jAnonymitySets, i));
 		int anonymitySetSize = env->GetArrayLength(jAnonymitySet);
 		for (int j = 0; j < anonymitySetSize; j++) {
 			auto jSerializedCoin = (jstring) (env->GetObjectArrayElement(jAnonymitySet, j));
 			const char *serializedCoin = env->GetStringUTFChars(jSerializedCoin, nullptr);
-			anonymitySet.push_back(serializedCoin);
+			anonymitySets[i].push_back(serializedCoin);
 		}
 
 		auto jAnonymitySetHash = (jstring) (env->GetObjectArrayElement(jAnonymitySetHashes, i));

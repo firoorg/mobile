@@ -202,16 +202,17 @@ const char *CreateJoinSplitScript(
 
 	for (int i = 0; i < setIds.size(); i++) {
 		uint32_t setId = setIds[i];
-		std::vector<lelantus::PublicCoin> publicCoins;
-		anonymity_sets[setId] = publicCoins;
+
+		anonymity_sets.insert({setId, std::vector<lelantus::PublicCoin>()});
 		std::vector<const char *> serializedCoins = anonymitySets[i];
 		for (auto &serializedCoin : serializedCoins) {
 			secp_primitives::GroupElement groupElement;
 			groupElement.deserialize(hex2bin(serializedCoin));
 			lelantus::PublicCoin publicCoin(groupElement);
-			publicCoins.push_back(publicCoin);
+			anonymity_sets.at(setId).push_back(publicCoin);
 		}
-		group_block_hashes[setId] = uint256S(groupBlockHashes[i]);
+
+		group_block_hashes.insert({setId, uint256S(groupBlockHashes[i])});
 	}
 
 	std::vector<unsigned char> script = std::vector<unsigned char>();
