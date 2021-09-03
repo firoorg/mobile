@@ -54,7 +54,6 @@ const char *CreateMintScript(
 
 	std::vector<unsigned char> script = std::vector<unsigned char>();
 	CreateMintScript(value, hex2bin(keydata), index, uint160(seedVector), script);
-	__android_log_print(ANDROID_LOG_INFO, "Tag", "size = %i", script.size());
 	return bin2hex(script, script.size());
 }
 
@@ -143,7 +142,7 @@ const char *CreateJMintScript(
 			hex2bin(AESkeydata),
 			script
 	);
-	return bin2hex(script, MINT_SCRIPT_LENGTH);
+	return bin2hex(script, script.size());
 }
 
 const char *CreateJoinSplitScript(
