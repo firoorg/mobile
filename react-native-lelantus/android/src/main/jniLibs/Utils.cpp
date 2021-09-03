@@ -54,7 +54,8 @@ const char *CreateMintScript(
 
 	std::vector<unsigned char> script = std::vector<unsigned char>();
 	CreateMintScript(value, hex2bin(keydata), index, uint160(seedVector), script);
-	return bin2hex(script, MINT_SCRIPT_LENGTH);
+	__android_log_print(ANDROID_LOG_INFO, "Tag", "size = %i", script.size());
+	return bin2hex(script, script.size());
 }
 
 const char *GetPublicCoin(
@@ -108,8 +109,6 @@ uint64_t EstimateFee(
 			coinsl,
 			coinsToBeSpent,
 			changeToMint);
-	__android_log_print(ANDROID_LOG_INFO, "Tag", "size = %i", coinsToBeSpent.size());
-	__android_log_print(ANDROID_LOG_INFO, "Tag", "changeToMint = %i", (int) changeToMint);
 	return fee;
 }
 
@@ -218,5 +217,6 @@ const char *CreateJoinSplitScript(
 	std::vector<unsigned char> script = std::vector<unsigned char>();
 	CreateJoinSplit(uint256S(txHash), privateCoin, spendAmount, fee, coinsToBeSpent, anonymity_sets,
 					anonymitySetHashes, group_block_hashes, script);
-	return bin2hex(script, SPEND_SCRIPT_LENGTH);
+	__android_log_print(ANDROID_LOG_INFO, "Tag", "size = %i", script.size());
+	return bin2hex(script, script.size());
 }
