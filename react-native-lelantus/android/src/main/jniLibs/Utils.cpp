@@ -66,7 +66,8 @@ const char *GetPublicCoin(
 		value, hex2bin(keydata), index, keyPathOut
 	);
 	const lelantus::PublicCoin &publicCoin = privateCoin.getPublicCoin();
-	return bin2hex(publicCoin.getValue().getvch().data(), PUBLIC_COIN_LENGTH);
+	return bin2hex(publicCoin.getValue().getvch().data(),
+				   publicCoin.getValue().getvch().size());
 }
 
 uint64_t EstimateFee(

@@ -5,10 +5,6 @@
 
 #define LELANTUS_TX_TPAYLOAD 47
 
-static const int PUBLIC_COIN_LENGTH = 34;
-static const int MINT_SCRIPT_LENGTH = 165;
-static const int SPEND_SCRIPT_LENGTH = 165;
-
 struct LelantusEntry {
 	bool isUsed;
 	int height;
