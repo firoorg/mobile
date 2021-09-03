@@ -7,11 +7,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class LelantusModule extends ReactContextBaseJavaModule {
 
 	private final ReactApplicationContext reactContext;
@@ -50,7 +45,7 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 			ReadableArray coinsArray,
 			Callback callback
 	) {
-		List<LelantusEntry> coins = new ArrayList<>();
+		LelantusEntry[] coins = new LelantusEntry[coinsArray.size()];
 		for (int i = 0; i < coinsArray.size(); i++) {
 			ReadableMap lelantusEntryMap = coinsArray.getMap(i);
 			LelantusEntry lelantusEntry = new LelantusEntry(
@@ -61,7 +56,7 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 					lelantusEntryMap.getInt("height"),
 					lelantusEntryMap.getInt("anonymitySetId")
 			);
-			coins.add(lelantusEntry);
+			coins[i] = lelantusEntry;
 		}
 		JoinSplitData data = Lelantus.INSTANCE.estimateJoinSplitFee(
 				(long) spendAmount,
@@ -103,12 +98,13 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 			int index,
 			ReadableArray coinsArray,
 			String txHash,
-			ReadableMap anonymitySet,
-			ReadableArray anonymitySetHashes,
-			ReadableMap groupBlockHashes,
+			ReadableArray setIdsArray,
+			ReadableArray anonymitySetsArray,
+			ReadableArray anonymitySetHashesArray,
+			ReadableArray groupBlockHashesArray,
 			Callback callback
 	) {
-		List<LelantusEntry> coins = new ArrayList<>();
+		LelantusEntry[] coins = new LelantusEntry[coinsArray.size()];
 		for (int i = 0; i < coinsArray.size(); i++) {
 			ReadableMap lelantusEntryMap = coinsArray.getMap(i);
 			LelantusEntry lelantusEntry = new LelantusEntry(
@@ -119,8 +115,34 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 					lelantusEntryMap.getInt("height"),
 					lelantusEntryMap.getInt("anonymitySetId")
 			);
-			coins.add(lelantusEntry);
+			coins[i] = lelantusEntry;
 		}
+
+		int[] setIds = new int[setIdsArray.size()];
+		for (int i = 0; i < setIdsArray.size(); i++) {
+			setIds[i] = setIdsArray.getInt(i);
+		}
+
+		String[][] anonymitySets = new String[anonymitySetsArray.size()][];
+		for (int i = 0; i < anonymitySetsArray.size(); i++) {
+			ReadableArray anonymitySetArray = anonymitySetsArray.getArray(i);
+			String[] anonymitySet = new String[anonymitySetArray.size()];
+			anonymitySets[i] = anonymitySet;
+			for (int j = 0; j < anonymitySetArray.size(); j++) {
+				anonymitySet[i] = anonymitySetArray.getString(j);
+			}
+		}
+
+		String[] anonymitySetHashes = new String[anonymitySetHashesArray.size()];
+		for (int i = 0; i < anonymitySetHashesArray.size(); i++) {
+			anonymitySetHashes[i] = anonymitySetHashesArray.getString(i);
+		}
+
+		String[] groupBlockHashes = new String[groupBlockHashesArray.size()];
+		for (int i = 0; i < groupBlockHashesArray.size(); i++) {
+			groupBlockHashes[i] = groupBlockHashesArray.getString(i);
+		}
+
 		String script = Lelantus.INSTANCE.createSpendScript(
 				(long) spendAmount,
 				subtractFeeFromAmount,
@@ -128,9 +150,10 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 				index,
 				coins,
 				txHash,
-				new HashMap<>(),
-				new ArrayList<>(),
-				new HashMap<>());
+				setIds,
+				anonymitySets,
+				anonymitySetHashes,
+				groupBlockHashes);
 		callback.invoke(script);
 	}
 }

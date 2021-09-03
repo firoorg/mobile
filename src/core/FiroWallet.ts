@@ -114,7 +114,11 @@ export class FiroWallet implements AbstractWallet {
       return this._xPub;
     }
 
-    const root = bitcoin.bip32.fromSeed(this.seed, this.network);
+    const root = bitcoin.bip32.fromSeed(
+      // eslint-disable-next-line no-undef
+      Buffer.from(this.seed, 'hex'),
+      this.network,
+    );
     this._xPub = root
       .deriveHardened(44)
       .deriveHardened(136)
@@ -265,6 +269,21 @@ export class FiroWallet implements AbstractWallet {
     const extractedTx = tx.extractTransaction();
     const txHash = extractedTx.getId();
 
+    const setIds: number[] = [];
+    const anonimitySets: string[][] = [];
+    const anonymitySetHashes: string[] = [];
+    const groupBlockHashes: string[] = [];
+    for (let i = 0; i < lelantusCoins.length; i++) {
+      const coin = lelantusCoins[i];
+      if (!setIds.includes(coin.anonymitySetId)) {
+        setIds.push(coin.anonymitySetId);
+        const result = await firoElectrum.getAnonymitySet(coin.anonymitySetId);
+        anonimitySets.push(result.serializedCoins);
+        anonymitySetHashes.push(result.setHash);
+        groupBlockHashes.push(result.blockHash);
+      }
+    }
+
     const spendScript = LelantusWrapper.lelantusSpend(
       spendAmount,
       params.subtractFeeFromAmount,
@@ -272,9 +291,10 @@ export class FiroWallet implements AbstractWallet {
       this.next_free_mint_index,
       lelantusEntries,
       txHash,
-      new Map(),
-      [],
-      new Map(),
+      setIds,
+      anonimitySets,
+      anonymitySetHashes,
+      groupBlockHashes,
     );
 
     let txHex = extractedTx.toHex();
@@ -330,7 +350,7 @@ export class FiroWallet implements AbstractWallet {
   _updateIsMintConfirmed(coin: LelantusCoin) {
     if (
       coin.height !== HEIGHT_NOT_SET &&
-      coin.height + this.confirm_block_count <
+      coin.height + this.confirm_block_count <=
         firoElectrum.getLatestBlockHeight()
     ) {
       this._lelantus_coins[coin.txId].isConfirmed = true;
@@ -575,6 +595,7 @@ export class FiroWallet implements AbstractWallet {
   }
 
   async getTransactionsAddresses(): Promise<Array<string>> {
+    await this.getXpub();
     const address2Fetch = [];
     // external addresses first
     for (let c = 0; c < this.next_free_address_index + this.gap_limit; c++) {

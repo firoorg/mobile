@@ -62,8 +62,10 @@ const char *GetPublicCoin(
 		const char *keydata,
 		int32_t index) {
 	uint32_t keyPathOut;
-	lelantus::PrivateCoin privateCoin = CreateMintPrivateCoin(value, hex2bin(keydata), index, keyPathOut);
-	const lelantus::PublicCoin& publicCoin = privateCoin.getPublicCoin();
+	lelantus::PrivateCoin privateCoin = CreateMintPrivateCoin(
+		value, hex2bin(keydata), index, keyPathOut
+	);
+	const lelantus::PublicCoin &publicCoin = privateCoin.getPublicCoin();
 	return bin2hex(publicCoin.getValue().getvch().data(), PUBLIC_COIN_LENGTH);
 }
 
@@ -90,7 +92,7 @@ uint64_t EstimateFee(
 		lelantusEntry.ecdsaSecretKey =
 				std::vector<unsigned char>(
 						coin.getEcdsaSeckey(),
-						coin.getEcdsaSeckey() + sizeof(coin.getEcdsaSeckey())
+						coin.getEcdsaSeckey() + 32
 				);
 		lelantusEntry.IsUsed = it->isUsed;
 		lelantusEntry.nHeight = it->height;
@@ -151,14 +153,18 @@ const char *CreateJoinSplitScript(
 		bool subtractFeeFromAmount,
 		const char *keydata,
 		uint32_t index,
-		std::list<LelantusEntry> coins) {
+		std::list<LelantusEntry> coins,
+		std::vector<uint32_t> setIds,
+		std::vector<std::vector<const char *>> anonymitySets,
+		const std::vector<std::vector<unsigned char>> &anonymitySetHashes,
+		std::vector<const char *> groupBlockHashes) {
 	std::list<lelantus::CLelantusEntry> coinsl;
 	std::list<LelantusEntry>::iterator it;
 	for (it = coins.begin(); it != coins.end(); ++it) {
 		uint32_t keyPathOut;
 		lelantus::PrivateCoin coin = CreateMintPrivateCoin(
 				it->amount,
-				hex2bin(keydata),
+				hex2bin(it->keydata),
 				it->index,
 				keyPathOut
 		);
@@ -169,7 +175,7 @@ const char *CreateJoinSplitScript(
 		lelantusEntry.ecdsaSecretKey =
 				std::vector<unsigned char>(
 						coin.getEcdsaSeckey(),
-						coin.getEcdsaSeckey() + sizeof(coin.getEcdsaSeckey())
+						coin.getEcdsaSeckey() + 32
 				);
 		lelantusEntry.IsUsed = it->isUsed;
 		lelantusEntry.nHeight = it->height;
@@ -191,12 +197,25 @@ const char *CreateJoinSplitScript(
 	lelantus::PrivateCoin privateCoin = CreateMintPrivateCoin(changeToMint, hex2bin(keydata), index,
 															  keyPathOut);
 
-	const std::map<uint32_t, std::vector<lelantus::PublicCoin>> anonymitySet;
-	const std::vector<std::vector<unsigned char>> anonymitySetHashes;
-	const std::map<uint32_t, uint256> groupBlockHashes; // todo
+	std::map<uint32_t, std::vector<lelantus::PublicCoin>> anonymity_sets;
+	std::map<uint32_t, uint256> group_block_hashes;
+
+	for (int i = 0; i < setIds.size(); i++) {
+		uint32_t setId = setIds[i];
+		std::vector<lelantus::PublicCoin> publicCoins;
+		anonymity_sets[setId] = publicCoins;
+		std::vector<const char *> serializedCoins = anonymitySets[i];
+		for (auto &serializedCoin : serializedCoins) {
+			secp_primitives::GroupElement groupElement;
+			groupElement.deserialize(hex2bin(serializedCoin));
+			lelantus::PublicCoin publicCoin(groupElement);
+			publicCoins.push_back(publicCoin);
+		}
+		group_block_hashes[setId] = uint256S(groupBlockHashes[i]);
+	}
 
 	std::vector<unsigned char> script = std::vector<unsigned char>();
-	CreateJoinSplit(uint256S(txHash), privateCoin, spendAmount, fee, coinsToBeSpent, anonymitySet,
-					anonymitySetHashes, groupBlockHashes, script);
-	return bin2hex(script, MINT_SCRIPT_LENGTH);
+	CreateJoinSplit(uint256S(txHash), privateCoin, spendAmount, fee, coinsToBeSpent, anonymity_sets,
+					anonymitySetHashes, group_block_hashes, script);
+	return bin2hex(script, SPEND_SCRIPT_LENGTH);
 }

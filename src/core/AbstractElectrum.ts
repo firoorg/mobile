@@ -55,6 +55,12 @@ export type MintMetadataModel = {
   anonimitySetId: number;
 };
 
+export type AnonymitySetModel = {
+  serializedCoins: string[];
+  blockHash: string;
+  setHash: string;
+};
+
 export interface AbstractElectrum {
   connectMain(): Promise<void>;
 
@@ -92,5 +98,5 @@ export interface AbstractElectrum {
 
   getMintMedata(serilizedCoins: string[]): Promise<MintMetadataModel[]>;
 
-  getAnonymitySet(setId: number): Promise<string[]>;
+  getAnonymitySet(setId: number): Promise<AnonymitySetModel>;
 }

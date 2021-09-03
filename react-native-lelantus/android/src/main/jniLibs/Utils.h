@@ -68,7 +68,11 @@ const char *CreateJoinSplitScript(
 		bool subtractFeeFromAmount,
 		const char *keydata,
 		uint32_t index,
-		std::list<LelantusEntry> coins
+		std::list<LelantusEntry> coins,
+		std::vector<uint32_t> setIds,
+		std::vector<std::vector<const char *>> anonymitySets,
+		const std::vector<std::vector<unsigned char>> &anonymitySetHashes,
+		std::vector<const char *> groupBlockHashes
 );
 
 #endif //ORG_FIRO_LELANTUS_UTILS_H

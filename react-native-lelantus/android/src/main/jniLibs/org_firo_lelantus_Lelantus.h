@@ -14,7 +14,7 @@ extern "C" {
 * Signature: (JJJJ)J
 */
 JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateMintScript
-        (JNIEnv *, jobject, jlong, jstring, jint, jstring);
+		(JNIEnv *, jobject, jlong, jstring, jint, jstring);
 
 /*
 * Class:     org_firo_lelantus_Lelantus
@@ -30,7 +30,7 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetPublicCoin
 * Signature: (JJJ)J
 */
 JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
-		(JNIEnv *, jobject, jlong, jboolean, jobject);
+		(JNIEnv *, jobject, jlong, jboolean, jobjectArray);
 
 /*
 * Class:     org_firo_lelantus_Lelantus
@@ -51,10 +51,11 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateJMintScript
 /*
 * Class:     org_firo_lelantus_Lelantus
 * Method:    jCreateSpendScript
-* Signature: (JJJJJJJJJ)J
+* Signature: (JJJJJJ[J[J[J[J)J
 */
 JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
-		(JNIEnv *, jobject, jlong, jboolean, jstring, jint, jobject, jstring, jobject, jobject, jobject);
+		(JNIEnv *, jobject, jlong, jboolean, jstring, jint, jobjectArray, jstring, jintArray,
+		 jobjectArray, jobjectArray, jobjectArray);
 
 #ifdef __cplusplus
 }

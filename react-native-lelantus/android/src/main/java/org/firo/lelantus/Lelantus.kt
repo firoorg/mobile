@@ -13,7 +13,7 @@ object Lelantus {
     fun estimateJoinSplitFee(
         spendAmount: Long,
         subtractFeeFromAmount: Boolean,
-        coins: List<LelantusEntry>
+        coins: Array<LelantusEntry>
     ): JoinSplitData {
         return jEstimateJoinSplitFee(spendAmount, subtractFeeFromAmount, coins)
     }
@@ -37,11 +37,12 @@ object Lelantus {
         subtractFeeFromAmount: Boolean,
         privateKey: String,
         index: Int,
-        coins: List<LelantusEntry>,
+        coins: Array<LelantusEntry>,
         txHash: String,
-        anonymitySet: Map<Int, String>,
-        anonymitySetHashes: List<List<String>>,
-        groupBlockHashes: Map<Int, String>
+        setIds: IntArray,
+        anonymitySets: Array<Array<String>>,
+        anonymitySetHashes: Array<String>,
+        groupBlockHashes: Array<String>
     ): String {
         return jCreateSpendScript(
             spendAmount,
@@ -50,7 +51,8 @@ object Lelantus {
             index,
             coins,
             txHash,
-            anonymitySet,
+            setIds,
+            anonymitySets,
             anonymitySetHashes,
             groupBlockHashes
         )
@@ -72,7 +74,7 @@ object Lelantus {
     external fun jEstimateJoinSplitFee(
         spendAmount: Long,
         subtractFeeFromAmount: Boolean,
-        lelantusEntryList: List<LelantusEntry>
+        lelantusEntryList: Array<LelantusEntry>
     ): JoinSplitData
 
     external fun jGetMintKeyPath(value: Long, privateKey: String, index: Int): Int
@@ -90,10 +92,11 @@ object Lelantus {
         subtractFeeFromAmount: Boolean,
         privateKey: String,
         index: Int,
-        coins: List<LelantusEntry>,
+        coins: Array<LelantusEntry>,
         txHash: String,
-        anonymitySet: Map<Int, String>,
-        anonymitySetHashes: List<List<String>>,
-        groupBlockHashes: Map<Int, String>
+        setIds: IntArray,
+        anonymitySets: Array<Array<String>>,
+        anonymitySetHashes: Array<String>,
+        groupBlockHashes: Array<String>
     ): String
 }

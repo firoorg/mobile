@@ -14,7 +14,7 @@ export class LelantusWrapper {
         value,
         keypair.privateKey?.toString('hex'),
         index,
-        keypair.fingerprint.toString('hex'),
+        keypair.identifier.toString('hex'),
         (script: string, publicCoin: string) => {
           resolve({script, publicCoin});
         },
@@ -67,7 +67,7 @@ export class LelantusWrapper {
         value,
         keypair.privateKey?.toString('hex'),
         index,
-        keypair.fingerprint.toString('hex'),
+        keypair.identifier.toString('hex'),
         privateKeyAES,
         (script: string) => {
           resolve(script);
@@ -83,9 +83,10 @@ export class LelantusWrapper {
     index: number,
     coins: LelantusEntry[],
     txHash: string,
-    anonymitySet: Map<number, any>,
-    anonymitySetHashes: [],
-    groupBlockHashes: Map<number, any>,
+    setIds: number[],
+    anonymitySets: string[][],
+    anonymitySetHashes: string[],
+    groupBlockHashes: string[],
   ) {
     return new Promise<string>(resolve => {
       RNLelantus.getSpendScript(
@@ -95,7 +96,8 @@ export class LelantusWrapper {
         index,
         coins,
         txHash,
-        anonymitySet,
+        setIds,
+        anonymitySets,
         anonymitySetHashes,
         groupBlockHashes,
         (script: string) => {

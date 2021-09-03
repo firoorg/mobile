@@ -5,6 +5,7 @@ import {
   TransactionModel,
   FullTransactionModel,
   MintMetadataModel,
+  AnonymitySetModel,
 } from './AbstractElectrum';
 import {network} from './FiroNetwork';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -409,15 +410,14 @@ export default class FiroElectrum implements AbstractElectrum {
     });
   }
 
-  async getAnonymitySet(setId: number): Promise<string[]> {
+  async getAnonymitySet(setId: number): Promise<AnonymitySetModel> {
     const param = [];
     param.push(setId + '');
     const result = await this.mainClient.request(
       'sigma.getanonymityset',
       param,
     );
-    console.log('result', result);
-    return [];
+    return result;
   }
 
   addressToScript(address: string): string {
