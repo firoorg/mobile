@@ -192,6 +192,10 @@ const char *CreateJoinSplitScript(
 			coinsToBeSpent,
 			changeToMint);
 
+	if (subtractFeeFromAmount) {
+		spendAmount -= fee;
+	}
+
 	uint32_t keyPathOut;
 	lelantus::PrivateCoin privateCoin = CreateMintPrivateCoin(changeToMint, hex2bin(keydata), index,
 															  keyPathOut);

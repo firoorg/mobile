@@ -211,24 +211,24 @@ export class FiroWallet implements AbstractWallet {
     });
 
     const tx = new bitcoin.Psbt({network: this.network});
-    tx.setVersion(2);
+
+    // lelantusjoinsplitbuilder.cpp, lines 299-305
+    tx.version = 3;
+    tx.nType = TRANSACTION_LELANTUS;
 
     tx.addInput({
       hash: '0000000000000000000000000000000000000000000000000000000000000000',
+      index: 0,
       sequence: 0xffffffff,
-      finalScriptSig: 0xc9, // todo check Buffer.from('c9', 'hex')
+      // eslint-disable-next-line no-undef
+      finalScriptSig: Buffer.from('c9', 'hex'),
     });
-    tx.finalizeAllInputs();
 
     const estimateFeeData = await LelantusWrapper.estimateJoinSplitFee(
       spendAmount,
       params.subtractFeeFromAmount,
       lelantusEntries,
     );
-
-    if (params.subtractFeeFromAmount) {
-      spendAmount -= estimateFeeData.fee;
-    }
 
     const jmintKeyPair = this._getNode(MINT_INDEX, this.next_free_mint_index);
 
@@ -256,14 +256,16 @@ export class FiroWallet implements AbstractWallet {
       // eslint-disable-next-line no-undef
       script: Buffer.from(jmintScript, 'hex'),
       value: 0,
-      version: 3,
-      nType: TRANSACTION_LELANTUS,
     });
 
+    let amount = spendAmount;
+    if (params.subtractFeeFromAmount) {
+      amount -= estimateFeeData.fee;
+    }
     tx.addOutput({
       // eslint-disable-next-line no-undef
       script: Buffer.from(params.address, 'hex'),
-      value: spendAmount,
+      value: amount,
     });
 
     const extractedTx = tx.extractTransaction();
