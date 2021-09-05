@@ -196,7 +196,7 @@ export class FiroWallet implements AbstractWallet {
 
     const lelantusCoins = this._getUnspentCoins();
     const lelantusEntries = lelantusCoins.map<LelantusEntry>(coin => {
-      const keyPair = this._getNode(MINT_INDEX, this.next_free_mint_index);
+      const keyPair = this._getNode(MINT_INDEX, coin.index);
       if (keyPair.privateKey === undefined) {
         return new LelantusEntry(0, '', 0, true, 0, 0);
       }
@@ -211,17 +211,17 @@ export class FiroWallet implements AbstractWallet {
     });
 
     const tx = new bitcoin.Psbt({network: this.network});
+    tx.setLocktime(firoElectrum.getLatestBlockHeight());
 
     // lelantusjoinsplitbuilder.cpp, lines 299-305
-    tx.version = 3;
-    tx.nType = TRANSACTION_LELANTUS;
+    tx.setVersion(3 | (8 << 16));
 
     tx.addInput({
       hash: '0000000000000000000000000000000000000000000000000000000000000000',
-      index: 0,
-      sequence: 0xffffffff,
+      index: 4294967295,
+      sequence: 4294967295,
       // eslint-disable-next-line no-undef
-      finalScriptSig: Buffer.from('c9', 'hex'),
+      finalScriptSig: Buffer.alloc(0),
     });
 
     const estimateFeeData = await LelantusWrapper.estimateJoinSplitFee(
@@ -231,12 +231,12 @@ export class FiroWallet implements AbstractWallet {
     );
 
     const jmintKeyPair = this._getNode(MINT_INDEX, this.next_free_mint_index);
-
     const keyPath = await LelantusWrapper.getMintKeyPath(
       estimateFeeData.chageToMint,
       jmintKeyPair,
       this.next_free_mint_index,
     );
+    console.log('keyPath', keyPath);
 
     const aesKeyPair = this._getNode(JMINT_INDEX, keyPath);
     const aesPrivateKey = aesKeyPair.privateKey?.toString('hex');
@@ -250,8 +250,8 @@ export class FiroWallet implements AbstractWallet {
       this.next_free_mint_index,
       aesPrivateKey,
     );
-
     console.log('jmintScript', jmintScript);
+
     tx.addOutput({
       // eslint-disable-next-line no-undef
       script: Buffer.from(jmintScript, 'hex'),
@@ -263,13 +263,16 @@ export class FiroWallet implements AbstractWallet {
       amount -= estimateFeeData.fee;
     }
     tx.addOutput({
-      // eslint-disable-next-line no-undef
-      script: Buffer.from(params.address, 'hex'),
+      address: params.address,
       value: amount,
     });
 
-    const extractedTx = tx.extractTransaction();
-    const txHash = extractedTx.getId();
+    const extractedTx = tx.extractTransaction(true);
+
+    // eslint-disable-next-line no-undef
+    extractedTx.setPayload(Buffer.alloc(0));
+    const txHash = extractedTx.getHash();
+    console.log('txHash', txHash.toString('hex'));
 
     const setIds: number[] = [];
     const anonimitySets: string[][] = [];
@@ -286,24 +289,30 @@ export class FiroWallet implements AbstractWallet {
       }
     }
 
-    const spendScript = LelantusWrapper.lelantusSpend(
+    const spendScript = await LelantusWrapper.lelantusSpend(
       spendAmount,
       params.subtractFeeFromAmount,
       jmintKeyPair,
       this.next_free_mint_index,
       lelantusEntries,
-      txHash,
+      txHash.toString('hex'),
       setIds,
       anonimitySets,
       anonymitySetHashes,
       groupBlockHashes,
     );
+    console.log('spendScript', spendScript);
 
-    let txHex = extractedTx.toHex();
-    txHex += spendScript;
+    //eslint-disable-next-line no-undef
+    extractedTx.setPayload(Buffer.from(spendScript, 'hex'));
 
+    const txHex = extractedTx.toHex();
+    const txId = extractedTx.getId();
+
+    console.log('txHex', txHex);
+    console.log('txId', txId);
     return {
-      txId: txHash,
+      txId: txId,
       txHex: txHex,
       value: spendAmount,
       fee: estimateFeeData.fee,

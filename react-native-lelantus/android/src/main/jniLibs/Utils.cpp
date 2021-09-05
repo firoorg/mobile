@@ -218,8 +218,11 @@ const char *CreateJoinSplitScript(
 		group_block_hashes.insert({setId, uint256S(groupBlockHashes[i])});
 	}
 
+	uint256 _txHash;
+	_txHash.SetHex(txHash);
+
 	std::vector<unsigned char> script = std::vector<unsigned char>();
-	CreateJoinSplit(uint256S(txHash), privateCoin, spendAmount, fee, coinsToBeSpent, anonymity_sets,
+	CreateJoinSplit(_txHash, privateCoin, spendAmount, fee, coinsToBeSpent, anonymity_sets,
 					anonymitySetHashes, group_block_hashes, script);
 	__android_log_print(ANDROID_LOG_INFO, "Tag", "size = %i", script.size());
 	return bin2hex(script, script.size());

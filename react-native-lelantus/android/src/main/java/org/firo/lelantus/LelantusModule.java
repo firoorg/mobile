@@ -7,6 +7,8 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
+import java.util.Arrays;
+
 public class LelantusModule extends ReactContextBaseJavaModule {
 
 	private final ReactApplicationContext reactContext;
@@ -129,7 +131,7 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 			String[] anonymitySet = new String[anonymitySetArray.size()];
 			anonymitySets[i] = anonymitySet;
 			for (int j = 0; j < anonymitySetArray.size(); j++) {
-				anonymitySet[i] = anonymitySetArray.getString(j);
+				anonymitySet[j] = anonymitySetArray.getString(j);
 			}
 		}
 

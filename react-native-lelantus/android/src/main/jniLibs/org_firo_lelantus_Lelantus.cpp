@@ -142,7 +142,7 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
 	for (int i = 0; i < setIdsSize; i++) {
 		setIds.push_back(idList[i]);
 
-		anonymitySets.push_back(std::vector<const char *>());
+		anonymitySets.emplace_back(std::vector<const char *>());
 		auto jAnonymitySet = (jobjectArray) (env->GetObjectArrayElement(jAnonymitySets, i));
 		int anonymitySetSize = env->GetArrayLength(jAnonymitySet);
 		for (int j = 0; j < anonymitySetSize; j++) {
