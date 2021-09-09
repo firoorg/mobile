@@ -374,26 +374,36 @@ export class FiroWallet implements AbstractWallet {
         return coin.publicCoin;
       });
       const mintMetadata = await firoElectrum.getMintMedata(publicCoinList);
+      const latestBlockHeight = firoElectrum.getLatestBlockHeight();
       console.log('mint metadata', mintMetadata);
       mintMetadata.forEach((metadata, index) => {
-        unconfirmedCoins[index].height = metadata.height;
-        unconfirmedCoins[index].anonymitySetId = metadata.anonimitySetId;
-        this._updateIsMintConfirmed(unconfirmedCoins[index]);
+        this._updateIsMintConfirmed(
+          unconfirmedCoins[index],
+          metadata.height,
+          metadata.anonimitySetId,
+          latestBlockHeight,
+        );
       });
       return true;
     }
     return false;
   }
 
-  _updateIsMintConfirmed(coin: LelantusCoin) {
+  _updateIsMintConfirmed(
+    coin: LelantusCoin,
+    height: number,
+    anonimitySetId: number,
+    latestBlockHeight: number,
+  ) {
     if (
       coin.height !== HEIGHT_NOT_SET &&
-      coin.height + this.confirm_block_count <=
-        firoElectrum.getLatestBlockHeight()
+      height + this.confirm_block_count <= latestBlockHeight
     ) {
-      this._lelantus_coins[coin.txId].isConfirmed = true;
+      coin.isConfirmed = true;
+      coin.height = height;
+      coin.anonymitySetId = anonimitySetId;
     } else {
-      this._lelantus_coins[coin.txId].isConfirmed = false;
+      coin.isConfirmed = false;
     }
   }
 
