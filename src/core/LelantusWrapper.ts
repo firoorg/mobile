@@ -9,7 +9,6 @@ export class LelantusWrapper {
     value: number,
   ): Promise<{script: string; publicCoin: string}> {
     return new Promise(resolve => {
-      console.log('value', value);
       RNLelantus.getMintScript(
         value,
         keypair.privateKey?.toString('hex'),

@@ -9,13 +9,19 @@ import {
 import {Divider} from 'react-native-elements';
 import {FiroPrimaryButton} from './Button';
 import localization from '../localization';
-import { FiroContext } from '../FiroContext';
+import {FiroContext} from '../FiroContext';
 
+type SendAmountInputCardProp = {
+  onAmountSelect: (amount: number) => void;
+};
 
-export const SendAmountInputCard: FC = () => {
+export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
   const [firoIndex, setFiroIndex] = useState(0);
-  const { getSettings } = useContext(FiroContext);
-  const placeholders = [localization.global.firo, (localization.currencies as any)[getSettings().defaultCurrency]];
+  const {getSettings} = useContext(FiroContext);
+  const placeholders = [
+    localization.global.firo,
+    (localization.currencies as any)[getSettings().defaultCurrency],
+  ];
   const currencyIndex = 1 - firoIndex;
   const onMaxClick = () => {};
   return (
@@ -25,6 +31,7 @@ export const SendAmountInputCard: FC = () => {
           <TextInput
             style={styles.input}
             placeholder={`${localization.amount_input.enter_amount} (${placeholders[firoIndex]})`}
+            onChangeText={text => props.onAmountSelect(parseInt(text, 10))}
           />
           <FiroPrimaryButton
             onClick={onMaxClick}
@@ -47,8 +54,11 @@ export const SendAmountInputCard: FC = () => {
 
 export const ReceiveAmountInputCard: FC = () => {
   const [firoIndex, setFiroIndex] = useState(0);
-  const { getSettings } = useContext(FiroContext);
-  const placeholders = [localization.global.firo, (localization.currencies as any)[getSettings().defaultCurrency]];
+  const {getSettings} = useContext(FiroContext);
+  const placeholders = [
+    localization.global.firo,
+    (localization.currencies as any)[getSettings().defaultCurrency],
+  ];
   const currencyIndex = 1 - firoIndex;
   return (
     <View style={styles.card}>

@@ -23,13 +23,13 @@ type AddressDetailsProps = {
 const AddressDetailsScreen: FC<AddressDetailsProps> = props => {
   const {item} = props.route.params;
 
-  const txList = new Array<TransactionItem>();
+  const txList: TransactionItem[] = [];
   items.forEach(tx => {
     let transactionItem = new TransactionItem();
     transactionItem.address = item.address;
     transactionItem.date = new Date(tx.time * 1000);
     transactionItem.transactionId = tx.txid;
-    transactionItem.firo = 1;
+    transactionItem.value = 1;
     txList.push(transactionItem);
   });
 

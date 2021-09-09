@@ -94,6 +94,29 @@ const MyWalletScreen = () => {
     }
   };
 
+  const doSpend = async (
+    amount: number,
+    subtractFeeFromAmount: boolean,
+    address: string,
+  ) => {
+    const wallet = getWallet();
+    if (!wallet) {
+      return;
+    }
+    try {
+      const spendTx = await wallet.createLelantusSpendTx({
+        spendAmount: amount,
+        subtractFeeFromAmount: subtractFeeFromAmount,
+        address: address,
+      });
+
+      const txId = await firoElectrum.broadcast(spendTx.txHex);
+      console.log(`broadcast tx: ${JSON.stringify(txId)}`);
+    } catch (e) {
+      console.log('error when creating spend transaction', e);
+    }
+  };
+
   const updateMintMetadata = async () => {
     const wallet = getWallet();
     if (!wallet) {
@@ -164,6 +187,12 @@ const MyWalletScreen = () => {
       return;
     }
     mintUnspentTransactions();
+  }, [walletAddress]);
+  useEffect(() => {
+    if (walletAddress === '') {
+      return;
+    }
+    doSpend(50000000, false, 'TCyCGfugBdKgyBguZGXATfKA4ibCkt9HiK');
   }, [walletAddress]);
 
   return (

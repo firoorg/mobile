@@ -54,8 +54,7 @@ JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 		isUsed = static_cast<bool>(env->CallBooleanMethod(mintCoin, leIsUsedId));
 		height = static_cast<bool>(env->CallIntMethod(mintCoin, leGetHeightId));
 		anonymitySetId = static_cast<bool>(env->CallIntMethod(mintCoin, leGetAnonymitySetIdId));
-		LelantusEntry lelantusEntry{isUsed, height, anonymitySetId, amount,
-									static_cast<uint32_t>(index),
+		LelantusEntry lelantusEntry{isUsed, height, anonymitySetId, amount, (uint32_t) index,
 									env->GetStringUTFChars(keydata, nullptr)};
 		coins.push_back(lelantusEntry);
 	}
@@ -123,8 +122,7 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
 		isUsed = static_cast<bool>(env->CallBooleanMethod(mintCoin, leIsUsedId));
 		height = static_cast<bool>(env->CallIntMethod(mintCoin, leGetHeightId));
 		anonymitySetId = static_cast<bool>(env->CallIntMethod(mintCoin, leGetAnonymitySetIdId));
-		LelantusEntry lelantusEntry{isUsed, height, anonymitySetId, amount,
-									static_cast<uint32_t>(coinIndex),
+		LelantusEntry lelantusEntry{isUsed, height, anonymitySetId, amount, (uint32_t) coinIndex,
 									env->GetStringUTFChars(keydata, nullptr)};
 		coins.push_back(lelantusEntry);
 	}
@@ -134,7 +132,7 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
 
 	std::vector<uint32_t> setIds;
 	std::vector<std::vector<const char *>> anonymitySets;
-	std::vector<std::vector<unsigned char>> anonymitySetHashes;
+	std::vector<const char *> anonymitySetHashes;
 	std::vector<const char *> groupBlockHashes;
 
 	int setIdsSize = env->GetArrayLength(jSetIds);
@@ -153,9 +151,7 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
 
 		auto jAnonymitySetHash = (jstring) (env->GetObjectArrayElement(jAnonymitySetHashes, i));
 		const char *setHash = env->GetStringUTFChars(jAnonymitySetHash, nullptr);
-		vector<unsigned char>::size_type setHashSize = strlen((const char *) setHash);
-		vector<unsigned char> anonymitySetHash(setHash, setHash + setHashSize);
-		anonymitySetHashes.push_back(anonymitySetHash);
+		anonymitySetHashes.push_back(setHash);
 
 		auto jGroupBlockHash = (jstring) (env->GetObjectArrayElement(jBlockGroupHashes, i));
 		const char *groupBlockHash = env->GetStringUTFChars(jGroupBlockHash, nullptr);

@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import {StyleSheet, View, Text, Image, TextInput} from 'react-native';
 import {FiroToolbarWithoutBack} from '../components/Toolbar';
 import {CurrentFiroTheme} from '../Themes';
@@ -8,14 +8,60 @@ import {SendAddress} from '../components/SendAddress';
 import {FiroPrimaryButton} from '../components/Button';
 import {FiroVerticalInfoText} from '../components/Texts';
 import {FiroContext} from '../FiroContext';
+import {firoElectrum} from '../core/FiroElectrum';
 import localization from '../localization';
 
 const {colors} = CurrentFiroTheme;
 
 const SendScreen = () => {
-  const { getFiroRate, getSettings } = useContext(FiroContext);
-  const currentCurrencyName: string = (localization.currencies as any)[getSettings().defaultCurrency];
-  const onClickSend = () => {};
+  const {getWallet} = useContext(FiroContext);
+  const {getFiroRate, getSettings} = useContext(FiroContext);
+  const [spend, setSpend] = useState(false);
+  const [spendAmount, setSpendAmount] = useState(0);
+  const [sendAddress, setSendAddress] = useState('');
+  const currentCurrencyName: string = (localization.currencies as any)[
+    getSettings().defaultCurrency
+  ];
+
+  const doSpend = async (
+    amount: number,
+    subtractFeeFromAmount: boolean,
+    address: string,
+  ) => {
+    const wallet = getWallet();
+    if (!wallet) {
+      return;
+    }
+    try {
+      const spendTx = await wallet.createLelantusSpendTx({
+        spendAmount: amount,
+        subtractFeeFromAmount: subtractFeeFromAmount,
+        address: address,
+      });
+
+      const txId = await firoElectrum.broadcast(spendTx.txHex);
+      console.log(`broadcast tx: ${JSON.stringify(txId)}`);
+    } catch (e) {
+      console.log('error when creating spend transaction', e);
+    }
+  };
+
+  useEffect(() => {
+    if (spend === true) {
+      return;
+    }
+    doSpend(spendAmount, false, sendAddress);
+  }, [spend]);
+
+  const onAmountSelect = (amount: number) => {
+    setSpendAmount(amount);
+  };
+  const onAddressSelect = (address: string) => {
+    setSendAddress(address);
+  };
+  const onClickSend = () => {
+    setSpend(true);
+  };
   return (
     <View style={styles.root}>
       <FiroToolbarWithoutBack title={localization.send_screen.title} />
@@ -32,12 +78,13 @@ const SendScreen = () => {
           </View>
           <Text style={styles.firo}>0.00 {localization.global.firo}</Text>
           <Text style={styles.currency}>
-            0.00 {currentCurrencyName} (1 {localization.global.firo} = {getFiroRate().toString() + " " + currentCurrencyName})
+            0.00 {currentCurrencyName} (1 {localization.global.firo} ={' '}
+            {getFiroRate().toString() + ' ' + currentCurrencyName})
           </Text>
         </View>
         <Divider style={styles.divider} />
-        <SendAmountInputCard />
-        <SendAddress style={styles.address} />
+        <SendAmountInputCard onAmountSelect={onAmountSelect} />
+        <SendAddress style={styles.address} onAddressSelect={onAddressSelect} />
         <TextInput
           style={styles.label}
           placeholder={localization.send_screen.label_optional}

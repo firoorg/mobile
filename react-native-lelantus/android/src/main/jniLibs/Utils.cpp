@@ -155,7 +155,7 @@ const char *CreateJoinSplitScript(
 		std::list<LelantusEntry> coins,
 		std::vector<uint32_t> setIds,
 		std::vector<std::vector<const char *>> anonymitySets,
-		const std::vector<std::vector<unsigned char>> &anonymitySetHashes,
+		const std::vector<const char *> &anonymitySetHashes,
 		std::vector<const char *> groupBlockHashes) {
 	std::list<lelantus::CLelantusEntry> coinsl;
 	std::list<LelantusEntry>::iterator it;
@@ -201,6 +201,7 @@ const char *CreateJoinSplitScript(
 															  keyPathOut);
 
 	std::map<uint32_t, std::vector<lelantus::PublicCoin>> anonymity_sets;
+	std::vector<std::vector<unsigned char>> _anonymitySetHashes;
 	std::map<uint32_t, uint256> group_block_hashes;
 
 	for (int i = 0; i < setIds.size(); i++) {
@@ -215,7 +216,14 @@ const char *CreateJoinSplitScript(
 			anonymity_sets.at(setId).push_back(publicCoin);
 		}
 
-		group_block_hashes.insert({setId, uint256S(groupBlockHashes[i])});
+		unsigned char *setHash = hex2bin(anonymitySetHashes[i]);
+		vector<unsigned char>::size_type setHashSize = strlen((const char *) setHash);
+		vector<unsigned char> anonymitySetHash(setHash, setHash + setHashSize);
+		_anonymitySetHashes.push_back(anonymitySetHash);
+
+		uint256 blockHash;
+		blockHash.SetHex(groupBlockHashes[i]);
+		group_block_hashes.insert({setId, blockHash});
 	}
 
 	uint256 _txHash;
@@ -223,7 +231,7 @@ const char *CreateJoinSplitScript(
 
 	std::vector<unsigned char> script = std::vector<unsigned char>();
 	CreateJoinSplit(_txHash, privateCoin, spendAmount, fee, coinsToBeSpent, anonymity_sets,
-					anonymitySetHashes, group_block_hashes, script);
+					_anonymitySetHashes, group_block_hashes, script);
 	__android_log_print(ANDROID_LOG_INFO, "Tag", "size = %i", script.size());
 	return bin2hex(script, script.size());
 }

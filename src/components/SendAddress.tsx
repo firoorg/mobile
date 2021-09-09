@@ -11,14 +11,19 @@ import {
 import {Divider} from 'react-native-elements';
 import * as NavigationService from '../NavigationService';
 import localization from '../localization';
+import {useEffect} from 'react';
 
 type SendAddressProps = {
   style: StyleProp<ViewStyle>;
+  onAddressSelect: (address: string) => void;
 };
 
 export const SendAddress: FC<SendAddressProps> = props => {
   const [firoIndex, setFiroIndex] = useState(0);
   const [sendAddress, setSendAddress] = useState('');
+  useEffect(() => {
+    props.onAddressSelect(sendAddress);
+  }, [sendAddress]);
   return (
     <View style={[styles.card, props.style]}>
       <View style={styles.inputContainer}>

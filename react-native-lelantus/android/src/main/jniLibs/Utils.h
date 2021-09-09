@@ -67,7 +67,7 @@ const char *CreateJoinSplitScript(
 		std::list<LelantusEntry> coins,
 		std::vector<uint32_t> setIds,
 		std::vector<std::vector<const char *>> anonymitySets,
-		const std::vector<std::vector<unsigned char>> &anonymitySetHashes,
+		const std::vector<const char *> &anonymitySetHashes,
 		std::vector<const char *> groupBlockHashes
 );
 
