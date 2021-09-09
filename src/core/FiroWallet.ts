@@ -271,7 +271,7 @@ export class FiroWallet implements AbstractWallet {
 
     // eslint-disable-next-line no-undef
     extractedTx.setPayload(Buffer.alloc(0));
-    const txHash = extractedTx.getHash();
+    const txHash = extractedTx.getId();
     console.log('txHash', txHash.toString('hex'));
 
     const setIds: number[] = [];
@@ -303,11 +303,38 @@ export class FiroWallet implements AbstractWallet {
     );
     console.log('spendScript', spendScript);
 
-    //eslint-disable-next-line no-undef
-    extractedTx.setPayload(Buffer.from(spendScript, 'hex'));
+    const finalTx = new bitcoin.Psbt({network: this.network});
+    finalTx.setLocktime(firoElectrum.getLatestBlockHeight());
 
-    const txHex = extractedTx.toHex();
-    const txId = extractedTx.getId();
+    // lelantusjoinsplitbuilder.cpp, lines 299-305
+    finalTx.setVersion(3 | (8 << 16));
+
+    finalTx.addInput({
+      hash: '0000000000000000000000000000000000000000000000000000000000000000',
+      index: 4294967295,
+      sequence: 4294967295,
+      // eslint-disable-next-line no-undef
+      finalScriptSig: Buffer.from('c9', 'hex'),
+    });
+
+    finalTx.addOutput({
+      // eslint-disable-next-line no-undef
+      script: Buffer.from(jmintScript, 'hex'),
+      value: 0,
+    });
+
+    finalTx.addOutput({
+      address: params.address,
+      value: amount,
+    });
+
+    const extTx = finalTx.extractTransaction(true);
+
+    //eslint-disable-next-line no-undef
+    extTx.setPayload(Buffer.from(spendScript, 'hex'));
+
+    const txHex = extTx.toHex();
+    const txId = extTx.getId();
 
     console.log('txHex', txHex);
     console.log('txId', txId);
@@ -466,7 +493,12 @@ export class FiroWallet implements AbstractWallet {
 
     // eslint-disable-next-line no-undef
     const root = bip32.fromSeed(Buffer.from(this.seed, 'hex'), this.network);
-    const path = `m/44'/136'/0'/${node}/${index}`;
+    let path = `m/44'/136'/0'/${node}/${index}`;
+    // if (index >= 0) {
+    //   path += index.toString();
+    // } else {
+    //   path += -index.toString() + "'";
+    // }
     const child = root.derivePath(path);
 
     return child;
