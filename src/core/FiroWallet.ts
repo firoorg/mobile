@@ -396,7 +396,7 @@ export class FiroWallet implements AbstractWallet {
     latestBlockHeight: number,
   ) {
     if (
-      coin.height !== HEIGHT_NOT_SET &&
+      coin.height === HEIGHT_NOT_SET &&
       height + this.confirm_block_count <= latestBlockHeight
     ) {
       coin.isConfirmed = true;
@@ -503,12 +503,12 @@ export class FiroWallet implements AbstractWallet {
 
     // eslint-disable-next-line no-undef
     const root = bip32.fromSeed(Buffer.from(this.seed, 'hex'), this.network);
-    let path = `m/44'/136'/0'/${node}/${index}`;
-    // if (index >= 0) {
-    //   path += index.toString();
-    // } else {
-    //   path += -index.toString() + "'";
-    // }
+    let path = `m/44'/136'/0'/${node}/`;
+    if (index >= 0) {
+      path += index.toString();
+    } else {
+      path += -index.toString() + "'";
+    }
     const child = root.derivePath(path);
 
     return child;
