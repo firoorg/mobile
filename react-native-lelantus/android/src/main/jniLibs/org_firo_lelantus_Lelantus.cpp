@@ -1,7 +1,6 @@
 
 #include "Utils.h"
 #include "org_firo_lelantus_Lelantus.h"
-#include <android/log.h>
 
 extern "C" {
 JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateMintScript

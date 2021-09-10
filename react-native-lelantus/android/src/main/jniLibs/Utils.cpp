@@ -2,7 +2,6 @@
 #include <iostream>
 #include <sstream>
 #include <utility>
-#include <android/log.h>
 
 unsigned char *hex2bin(const char *hexstr) {
 	size_t length = strlen(hexstr) / 2;
@@ -232,6 +231,5 @@ const char *CreateJoinSplitScript(
 	std::vector<unsigned char> script = std::vector<unsigned char>();
 	CreateJoinSplit(_txHash, privateCoin, spendAmount, fee, coinsToBeSpent, anonymity_sets,
 					_anonymitySetHashes, group_block_hashes, script);
-	__android_log_print(ANDROID_LOG_INFO, "Tag", "size = %i", script.size());
 	return bin2hex(script, script.size());
 }
