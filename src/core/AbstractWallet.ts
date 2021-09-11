@@ -31,6 +31,9 @@ export type FiroSpendTxReturn = {
   txHex: string;
   value: number;
   fee: number;
+  changeToMint: number;
+  publicCoin: string;
+  spendCoinIndexes: number[];
 };
 
 export interface AbstractWallet {
@@ -62,10 +65,12 @@ export interface AbstractWallet {
   createLelantusSpendTx(
     params: LelantusSpendTxParams,
   ): Promise<FiroSpendTxReturn>;
-  addLelantusMintToCache(
+  addLelantusMintToCache(txId: string, value: number, publicCoin: string): void;
+  markCoinsSpend(
     txId: string,
-    value: number,
+    jmintValue: number,
     publicCoin: string,
-  ): Promise<void>;
+    spendCoinIndexes: number[],
+  ): void;
   updateMintMetadata(): Promise<boolean>;
 }

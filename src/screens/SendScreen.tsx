@@ -14,6 +14,7 @@ import localization from '../localization';
 const {colors} = CurrentFiroTheme;
 
 const SendScreen = () => {
+  const {saveToDisk} = useContext(FiroContext);
   const {getWallet} = useContext(FiroContext);
   const {getFiroRate, getSettings} = useContext(FiroContext);
   const [spend, setSpend] = useState(false);
@@ -41,6 +42,16 @@ const SendScreen = () => {
 
       const txId = await firoElectrum.broadcast(spendTx.txHex);
       console.log(`broadcast tx: ${JSON.stringify(txId)}`);
+
+      if (txId === spendTx.txId) {
+        wallet.markCoinsSpend(
+          txId,
+          spendTx.changeToMint,
+          spendTx.publicCoin,
+          spendTx.spendCoinIndexes,
+        );
+        await saveToDisk();
+      }
     } catch (e) {
       console.log('error when creating spend transaction', e);
     }

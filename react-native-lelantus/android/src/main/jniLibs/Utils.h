@@ -42,7 +42,8 @@ uint64_t EstimateFee(
 		uint64_t spendAmount,
 		bool subtractFeeFromAmount,
 		std::list<LelantusEntry> coins,
-		uint64_t &changeToMint
+		uint64_t &changeToMint,
+		std::vector<int32_t> &spendCoinIndexes
 );
 
 uint32_t GetMintKeyPath(

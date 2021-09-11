@@ -62,7 +62,7 @@ const char *GetPublicCoin(
 		int32_t index) {
 	uint32_t keyPathOut;
 	lelantus::PrivateCoin privateCoin = CreateMintPrivateCoin(
-		value, hex2bin(keydata), index, keyPathOut
+			value, hex2bin(keydata), index, keyPathOut
 	);
 	const lelantus::PublicCoin &publicCoin = privateCoin.getPublicCoin();
 	return bin2hex(publicCoin.getValue().getvch().data(),
@@ -73,7 +73,8 @@ uint64_t EstimateFee(
 		uint64_t spendAmount,
 		bool subtractFeeFromAmount,
 		std::list<LelantusEntry> coins,
-		uint64_t &changeToMint
+		uint64_t &changeToMint,
+		std::vector<int32_t> &spendCoinIndexes
 ) {
 	std::list<lelantus::CLelantusEntry> coinsl;
 	std::list<LelantusEntry>::iterator it;
@@ -108,6 +109,22 @@ uint64_t EstimateFee(
 			coinsl,
 			coinsToBeSpent,
 			changeToMint);
+
+	for (const auto& entry : coinsToBeSpent) {
+			for (it = coins.begin(); it != coins.end(); ++it) {
+			uint32_t keyPathOut;
+			lelantus::PrivateCoin coin = CreateMintPrivateCoin(
+					it->amount,
+					hex2bin(it->keydata),
+					it->index,
+					keyPathOut
+			);
+			if (coin.getSerialNumber() == entry.serialNumber) {
+				spendCoinIndexes.push_back(it->index);
+			}
+		}
+	}
+
 	return fee;
 }
 

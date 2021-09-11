@@ -36,7 +36,7 @@ JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 	jmethodID leIsUsedId = env->GetMethodID(leCls, "isUsed", "()Z");
 	jmethodID leGetHeightId = env->GetMethodID(leCls, "getHeight", "()I");
 	jmethodID leGetAnonymitySetIdId = env->GetMethodID(leCls, "getAnonymitySetId", "()I");
-	jmethodID jsdConstructor = env->GetMethodID(jsdCls, "<init>", "(JJ)V");
+	jmethodID jsdConstructor = env->GetMethodID(jsdCls, "<init>", "(JJ[I)V");
 
 	std::list<LelantusEntry> coins;
 	int index, height, anonymitySetId;
@@ -59,14 +59,18 @@ JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 	}
 
 	uint64_t changeToMint;
+	std::vector<int32_t> spendCoinIndexes;
 	uint64_t fee = EstimateFee(
 			spendAmount,
 			subtractFeeFromAmount,
 			coins,
-			changeToMint
+			changeToMint,
+			spendCoinIndexes
 	);
 
-	jobject result = env->NewObject(jsdCls, jsdConstructor, (jlong) fee, (jlong) changeToMint);
+	jintArray indexes = env->NewIntArray(spendCoinIndexes.size());
+	env->SetIntArrayRegion(indexes, 0, spendCoinIndexes.size(), (jint *) &spendCoinIndexes[0]);
+	jobject result = env->NewObject(jsdCls, jsdConstructor, (jlong) fee, (jlong) changeToMint, indexes);
 
 	return result;
 }

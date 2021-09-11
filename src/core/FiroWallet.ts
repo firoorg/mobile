@@ -230,11 +230,12 @@ export class FiroWallet implements AbstractWallet {
       lelantusEntries,
     );
 
-    const jmintKeyPair = this._getNode(MINT_INDEX, this.next_free_mint_index);
+    const index = this.next_free_mint_index;
+    const jmintKeyPair = this._getNode(MINT_INDEX, index);
     const keyPath = await LelantusWrapper.getMintKeyPath(
       estimateFeeData.chageToMint,
       jmintKeyPair,
-      this.next_free_mint_index,
+      index,
     );
     console.log('keyPath', keyPath);
 
@@ -244,17 +245,17 @@ export class FiroWallet implements AbstractWallet {
       throw Error("Can't generate aes private key");
     }
 
-    const jmintScript = await LelantusWrapper.lelantusJMint(
+    const jmintData = await LelantusWrapper.lelantusJMint(
       estimateFeeData.chageToMint,
       jmintKeyPair,
-      this.next_free_mint_index,
+      index,
       aesPrivateKey,
     );
-    console.log('jmintScript', jmintScript);
+    console.log('jmintScript', jmintData.script);
 
     tx.addOutput({
       // eslint-disable-next-line no-undef
-      script: Buffer.from(jmintScript, 'hex'),
+      script: Buffer.from(jmintData.script, 'hex'),
       value: 0,
     });
 
@@ -319,7 +320,7 @@ export class FiroWallet implements AbstractWallet {
 
     finalTx.addOutput({
       // eslint-disable-next-line no-undef
-      script: Buffer.from(jmintScript, 'hex'),
+      script: Buffer.from(jmintData.script, 'hex'),
       value: 0,
     });
 
@@ -343,14 +344,17 @@ export class FiroWallet implements AbstractWallet {
       txHex: txHex,
       value: spendAmount,
       fee: estimateFeeData.fee,
+      changeToMint: estimateFeeData.chageToMint,
+      publicCoin: jmintData.publicCoin,
+      spendCoinIndexes: estimateFeeData.spendCoinIndexes,
     };
   }
 
-  async addLelantusMintToCache(
+  addLelantusMintToCache(
     txId: string,
     value: number,
     publicCoin: string,
-  ): Promise<void> {
+  ): void {
     if (this._lelantus_coins[txId]) {
       return;
     }
@@ -365,6 +369,35 @@ export class FiroWallet implements AbstractWallet {
       isUsed: false,
     };
     this.next_free_mint_index += 1;
+  }
+
+  markCoinsSpend(
+    txId: string,
+    jmintValue: number,
+    publicCoin: string,
+    spendCoinIndexes: number[],
+  ): void {
+    if (this._lelantus_coins[txId]) {
+      return;
+    }
+    this._lelantus_coins[txId] = {
+      index: this.next_free_mint_index,
+      value: jmintValue,
+      publicCoin: publicCoin,
+      isConfirmed: false,
+      txId: txId,
+      height: HEIGHT_NOT_SET,
+      anonymitySetId: 0,
+      isUsed: false,
+    };
+    this.next_free_mint_index += 1;
+
+    const coins = Object.values(this._lelantus_coins);
+    coins.forEach(coin => {
+      if (spendCoinIndexes.includes(coin.index)) {
+        coin.isUsed = true;
+      }
+    });
   }
 
   async updateMintMetadata(): Promise<boolean> {
@@ -397,7 +430,8 @@ export class FiroWallet implements AbstractWallet {
   ) {
     if (
       coin.height === HEIGHT_NOT_SET &&
-      height + this.confirm_block_count <= latestBlockHeight
+      height !== HEIGHT_NOT_SET &&
+      height + this.confirm_block_count - 1 <= latestBlockHeight
     ) {
       coin.isConfirmed = true;
       coin.height = height;
@@ -503,12 +537,7 @@ export class FiroWallet implements AbstractWallet {
 
     // eslint-disable-next-line no-undef
     const root = bip32.fromSeed(Buffer.from(this.seed, 'hex'), this.network);
-    let path = `m/44'/136'/0'/${node}/`;
-    if (index >= 0) {
-      path += index.toString();
-    } else {
-      path += -index.toString() + "'";
-    }
+    let path = `m/44'/136'/0'/${node}/${index >>> 0}`;
     const child = root.derivePath(path);
 
     return child;

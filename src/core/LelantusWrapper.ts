@@ -26,13 +26,17 @@ export class LelantusWrapper {
     subtractFeeFromAmount: boolean,
     coins: LelantusEntry[],
   ) {
-    return new Promise<{fee: number; chageToMint: number}>(resolve => {
+    return new Promise<{
+      fee: number;
+      chageToMint: number;
+      spendCoinIndexes: number[];
+    }>(resolve => {
       RNLelantus.estimateJoinSplitFee(
         spendAmount,
         subtractFeeFromAmount,
         coins,
-        (fee: number, chageToMint: number) => {
-          resolve({fee, chageToMint});
+        (fee: number, chageToMint: number, spendCoinIndexes: number[]) => {
+          resolve({fee, chageToMint, spendCoinIndexes});
         },
       );
     });
@@ -61,15 +65,18 @@ export class LelantusWrapper {
     index: number,
     privateKeyAES: String,
   ) {
-    return new Promise<string>(resolve => {
+    return new Promise<{
+      script: string;
+      publicCoin: string;
+    }>(resolve => {
       RNLelantus.getJMintScript(
         value,
         keypair.privateKey?.toString('hex'),
         index,
         keypair.identifier.toString('hex'),
         privateKeyAES,
-        (script: string) => {
-          resolve(script);
+        (script: string, publicCoin: string) => {
+          resolve({script, publicCoin});
         },
       );
     });

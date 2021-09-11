@@ -1,13 +1,13 @@
 package org.firo.lelantus;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-
-import java.util.Arrays;
+import com.facebook.react.bridge.WritableArray;
 
 public class LelantusModule extends ReactContextBaseJavaModule {
 
@@ -65,7 +65,11 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 				subtractFeeFromAmount,
 				coins
 		);
-		callback.invoke((double) data.getFee(), (double) data.getChangeToMint());
+		WritableArray indexes = Arguments.createArray();
+		for (int i = 0; i < data.getSpendCoinIndexes().length; i++) {
+			indexes.pushInt(data.getSpendCoinIndexes()[i]);
+		}
+		callback.invoke((double) data.getFee(), (double) data.getChangeToMint(), indexes);
 	}
 
 	@ReactMethod
@@ -89,7 +93,8 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 			Callback callback
 	) {
 		String script = Lelantus.INSTANCE.createJMintScript((long) value, privateKey, index, seed, privateKeyAES);
-		callback.invoke(script);
+		String publicCoin = Lelantus.INSTANCE.getPublicCoin((long) value, privateKey, index);
+		callback.invoke(script, publicCoin);
 	}
 
 	@ReactMethod
