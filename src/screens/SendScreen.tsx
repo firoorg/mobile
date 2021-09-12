@@ -10,6 +10,7 @@ import {FiroVerticalInfoText} from '../components/Texts';
 import {FiroContext} from '../FiroContext';
 import {firoElectrum} from '../core/FiroElectrum';
 import localization from '../localization';
+import { SATOSHI } from '../core/FiroWallet';
 
 const {colors} = CurrentFiroTheme;
 
@@ -17,6 +18,7 @@ const SendScreen = () => {
   const {saveToDisk} = useContext(FiroContext);
   const {getWallet} = useContext(FiroContext);
   const {getFiroRate, getSettings} = useContext(FiroContext);
+  const [balance, setBalance] = useState(0);
   const [spendAmount, setSpendAmount] = useState(0);
   const [sendAddress, setSendAddress] = useState('');
   const currentCurrencyName: string = (localization.currencies as any)[
@@ -56,8 +58,16 @@ const SendScreen = () => {
     }
   };
 
+  const updateBalance = async () => {
+    try {
+      let walletBalance = getWallet()?.getBalance();
+      setBalance(walletBalance ?? 0);
+    } catch (e) {
+      console.log('error when getting balance', e);
+    }
+  };
   const onAmountSelect = (amount: number) => {
-    setSpendAmount(amount);
+    setSpendAmount(amount * SATOSHI);
   };
   const onAddressSelect = (address: string) => {
     setSendAddress(address);
@@ -69,6 +79,11 @@ const SendScreen = () => {
       console.log('somting went wrong in spend tx', e)
     }
   };
+
+  useEffect(() => {
+    updateBalance();
+  }, []);
+
   return (
     <View style={styles.root}>
       <FiroToolbarWithoutBack title={localization.send_screen.title} />
@@ -83,9 +98,9 @@ const SendScreen = () => {
               {localization.global.firo} {localization.global.balance}
             </Text>
           </View>
-          <Text style={styles.firo}>0.00 {localization.global.firo}</Text>
+          <Text style={styles.firo}>{balance} {localization.global.firo}</Text>
           <Text style={styles.currency}>
-            0.00 {currentCurrencyName} (1 {localization.global.firo} ={' '}
+            {(balance * getFiroRate()).toFixed(2)} {currentCurrencyName} (1 {localization.global.firo} ={' '}
             {getFiroRate().toString() + ' ' + currentCurrencyName})
           </Text>
         </View>
