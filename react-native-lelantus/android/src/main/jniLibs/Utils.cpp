@@ -233,8 +233,7 @@ const char *CreateJoinSplitScript(
 		}
 
 		unsigned char *setHash = hex2bin(anonymitySetHashes[i]);
-		vector<unsigned char>::size_type setHashSize = strlen((const char *) setHash);
-		vector<unsigned char> anonymitySetHash(setHash, setHash + setHashSize);
+		vector<unsigned char> anonymitySetHash(setHash, setHash + 32);
 		_anonymitySetHashes.push_back(anonymitySetHash);
 
 		uint256 blockHash;
