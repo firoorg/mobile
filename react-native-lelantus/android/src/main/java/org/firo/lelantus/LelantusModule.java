@@ -79,7 +79,7 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 			int index,
 			Callback callback
 	) {
-		long keyPath = Lelantus.INSTANCE.getMintKeyPath((long) value, privateKey, index);
+		double keyPath = (double) Lelantus.INSTANCE.getMintKeyPath((long) value, privateKey, index);
 		callback.invoke(keyPath);
 	}
 
