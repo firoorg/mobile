@@ -2,7 +2,7 @@ import React, {useContext, useState, useEffect} from 'react';
 import {StyleSheet, View, Text, Image, TextInput} from 'react-native';
 import {FiroToolbarWithoutBack} from '../components/Toolbar';
 import {CurrentFiroTheme} from '../Themes';
-import {Divider} from 'react-native-elements';
+import {Divider, Switch} from 'react-native-elements';
 import {SendAmountInputCard} from '../components/AmountInput';
 import {SendAddress} from '../components/SendAddress';
 import {FiroPrimaryButton} from '../components/Button';
@@ -10,6 +10,7 @@ import {FiroVerticalInfoText} from '../components/Texts';
 import {FiroContext} from '../FiroContext';
 import {firoElectrum} from '../core/FiroElectrum';
 import localization from '../localization';
+import { SATOSHI } from '../core/FiroWallet';
 
 const {colors} = CurrentFiroTheme;
 
@@ -17,9 +18,10 @@ const SendScreen = () => {
   const {saveToDisk} = useContext(FiroContext);
   const {getWallet} = useContext(FiroContext);
   const {getFiroRate, getSettings} = useContext(FiroContext);
-  const [spend, setSpend] = useState(false);
+  const [balance, setBalance] = useState(0);
   const [spendAmount, setSpendAmount] = useState(0);
   const [sendAddress, setSendAddress] = useState('');
+  const [subtractFeeFromAmount, setSubtractFeeFromAmount] = useState(false);
   const currentCurrencyName: string = (localization.currencies as any)[
     getSettings().defaultCurrency
   ];
@@ -57,22 +59,32 @@ const SendScreen = () => {
     }
   };
 
-  useEffect(() => {
-    if (spend === true) {
-      return;
+  const updateBalance = async () => {
+    try {
+      let walletBalance = getWallet()?.getBalance();
+      setBalance(walletBalance ?? 0);
+    } catch (e) {
+      console.log('error when getting balance', e);
     }
-    doSpend(spendAmount, false, sendAddress);
-  }, [spend]);
-
+  };
   const onAmountSelect = (amount: number) => {
-    setSpendAmount(amount);
+    setSpendAmount(amount * SATOSHI);
   };
   const onAddressSelect = (address: string) => {
     setSendAddress(address);
   };
-  const onClickSend = () => {
-    setSpend(true);
+  const onClickSend = async () => {
+    try {
+    await doSpend(spendAmount, subtractFeeFromAmount, sendAddress);
+    } catch(e) {
+      console.log('somting went wrong in spend tx', e)
+    }
   };
+
+  useEffect(() => {
+    updateBalance();
+  }, []);
+
   return (
     <View style={styles.root}>
       <FiroToolbarWithoutBack title={localization.send_screen.title} />
@@ -87,9 +99,9 @@ const SendScreen = () => {
               {localization.global.firo} {localization.global.balance}
             </Text>
           </View>
-          <Text style={styles.firo}>0.00 {localization.global.firo}</Text>
+          <Text style={styles.firo}>{balance} {localization.global.firo}</Text>
           <Text style={styles.currency}>
-            0.00 {currentCurrencyName} (1 {localization.global.firo} ={' '}
+            {(balance * getFiroRate()).toFixed(2)} {currentCurrencyName} (1 {localization.global.firo} ={' '}
             {getFiroRate().toString() + ' ' + currentCurrencyName})
           </Text>
         </View>
@@ -115,6 +127,11 @@ const SendScreen = () => {
             <Text style={styles.reduceFeeTitle}>
               {localization.send_screen.reduce_fee}
             </Text>
+            <Switch
+              value={subtractFeeFromAmount}
+              color={colors.primary}
+              onValueChange={(value) => setSubtractFeeFromAmount(value)}
+            />
           </View>
         </View>
         <FiroPrimaryButton
@@ -206,6 +223,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   reduceFeeTitle: {
     fontFamily: 'Rubik-Regular',

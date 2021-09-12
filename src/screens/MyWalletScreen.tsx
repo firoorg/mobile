@@ -13,39 +13,11 @@ const {colors} = CurrentFiroTheme;
 
 const MyWalletScreen = () => {
   const {getWallet} = useContext(FiroContext);
-  const [walletAddress, setWalletAddress] = useState('');
   const [balance, setBalance] = useState(0);
   const [txHistory, setTxHistory] = useState(new Array<TransactionItem>());
   const {saveToDisk} = useContext(FiroContext);
 
-  const getAddress = async () => {
-    const wallet = getWallet();
-    if (wallet === undefined) {
-      throw new Error('wallet not created');
-    }
-
-    try {
-      const address = await wallet.getAddressAsync();
-      setWalletAddress(address);
-    } catch (e) {
-      console.log('error when getting address', e);
-    }
-  };
-
-  const updateBalance = async () => {
-    try {
-      let walletBalance = getWallet()?.getBalance();
-      if (walletBalance !== undefined) {
-        setBalance(walletBalance);
-      } else {
-        setBalance(0);
-      }
-    } catch (e) {
-      console.log('error when getting balance', e);
-    }
-  };
-
-  const mintUnspentTransactions = async () => {
+  const doMint = async () => {
     const wallet = getWallet();
     if (!wallet) {
       return;
@@ -92,20 +64,9 @@ const MyWalletScreen = () => {
         console.log('error when creating mint transaction', e);
       }
     }
-  };
+  }
 
-  const updateMintMetadata = async () => {
-    const wallet = getWallet();
-    if (!wallet) {
-      return;
-    }
-
-    if (await wallet.updateMintMetadata()) {
-      await saveToDisk();
-    }
-  };
-
-  const getTransactionList = async () => {
+  const retriveTxList = async () =>{
     const wallet = getWallet();
     if (!wallet) {
       return;
@@ -140,31 +101,47 @@ const MyWalletScreen = () => {
       }
     }
     setTxHistory(txList);
+  }
+
+  const updateBalance = async () => {
+    try {
+      let walletBalance = getWallet()?.getBalance();
+      setBalance(walletBalance ?? 0);
+    } catch (e) {
+      console.log('error when getting balance', e);
+    }
+  };
+
+  const mintUnspentTransactions = async () => {
+    doMint()
+  };
+
+  const updateMintMetadata = async () => {
+    const wallet = getWallet();
+    if (!wallet) {
+      return;
+    }
+
+    if (await wallet.updateMintMetadata()) {
+      await saveToDisk();
+    }
+  };
+
+  const getTransactionList = async () => {
+    retriveTxList()
   };
   useEffect(() => {
-    getAddress();
+    updateBalance();
   }, []);
   useEffect(() => {
-    if (walletAddress === '') {
-      return;
-    }
-    updateBalance();
-  }, [walletAddress]);
-  useEffect(() => {
-    if (walletAddress === '') {
-      return;
-    }
     getTransactionList();
-  }, [walletAddress]);
+  }, []);
   useEffect(() => {
     updateMintMetadata();
   }, []);
   useEffect(() => {
-    if (walletAddress === '') {
-      return;
-    }
     mintUnspentTransactions();
-  }, [walletAddress]);
+  }, []);
 
   return (
     <View style={styles.root}>
