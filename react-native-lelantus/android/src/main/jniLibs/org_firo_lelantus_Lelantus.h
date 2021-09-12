@@ -37,7 +37,7 @@ JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 * Method:    jGetMintKeyPath
 * Signature: (JJJ)J
 */
-JNIEXPORT jint JNICALL Java_org_firo_lelantus_Lelantus_jGetMintKeyPath
+JNIEXPORT jlong JNICALL Java_org_firo_lelantus_Lelantus_jGetMintKeyPath
 		(JNIEnv *, jobject, jlong, jstring, jint);
 
 /*

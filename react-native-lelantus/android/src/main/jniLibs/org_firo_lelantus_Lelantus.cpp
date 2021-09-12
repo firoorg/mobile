@@ -75,7 +75,7 @@ JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 	return result;
 }
 
-JNIEXPORT jint JNICALL Java_org_firo_lelantus_Lelantus_jGetMintKeyPath
+JNIEXPORT jlong JNICALL Java_org_firo_lelantus_Lelantus_jGetMintKeyPath
 		(JNIEnv *env, jobject thisClass, jlong value, jstring jPrivateKey, jint index) {
 	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
 	uint32_t keyPath = GetMintKeyPath(value, privateKey, index);

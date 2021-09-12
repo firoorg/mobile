@@ -18,7 +18,7 @@ object Lelantus {
         return jEstimateJoinSplitFee(spendAmount, subtractFeeFromAmount, coins)
     }
 
-    fun getMintKeyPath(value: Long, privateKey: String, index: Int): Int {
+    fun getMintKeyPath(value: Long, privateKey: String, index: Int): Long {
         return jGetMintKeyPath(value, privateKey, index)
     }
 
@@ -77,7 +77,7 @@ object Lelantus {
         lelantusEntryList: Array<LelantusEntry>
     ): JoinSplitData
 
-    external fun jGetMintKeyPath(value: Long, privateKey: String, index: Int): Int
+    external fun jGetMintKeyPath(value: Long, privateKey: String, index: Int): Long
 
     external fun jCreateJMintScript(
         value: Long,

@@ -537,7 +537,7 @@ export class FiroWallet implements AbstractWallet {
 
     // eslint-disable-next-line no-undef
     const root = bip32.fromSeed(Buffer.from(this.seed, 'hex'), this.network);
-    let path = `m/44'/136'/0'/${node}/${index >>> 0}`;
+    let path = `m/44'/136'/0'/${node}/${index}`;
     const child = root.derivePath(path);
 
     return child;
