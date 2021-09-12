@@ -2,7 +2,7 @@ import React, {useContext, useState, useEffect} from 'react';
 import {StyleSheet, View, Text, Image, TextInput} from 'react-native';
 import {FiroToolbarWithoutBack} from '../components/Toolbar';
 import {CurrentFiroTheme} from '../Themes';
-import {Divider} from 'react-native-elements';
+import {Divider, Switch} from 'react-native-elements';
 import {SendAmountInputCard} from '../components/AmountInput';
 import {SendAddress} from '../components/SendAddress';
 import {FiroPrimaryButton} from '../components/Button';
@@ -21,6 +21,7 @@ const SendScreen = () => {
   const [balance, setBalance] = useState(0);
   const [spendAmount, setSpendAmount] = useState(0);
   const [sendAddress, setSendAddress] = useState('');
+  const [subtractFeeFromAmount, setSubtractFeeFromAmount] = useState(false);
   const currentCurrencyName: string = (localization.currencies as any)[
     getSettings().defaultCurrency
   ];
@@ -74,7 +75,7 @@ const SendScreen = () => {
   };
   const onClickSend = async () => {
     try {
-    await doSpend(spendAmount, false, sendAddress);
+    await doSpend(spendAmount, subtractFeeFromAmount, sendAddress);
     } catch(e) {
       console.log('somting went wrong in spend tx', e)
     }
@@ -126,6 +127,11 @@ const SendScreen = () => {
             <Text style={styles.reduceFeeTitle}>
               {localization.send_screen.reduce_fee}
             </Text>
+            <Switch
+              value={subtractFeeFromAmount}
+              color={colors.primary}
+              onValueChange={(value) => setSubtractFeeFromAmount(value)}
+            />
           </View>
         </View>
         <FiroPrimaryButton
@@ -217,6 +223,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   reduceFeeTitle: {
     fontFamily: 'Rubik-Regular',
