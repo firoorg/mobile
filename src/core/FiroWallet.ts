@@ -72,8 +72,9 @@ export class FiroWallet implements AbstractWallet {
     this.seed = (await bip39.mnemonicToSeed(this.secret)).toString('hex');
   }
 
-  setSecret(secret: string): void {
+  async setSecret(secret: string): Promise<void> {
     this.secret = secret;
+    this.seed = (await bip39.mnemonicToSeed(this.secret)).toString('hex');
   }
 
   getSecret(): string {

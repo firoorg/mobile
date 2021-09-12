@@ -47,7 +47,7 @@ export interface AbstractWallet {
   _txs_by_internal_index: Array<Array<TransactionItem>>;
 
   generate(): Promise<void>;
-  setSecret(secret: string): void;
+  setSecret(secret: string): Promise<void>
   getSecret(): string;
 
   getAddressAsync(): Promise<string>;

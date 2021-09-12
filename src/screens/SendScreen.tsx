@@ -17,7 +17,6 @@ const SendScreen = () => {
   const {saveToDisk} = useContext(FiroContext);
   const {getWallet} = useContext(FiroContext);
   const {getFiroRate, getSettings} = useContext(FiroContext);
-  const [spend, setSpend] = useState(false);
   const [spendAmount, setSpendAmount] = useState(0);
   const [sendAddress, setSendAddress] = useState('');
   const currentCurrencyName: string = (localization.currencies as any)[
@@ -57,21 +56,18 @@ const SendScreen = () => {
     }
   };
 
-  useEffect(() => {
-    if (spend === true) {
-      return;
-    }
-    doSpend(spendAmount, false, sendAddress);
-  }, [spend]);
-
   const onAmountSelect = (amount: number) => {
     setSpendAmount(amount);
   };
   const onAddressSelect = (address: string) => {
     setSendAddress(address);
   };
-  const onClickSend = () => {
-    setSpend(true);
+  const onClickSend = async () => {
+    try {
+    await doSpend(spendAmount, false, sendAddress);
+    } catch(e) {
+      console.log('somting went wrong in spend tx', e)
+    }
   };
   return (
     <View style={styles.root}>
