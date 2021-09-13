@@ -2,7 +2,9 @@ import {
   AbstractWallet,
   FiroMintTxReturn,
   FiroSpendTxReturn,
+  FiroTxFeeReturn,
   LelantusMintTxParams,
+  LelantusSpendFeeParams,
   LelantusSpendTxParams,
 } from './AbstractWallet';
 import { network, Network } from './FiroNetwork';
@@ -192,11 +194,21 @@ export class FiroWallet implements AbstractWallet {
     };
   }
 
-  async createLelantusSpendTx(
-    params: LelantusSpendTxParams,
-  ): Promise<FiroSpendTxReturn> {
+  async estimateJoinSplitFee(params: LelantusSpendFeeParams): Promise<FiroTxFeeReturn> {
     let spendAmount = params.spendAmount;
 
+    const lelantusEntries = this._getLelantusEntry();
+
+    const estimateFeeData = await LelantusWrapper.estimateJoinSplitFee(
+      spendAmount,
+      params.subtractFeeFromAmount,
+      lelantusEntries,
+    );
+
+    return estimateFeeData
+  }
+
+  _getLelantusEntry(): LelantusEntry[] {
     const lelantusCoins = this._getUnspentCoins();
     const lelantusEntries = lelantusCoins.map<LelantusEntry>(coin => {
       const keyPair = this._getNode(MINT_INDEX, coin.index);
@@ -213,6 +225,23 @@ export class FiroWallet implements AbstractWallet {
       );
     });
 
+    return lelantusEntries
+  }
+
+  async createLelantusSpendTx(
+    params: LelantusSpendTxParams,
+  ): Promise<FiroSpendTxReturn> {
+    let spendAmount = params.spendAmount;
+    let lelantusEntries = this._getLelantusEntry();
+
+    const estimateJoinSplitFee = await this.estimateJoinSplitFee({
+      spendAmount,
+      subtractFeeFromAmount: params.subtractFeeFromAmount
+    })
+    let chageToMint = estimateJoinSplitFee.chageToMint;
+    let fee = estimateJoinSplitFee.fee;
+    let spendCoinIndexes = estimateJoinSplitFee.spendCoinIndexes;
+
     const tx = new bitcoin.Psbt({ network: this.network });
     tx.setLocktime(firoElectrum.getLatestBlockHeight());
 
@@ -227,16 +256,10 @@ export class FiroWallet implements AbstractWallet {
       finalScriptSig: Buffer.alloc(0),
     });
 
-    const estimateFeeData = await LelantusWrapper.estimateJoinSplitFee(
-      spendAmount,
-      params.subtractFeeFromAmount,
-      lelantusEntries,
-    );
-
     const index = this.next_free_mint_index;
     const jmintKeyPair = this._getNode(MINT_INDEX, index);
     const keyPath = await LelantusWrapper.getMintKeyPath(
-      estimateFeeData.chageToMint,
+      chageToMint,
       jmintKeyPair,
       index,
     );
@@ -249,7 +272,7 @@ export class FiroWallet implements AbstractWallet {
     }
 
     const jmintData = await LelantusWrapper.lelantusJMint(
-      estimateFeeData.chageToMint,
+      chageToMint,
       jmintKeyPair,
       index,
       aesPrivateKey,
@@ -264,7 +287,7 @@ export class FiroWallet implements AbstractWallet {
 
     let amount = spendAmount;
     if (params.subtractFeeFromAmount) {
-      amount -= estimateFeeData.fee;
+      amount -= fee;
     }
     tx.addOutput({
       address: params.address,
@@ -282,11 +305,12 @@ export class FiroWallet implements AbstractWallet {
     const anonimitySets: string[][] = [];
     const anonymitySetHashes: string[] = [];
     const groupBlockHashes: string[] = [];
-    for (let i = 0; i < lelantusCoins.length; i++) {
-      const coin = lelantusCoins[i];
-      if (!setIds.includes(coin.anonymitySetId)) {
-        setIds.push(coin.anonymitySetId);
-        const result = await firoElectrum.getAnonymitySet(coin.anonymitySetId);
+    for (let i = 0; i < lelantusEntries.length; i++) {
+      const anonymitySetId = lelantusEntries[i].anonymitySetId;
+
+      if (!setIds.includes(anonymitySetId)) {
+        setIds.push(anonymitySetId);
+        const result = await firoElectrum.getAnonymitySet(anonymitySetId);
         anonimitySets.push(result.serializedCoins);
         anonymitySetHashes.push(result.setHash);
         groupBlockHashes.push(result.blockHash);
@@ -346,10 +370,10 @@ export class FiroWallet implements AbstractWallet {
       txId: txId,
       txHex: txHex,
       value: spendAmount,
-      fee: estimateFeeData.fee,
-      changeToMint: estimateFeeData.chageToMint,
+      fee: fee,
+      changeToMint: chageToMint,
       publicCoin: jmintData.publicCoin,
-      spendCoinIndexes: estimateFeeData.spendCoinIndexes,
+      spendCoinIndexes: spendCoinIndexes,
     };
   }
 

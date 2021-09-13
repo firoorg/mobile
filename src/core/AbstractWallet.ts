@@ -1,6 +1,7 @@
-import {BalanceData} from '../data/BalanceData';
-import {LelantusCoin} from '../data/LelantusCoin';
-import {TransactionItem} from '../data/TransactionItem';
+import { BalanceData } from '../data/BalanceData';
+import { LelantusCoin } from '../data/LelantusCoin';
+import { LelantusEntry } from '../data/LelantusEntry';
+import { TransactionItem } from '../data/TransactionItem';
 
 export type LelantusMintTxParams = {
   utxos: {
@@ -11,6 +12,17 @@ export type LelantusMintTxParams = {
     address: string;
   }[];
 };
+
+export type LelantusSpendFeeParams = {
+  spendAmount: number;
+  subtractFeeFromAmount: boolean;
+};
+
+export type FiroTxFeeReturn = {
+  fee: number;
+  chageToMint: number;
+  spendCoinIndexes: number[];
+}
 
 export type LelantusSpendTxParams = {
   spendAmount: number;
@@ -62,6 +74,7 @@ export interface AbstractWallet {
   prepareForSerialization(): void;
 
   createLelantusMintTx(params: LelantusMintTxParams): Promise<FiroMintTxReturn>;
+  estimateJoinSplitFee(params: LelantusSpendFeeParams): Promise<FiroTxFeeReturn>;
   createLelantusSpendTx(
     params: LelantusSpendTxParams,
   ): Promise<FiroSpendTxReturn>;

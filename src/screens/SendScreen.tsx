@@ -13,18 +13,46 @@ import localization from '../localization';
 import { SATOSHI } from '../core/FiroWallet';
 
 const {colors} = CurrentFiroTheme;
+var timerHandler: number = -1;
 
 const SendScreen = () => {
   const {saveToDisk} = useContext(FiroContext);
   const {getWallet} = useContext(FiroContext);
   const {getFiroRate, getSettings} = useContext(FiroContext);
-  const [balance, setBalance] = useState(0);
-  const [spendAmount, setSpendAmount] = useState(0);
+  const [balance, setBalance] = useState(0.0);
+  const [spendAmount, setSpendAmount] = useState(0.0);
   const [sendAddress, setSendAddress] = useState('');
+  const [fee, setFee] = useState(0.0);
+  const [total, setTotal] = useState(0.0);
   const [subtractFeeFromAmount, setSubtractFeeFromAmount] = useState(false);
   const currentCurrencyName: string = (localization.currencies as any)[
     getSettings().defaultCurrency
   ];
+
+  const estimateFee = () => {
+    if (timerHandler !== -1) {
+      clearTimeout(timerHandler)
+      console.log('clearTimeout', timerHandler)
+    }
+    timerHandler = setTimeout(async () => {
+      const wallet = getWallet();
+      if (!wallet) {
+        return;
+      }
+      try {
+        const estimate = await wallet.estimateJoinSplitFee({
+          spendAmount,
+          subtractFeeFromAmount
+        })
+
+        console.log('fee', fee)
+        setFee(estimate.fee)
+      } catch(e) {
+        console.log('estimateFee', e)
+      }
+
+    }, 300);
+  }
 
   const doSpend = async (
     amount: number,
@@ -68,7 +96,12 @@ const SendScreen = () => {
     }
   };
   const onAmountSelect = (amount: number) => {
-    setSpendAmount(amount * SATOSHI);
+    const staoshi = amount * SATOSHI;
+    if (isNaN(staoshi)) {
+      setSpendAmount(0)
+    } else {
+      setSpendAmount(staoshi);
+    }
   };
   const onAddressSelect = (address: string) => {
     setSendAddress(address);
@@ -84,6 +117,20 @@ const SendScreen = () => {
   useEffect(() => {
     updateBalance();
   }, []);
+
+  useEffect(() => {
+    const sub = subtractFeeFromAmount ? -1 : 1;
+    setTotal(spendAmount + sub * fee)
+  }, [fee]);
+
+  useEffect(() => {
+    const sub = subtractFeeFromAmount ? -1 : 1;
+    setTotal(spendAmount + sub * fee)
+  }, [subtractFeeFromAmount]);
+
+  useEffect(() => {
+    estimateFee()
+  }, [spendAmount]);
 
   return (
     <View style={styles.root}>
@@ -116,12 +163,12 @@ const SendScreen = () => {
           <FiroVerticalInfoText
             style={styles.feeDetail}
             title={localization.send_screen.transaction_fee}
-            text={'0.00' + localization.global.firo}
+            text={`${fee} ${localization.global.firo}`}
           />
           <FiroVerticalInfoText
             style={styles.feeDetail}
             title={localization.send_screen.total_send_amount}
-            text={'0.00' + localization.global.firo}
+            text={`${total} ${localization.global.firo}`}
           />
           <View style={styles.reduceFeeContainer}>
             <Text style={styles.reduceFeeTitle}>
