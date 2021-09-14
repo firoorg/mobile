@@ -31,7 +31,7 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
           <TextInput
             style={styles.input}
             placeholder={`${localization.amount_input.enter_amount} (${placeholders[firoIndex]})`}
-            onChangeText={text => props.onAmountSelect(parseInt(text, 10))}
+            onChangeText={text => props.onAmountSelect(parseFloat(text))}
           />
           <FiroPrimaryButton
             onClick={onMaxClick}

@@ -37,7 +37,7 @@ export const BalanceCard: FC<BalanceCardProp> = props => {
           />
           <Text style={styles.title}>Firo Balance</Text>
         </View>
-        <Text style={styles.firo}>{props.balance.toFixed(2)}</Text>
+        <Text style={styles.firo}>{props.balance}</Text>
         <Text style={styles.currency}>{(props.balance * getFiroRate()).toFixed(2)} {(localization.currencies as any)[getSettings().defaultCurrency]}</Text>
         {props.balance === 0 && (
           <FiroGetFiroButton
