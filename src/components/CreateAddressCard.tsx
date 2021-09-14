@@ -1,9 +1,10 @@
 import React, {FC} from 'react';
 import {Text, Divider} from 'react-native-elements';
-import {View, StyleSheet, Image, TextInput} from 'react-native';
+import {View, StyleSheet, Image, TextInput, ToastAndroid} from 'react-native';
 import {FiroPrimaryGreenButton} from './Button';
 import localization from '../localization';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 type CreateAddressProp = {
   address: string;
@@ -12,6 +13,14 @@ type CreateAddressProp = {
 
 export const CreateAddressCard: FC<CreateAddressProp> = props => {
   const onAddressSaveClick = () => {};
+  const onCopyClick = () => {
+    Clipboard.setString(props.address);
+    ToastAndroid.showWithGravity(
+      localization.create_address_card.address_copied,
+      ToastAndroid.SHORT,
+      ToastAndroid.TOP,
+    );
+  };
   return (
     <View style={styles.card}>
       <Text style={styles.currentAddressLabel}>
@@ -19,6 +28,9 @@ export const CreateAddressCard: FC<CreateAddressProp> = props => {
       </Text>
       <View style={styles.currentAddress}>
         <Text style={styles.address}>{props.address}</Text>
+        <TouchableWithoutFeedback onPress={onCopyClick}>
+          <Image style={styles.icon} source={require('../img/ic_copy.png')} />
+        </TouchableWithoutFeedback>
         <TouchableWithoutFeedback onPress={props.onClick}>
           <Image
             style={styles.icon}

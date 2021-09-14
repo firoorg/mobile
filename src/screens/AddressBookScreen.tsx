@@ -38,7 +38,7 @@ const AddressBookScreen = () => {
 
   useEffect(() => {
     loadAddressBook();
-  }, []);
+  });
 
   const onAddNewClick = () => {
     NavigationService.navigate('AddEditAddressScreen', {undefined});

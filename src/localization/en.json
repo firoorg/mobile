@@ -20,6 +20,7 @@
   "create_address_card": {
     "current_address": "Current Address:",
     "address_name": "Address Name",
+    "address_copied": "Address copied",
     "save_address": "Save Address"
   },
 

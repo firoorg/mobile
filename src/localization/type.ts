@@ -22,6 +22,7 @@ export interface IString extends LocalizedStringsMethods {
   create_address_card: {
     current_address: string;
     address_name: string;
+    address_copied: string;
     save_address: string;
   };
 
