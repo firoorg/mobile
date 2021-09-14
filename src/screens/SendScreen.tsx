@@ -31,8 +31,8 @@ const SendScreen = () => {
 
   const estimateFee = () => {
     if (timerHandler !== -1) {
-      clearTimeout(timerHandler)
-      console.log('clearTimeout', timerHandler)
+      clearTimeout(timerHandler);
+      console.log('clearTimeout', timerHandler);
     }
     timerHandler = setTimeout(async () => {
       const wallet = getWallet();
@@ -42,17 +42,16 @@ const SendScreen = () => {
       try {
         const estimate = await wallet.estimateJoinSplitFee({
           spendAmount,
-          subtractFeeFromAmount
-        })
+          subtractFeeFromAmount,
+        });
 
-        console.log('fee', fee)
-        setFee(estimate.fee)
-      } catch(e) {
-        console.log('estimateFee', e)
+        console.log('fee', fee);
+        setFee(estimate.fee);
+      } catch (e) {
+        console.log('estimateFee', e);
       }
-
     }, 300);
-  }
+  };
 
   const doSpend = async (
     amount: number,
@@ -98,7 +97,7 @@ const SendScreen = () => {
   const onAmountSelect = (amount: number) => {
     const staoshi = amount * SATOSHI;
     if (isNaN(staoshi)) {
-      setSpendAmount(0)
+      setSpendAmount(0);
     } else {
       setSpendAmount(staoshi);
     }
@@ -119,17 +118,12 @@ const SendScreen = () => {
   }, []);
 
   useEffect(() => {
-    const sub = subtractFeeFromAmount ? -1 : 1;
-    setTotal(spendAmount + sub * fee)
-  }, [fee]);
+    const sub = subtractFeeFromAmount ? 1 : 0;
+    setTotal(spendAmount + sub * fee);
+  }, [fee, subtractFeeFromAmount]);
 
   useEffect(() => {
-    const sub = subtractFeeFromAmount ? -1 : 1;
-    setTotal(spendAmount + sub * fee)
-  }, [subtractFeeFromAmount]);
-
-  useEffect(() => {
-    estimateFee()
+    estimateFee();
   }, [spendAmount]);
 
   return (
@@ -150,7 +144,8 @@ const SendScreen = () => {
             {balance} {localization.global.firo}
           </Text>
           <Text style={styles.currency}>
-            {(balance * getFiroRate()).toFixed(2)} {currentCurrencyName} (1 {localization.global.firo} ={' '}
+            {(balance * getFiroRate()).toFixed(2)} {currentCurrencyName} (1{' '}
+            {localization.global.firo} ={' '}
             {getFiroRate().toString() + ' ' + currentCurrencyName})
           </Text>
         </View>
@@ -165,12 +160,12 @@ const SendScreen = () => {
           <FiroVerticalInfoText
             style={styles.feeDetail}
             title={localization.send_screen.transaction_fee}
-            text={`${fee} ${localization.global.firo}`}
+            text={`${fee / SATOSHI} ${localization.global.firo}`}
           />
           <FiroVerticalInfoText
             style={styles.feeDetail}
             title={localization.send_screen.total_send_amount}
-            text={`${total} ${localization.global.firo}`}
+            text={`${total / SATOSHI} ${localization.global.firo}`}
           />
           <View style={styles.reduceFeeContainer}>
             <Text style={styles.reduceFeeTitle}>
