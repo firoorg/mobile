@@ -96,6 +96,8 @@ export interface AbstractElectrum {
 
   broadcast(hex: string): Promise<string>;
 
+  subscribeToChanges(onChange: (params: any) => void): void;
+
   getMintMedata(serilizedCoins: string[]): Promise<MintMetadataModel[]>;
 
   getAnonymitySet(setId: number): Promise<AnonymitySetModel>;

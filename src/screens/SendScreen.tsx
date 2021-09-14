@@ -10,7 +10,7 @@ import {FiroVerticalInfoText} from '../components/Texts';
 import {FiroContext} from '../FiroContext';
 import {firoElectrum} from '../core/FiroElectrum';
 import localization from '../localization';
-import { SATOSHI } from '../core/FiroWallet';
+import {SATOSHI} from '../core/FiroWallet';
 
 const {colors} = CurrentFiroTheme;
 
@@ -75,9 +75,9 @@ const SendScreen = () => {
   };
   const onClickSend = async () => {
     try {
-    await doSpend(spendAmount, subtractFeeFromAmount, sendAddress);
-    } catch(e) {
-      console.log('somting went wrong in spend tx', e)
+      await doSpend(spendAmount, subtractFeeFromAmount, sendAddress);
+    } catch (e) {
+      console.log('somting went wrong in spend tx', e);
     }
   };
 
@@ -99,7 +99,9 @@ const SendScreen = () => {
               {localization.global.firo} {localization.global.balance}
             </Text>
           </View>
-          <Text style={styles.firo}>{balance} {localization.global.firo}</Text>
+          <Text style={styles.firo}>
+            {balance} {localization.global.firo}
+          </Text>
           <Text style={styles.currency}>
             {(balance * getFiroRate()).toFixed(2)} {currentCurrencyName} (1 {localization.global.firo} ={' '}
             {getFiroRate().toString() + ' ' + currentCurrencyName})
@@ -130,7 +132,7 @@ const SendScreen = () => {
             <Switch
               value={subtractFeeFromAmount}
               color={colors.primary}
-              onValueChange={(value) => setSubtractFeeFromAmount(value)}
+              onValueChange={value => setSubtractFeeFromAmount(value)}
             />
           </View>
         </View>

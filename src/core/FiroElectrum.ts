@@ -120,7 +120,14 @@ export default class FiroElectrum implements AbstractElectrum {
         this.serverName = ver[0];
         this.mainConnected = true;
         this.wasConnectedAtLeastOnce = true;
-        const header = await this.mainClient.blockchainHeaders_subscribe();
+        let header = await this.mainClient.blockchainHeaders_subscribe();
+        this.mainClient.subscribe.on(
+          'blockchain.headers.subscribe',
+          (params: any) => {
+            this.latestBlockheight = params[0].height;
+            this.latestBlockheightTimestamp = Math.floor(+new Date() / 1000);
+          },
+        );
         if (header && header.height) {
           this.latestBlockheight = header.height;
           this.latestBlockheightTimestamp = Math.floor(+new Date() / 1000);
@@ -366,6 +373,18 @@ export default class FiroElectrum implements AbstractElectrum {
       reversedHash.toString('hex'),
     );
     return listUnspent;
+  }
+
+  subscribeToChanges(onChange: (params: any) => void): void {
+    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
+      throw new Error('Electrum client is not connected');
+    }
+    this.mainClient.subscribe.on(
+      'blockchain.headers.subscribe',
+      (params: any) => {
+        onChange(params);
+      },
+    );
   }
 
   async broadcast(hex: string): Promise<string> {

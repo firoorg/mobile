@@ -64,9 +64,9 @@ const MyWalletScreen = () => {
         console.log('error when creating mint transaction', e);
       }
     }
-  }
+  };
 
-  const retriveTxList = async () =>{
+  const retriveTxList = async () => {
     const wallet = getWallet();
     if (!wallet) {
       return;
@@ -101,7 +101,7 @@ const MyWalletScreen = () => {
       }
     }
     setTxHistory(txList);
-  }
+  };
 
   const updateBalance = async () => {
     try {
@@ -113,7 +113,7 @@ const MyWalletScreen = () => {
   };
 
   const mintUnspentTransactions = async () => {
-    doMint()
+    doMint();
   };
 
   const updateMintMetadata = async () => {
@@ -128,8 +128,18 @@ const MyWalletScreen = () => {
   };
 
   const getTransactionList = async () => {
-    retriveTxList()
+    retriveTxList();
   };
+
+  const subscribeToElectrum = async () => {
+    firoElectrum.subscribeToChanges(() => {
+      mintUnspentTransactions();
+      updateMintMetadata();
+      updateBalance();
+      getTransactionList();
+    });
+  };
+
   useEffect(() => {
     updateBalance();
   }, []);
@@ -137,10 +147,13 @@ const MyWalletScreen = () => {
     getTransactionList();
   }, []);
   useEffect(() => {
+    mintUnspentTransactions();
+  }, []);
+  useEffect(() => {
     updateMintMetadata();
   }, []);
   useEffect(() => {
-    mintUnspentTransactions();
+    subscribeToElectrum();
   }, []);
 
   return (
