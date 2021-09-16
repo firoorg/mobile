@@ -27,7 +27,7 @@ const PassphraseScreen = () => {
       await encryptStorage(password);
       jobDone = true;
 
-      NavigationService.dispatch(StackActions.replace('MainScreen', undefined));
+      NavigationService.clearStack('MainScreen');
     } finally {
       if (!jobDone) {
         setCreating(false);

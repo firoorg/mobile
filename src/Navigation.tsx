@@ -86,7 +86,7 @@ type TabStackParamList = {
 };
 const TabStack = createBottomTabNavigator<TabStackParamList>();
 const TabScreen = () => (
-  <TabStack.Navigator tabBar={props => <BottomTabBar {...props} />}>
+  <TabStack.Navigator screenOptions={{headerShown: false}} tabBar={props => <BottomTabBar {...props} />}>
     <TabStack.Screen name="Wallet" component={Wallet} />
     <TabStack.Screen name="Receive" component={ReceiveScreen} />
     <TabStack.Screen name="Send" component={SendScreen} />

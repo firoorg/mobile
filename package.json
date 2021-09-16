@@ -17,9 +17,9 @@
   "dependencies": {
     "@react-native-clipboard/clipboard": "^1.8.2",
     "@react-native-community/async-storage": "1.12.1",
-    "@react-navigation/bottom-tabs": "^5.11.11",
-    "@react-navigation/native": "^5.9.4",
-    "@react-navigation/stack": "^5.14.5",
+    "@react-navigation/bottom-tabs": "^6.0.5",
+    "@react-navigation/native": "^6.0.2",
+    "@react-navigation/stack": "^6.0.7",
     "assert": "^1.5.0",
     "bc-ur": "^0.1.6",
     "bignumber.js": "9.0.1",

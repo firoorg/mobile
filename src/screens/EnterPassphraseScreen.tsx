@@ -1,6 +1,5 @@
 import React, {useContext, useState} from 'react';
 import * as NavigationService from '../NavigationService';
-import {StackActions} from '@react-navigation/native';
 import {Image, StyleSheet, View} from 'react-native';
 import {FiroSecondaryButton} from '../components/Button';
 import {FiroToolbar} from '../components/Toolbar';
@@ -24,7 +23,7 @@ const EnterPassphraseScreen = () => {
     console.log(password);
     setLoading(true);
     if (await loadFromDisk(password)) {
-      NavigationService.dispatch(StackActions.replace('MainScreen', undefined));
+      NavigationService.clearStack('MainScreen');
     }
     setLoading(false);
   };
