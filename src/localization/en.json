@@ -78,10 +78,14 @@
   },
   
   "enter_passphrase_screen": {
+    "title_toolbar": "Enter passphrase",
+    "title_toolbar_fingerprint": "Provide fingerprint",
     "title": "Enter Passphrase",
+    "title_fingerprint": "Provide Fingerprint",
     "body": "For unlock wallet",
     "login": "Login",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "prompt_fingerprint": "Login Via Fingerprint"
   },
 
   "transaction_details": {

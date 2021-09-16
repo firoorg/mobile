@@ -1,6 +1,6 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import * as NavigationService from '../NavigationService';
-import {Image, StyleSheet, View} from 'react-native';
+import {Alert, Image, StyleSheet, View} from 'react-native';
 import {FiroSecondaryButton} from '../components/Button';
 import {FiroToolbar} from '../components/Toolbar';
 import {FiroTitleBig, FiroTextBig} from '../components/Texts';
@@ -8,48 +8,81 @@ import {FiroInputPassword} from '../components/Input';
 import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
 import localization from '../localization';
+import { Biometrics } from '../utils/biometrics';
 
 const {colors} = CurrentFiroTheme;
 
 const EnterPassphraseScreen = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [biometricEnabled, setBiometricEnabled] = useState(false);
   const {loadFromDisk} = useContext(FiroContext);
   const btnText = loading
     ? localization.enter_passphrase_screen.loading
     : localization.enter_passphrase_screen.login;
 
-  const onClickDone = async () => {
-    console.log(password);
+  const onClickDone = async (passphrase: string) => {
+    console.log(passphrase);
     setLoading(true);
-    if (await loadFromDisk(password)) {
+    if (await loadFromDisk(passphrase)) {
       NavigationService.clearStack('MainScreen');
     }
     setLoading(false);
   };
+
+  const loginViaFingerprint = () => {
+    setBiometricEnabled(true);
+    Biometrics.getPassphrase(localization.enter_passphrase_screen.prompt_fingerprint)
+      .then(info => {
+        if (info.success) {
+          onClickDone(info.password as string);
+        } else {
+          setBiometricEnabled(false);
+        }
+      });
+  };
+
+  // handle biometrics
+  useEffect(() => {
+    Biometrics.biometricAuthorizationEnabled()
+      .then(enabled => {
+        if (enabled) {
+          loginViaFingerprint();
+        }
+      });
+  }, []);
+  
   return (
     <View style={styles.root}>
-      <FiroToolbar title="Enter passphrase" />
+      <FiroToolbar title={biometricEnabled
+        ? localization.enter_passphrase_screen.title_toolbar_fingerprint
+        : localization.enter_passphrase_screen.title_toolbar} />
       <Image
         style={styles.logo}
         source={require('../img/firo-logo-black.png')}
       />
       <FiroTitleBig
         style={styles.title}
-        text={localization.enter_passphrase_screen.title}
+        text={biometricEnabled
+          ? localization.enter_passphrase_screen.title_fingerprint
+          : localization.enter_passphrase_screen.title}
       />
       <FiroTextBig
         style={styles.textCopy}
         text={localization.enter_passphrase_screen.body}
       />
-      <FiroInputPassword
-        style={styles.password}
-        onTextChanged={txt => setPassword(txt)}
-      />
+      {
+        !biometricEnabled
+          ? <FiroInputPassword
+            style={styles.password}
+            onTextChanged={txt => setPassword(txt)}
+          />
+          : null
+      }
       <FiroSecondaryButton
         buttonStyle={styles.restoreWallet}
         text={btnText}
-        onClick={onClickDone}
+        onClick={() => onClickDone(password)}
       />
     </View>
   );

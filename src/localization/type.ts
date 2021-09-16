@@ -81,10 +81,14 @@ export interface IString extends LocalizedStringsMethods {
   };
 
   enter_passphrase_screen: {
+    title_toolbar: string;
+    title_toolbar_fingerprint: string;
     title: string;
+    title_fingerprint: string;
     body: string;
     login: string;
     loading: string;
+    prompt_fingerprint: string;
   };
 
   transaction_details: {

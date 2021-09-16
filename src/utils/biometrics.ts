@@ -12,7 +12,10 @@ export class Biometrics {
 
     public static async biometricAuthorizationEnabled(): Promise<boolean> {
         const storage: AppStorage = new AppStorage();
-        const encryptedPassword: string = await storage.getItem(AppStorage.ENCRYPTED_PASSWORD);
+        let encryptedPassword: string = '';
+        try {
+            encryptedPassword = await storage.getItem(AppStorage.ENCRYPTED_PASSWORD);
+        } catch (error) { }
         return !!encryptedPassword;
     }
 
