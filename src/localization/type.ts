@@ -41,8 +41,10 @@ export interface IString extends LocalizedStringsMethods {
   };
 
   transaction_list_item: {
-    received: string;
-    sent: string;
+    receive: string;
+    send: string;
+    anonymize: string;
+    uncondirmed: string;
   };
 
   welcome_screen: {
@@ -92,6 +94,7 @@ export interface IString extends LocalizedStringsMethods {
     received: string;
     sent_to: string;
     received_from: string;
+    address: string;
     label: string;
     fee: string;
   };

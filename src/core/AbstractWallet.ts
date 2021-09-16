@@ -74,7 +74,9 @@ export interface AbstractWallet {
   prepareForSerialization(): void;
 
   createLelantusMintTx(params: LelantusMintTxParams): Promise<FiroMintTxReturn>;
-  estimateJoinSplitFee(params: LelantusSpendFeeParams): Promise<FiroTxFeeReturn>;
+  estimateJoinSplitFee(
+    params: LelantusSpendFeeParams,
+  ): Promise<FiroTxFeeReturn>;
   createLelantusSpendTx(
     params: LelantusSpendTxParams,
   ): Promise<FiroSpendTxReturn>;

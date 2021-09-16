@@ -11,17 +11,18 @@ import {
 import {CurrentFiroTheme} from '../Themes';
 import {FiroGetFiroButton} from './Button';
 import localization from '../localization';
-import { FiroContext } from '../FiroContext';
+import {FiroContext} from '../FiroContext';
 
 const colors = CurrentFiroTheme.colors;
 
 type BalanceCardProp = {
   style: StyleProp<ViewStyle>;
   balance: number;
+  unconfirmedBalance: number;
 };
 
 export const BalanceCard: FC<BalanceCardProp> = props => {
-  const { getFiroRate, getSettings } = useContext(FiroContext);
+  const {getFiroRate, getSettings} = useContext(FiroContext);
   const onGetFiroClick = () => {};
   return (
     <View style={styles.cardContainer}>
@@ -37,8 +38,16 @@ export const BalanceCard: FC<BalanceCardProp> = props => {
           />
           <Text style={styles.title}>Firo Balance</Text>
         </View>
-        <Text style={styles.firo}>{props.balance}</Text>
-        <Text style={styles.currency}>{(props.balance * getFiroRate()).toFixed(2)} {(localization.currencies as any)[getSettings().defaultCurrency]}</Text>
+        <Text style={styles.firo}>{parseFloat(props.balance.toFixed(8))}</Text>
+        {props.unconfirmedBalance > 0 && (
+          <Text style={styles.firo_unconfirmed}>
+            ({parseFloat(props.unconfirmedBalance.toFixed(8))})
+          </Text>
+        )}
+        <Text style={styles.currency}>
+          {(props.balance * getFiroRate()).toFixed(2)}{' '}
+          {(localization.currencies as any)[getSettings().defaultCurrency]}
+        </Text>
         {props.balance === 0 && (
           <FiroGetFiroButton
             buttonStyle={styles.getFiro}
@@ -112,7 +121,13 @@ const styles = StyleSheet.create({
   firo: {
     marginTop: 17,
     fontFamily: 'Rubik-Medium',
-    fontSize: 28,
+    fontSize: 26,
+    color: '#ffffff',
+    textAlign: 'center',
+  },
+  firo_unconfirmed: {
+    fontFamily: 'Rubik-Medium',
+    fontSize: 16,
     color: '#ffffff',
     textAlign: 'center',
   },

@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {ListItem} from 'react-native-elements';
-import {FlatList} from 'react-native-gesture-handler';
+import {FlatList} from 'react-native';
 import * as NavigationService from '../NavigationService';
 import {CurrentFiroTheme} from '../Themes';
 import {AddressBookItem} from '../data/AddressBookItem';

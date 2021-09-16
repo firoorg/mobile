@@ -1,18 +1,13 @@
 export class TransactionItem {
   value: number = 0;
-  received: boolean = true;
-  blocktime: number = 0;
+  received: boolean = false;
+  isMint: boolean = false;
   date: Date = new Date();
-  status: number = 0;
-  transactionId: string = '';
+  condirmed: boolean = false;
+  txId: string = '';
   address: string = '';
   fee: number = 0;
   label: string | undefined;
-  confirmations: number = 0;
-  txid: string = '';
-  hash: string = '';
-  inputs: Array<VIn> = [];
-  outputs: Array<VOut> = [];
 }
 
 export type VIn = {

@@ -7,7 +7,6 @@ import {TransactionList} from '../components/TransactionList';
 import {CurrentFiroTheme} from '../Themes';
 import {AddressBookItem} from '../data/AddressBookItem';
 import {TransactionItem} from '../data/TransactionItem';
-import items from '../mock/tx-mock';
 import localization from '../localization';
 
 const {colors} = CurrentFiroTheme;
@@ -24,14 +23,6 @@ const AddressDetailsScreen: FC<AddressDetailsProps> = props => {
   const {item} = props.route.params;
 
   const txList: TransactionItem[] = [];
-  items.forEach(tx => {
-    let transactionItem = new TransactionItem();
-    transactionItem.address = item.address;
-    transactionItem.date = new Date(tx.time * 1000);
-    transactionItem.transactionId = tx.txid;
-    transactionItem.value = 1;
-    txList.push(transactionItem);
-  });
 
   return (
     <View style={styles.root}>

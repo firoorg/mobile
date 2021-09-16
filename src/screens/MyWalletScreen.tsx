@@ -8,13 +8,17 @@ import {FiroContext} from '../FiroContext';
 import {firoElectrum} from '../core/FiroElectrum';
 import {TransactionItem} from '../data/TransactionItem';
 import localization from '../localization';
+import {FiroTransactionEmpty} from '../components/EmptyState';
 
 const {colors} = CurrentFiroTheme;
 
 const MyWalletScreen = () => {
   const {getWallet} = useContext(FiroContext);
   const [balance, setBalance] = useState(0);
-  const [txHistory, setTxHistory] = useState(new Array<TransactionItem>());
+  const [unconfirmedBalance, setUnconfirmedBalance] = useState(0);
+  const [txHistory, setTxHistory] = useState<TransactionItem[] | undefined>(
+    undefined,
+  );
   const {saveToDisk} = useContext(FiroContext);
 
   const doMint = async () => {
@@ -82,31 +86,47 @@ const MyWalletScreen = () => {
           let transactionItem = new TransactionItem();
           transactionItem.address = tx.address;
           transactionItem.date = new Date(tx.time * 1000);
-          transactionItem.transactionId = tx.txid;
-          tx.outputs.forEach(vout => {
-            if (vout.addresses && vout.addresses.includes(address)) {
-              transactionItem.value += vout.value;
-            } else if (
-              vout.scriptPubKey &&
-              vout.scriptPubKey.type === 'lelantusmint'
-            ) {
-              transactionItem.received = false;
-              transactionItem.value = vout.value;
-            }
-          });
-          txList.push(transactionItem);
+          transactionItem.txId = tx.txid;
+          transactionItem.condirmed = true;
+
+          if (
+            tx.outputs.length === 1 &&
+            tx.outputs[0].scriptPubKey &&
+            tx.outputs[0].scriptPubKey.type === 'lelantusmint'
+          ) {
+            transactionItem.received = false;
+            transactionItem.isMint = true;
+            transactionItem.value = tx.outputs[0].value;
+            transactionItem.condirmed = tx.confirmations >= 2; // TODO: move to wallet and use MINT_CONFIRM_BLOCK_COUNT
+          } else {
+            tx.outputs.forEach(vout => {
+              if (vout.addresses && vout.addresses.includes(address)) {
+                transactionItem.value += vout.value;
+                transactionItem.received = true;
+              }
+            });
+          }
+
+          if (transactionItem.received || transactionItem.isMint) {
+            txList.push(transactionItem);
+          }
         });
       } catch (e) {
         console.log('error when getting transaction list', e);
       }
     }
+    txList.sort((tx1: TransactionItem, tx2: TransactionItem) => {
+      return tx2.date.getTime() - tx1.date.getTime();
+    });
     setTxHistory(txList);
   };
 
-  const updateBalance = async () => {
+  const updateBalance = () => {
     try {
       let walletBalance = getWallet()?.getBalance();
+      let walletUnconfirmedBalance = getWallet()?.getUnconfirmedBalance();
       setBalance(walletBalance ?? 0);
+      setUnconfirmedBalance(walletUnconfirmedBalance ?? 0);
     } catch (e) {
       console.log('error when getting balance', e);
     }
@@ -131,41 +151,46 @@ const MyWalletScreen = () => {
     retriveTxList();
   };
 
-  const subscribeToElectrum = async () => {
+  const subscribeToElectrumChanges = async () => {
     firoElectrum.subscribeToChanges(() => {
-      mintUnspentTransactions();
-      updateMintMetadata();
-      updateBalance();
-      getTransactionList();
+      updateWalletData();
     });
+  };
+
+  const updateWalletData = async () => {
+    await updateMintMetadata();
+    updateBalance();
+
+    await getTransactionList();
+    await mintUnspentTransactions();
   };
 
   useEffect(() => {
     updateBalance();
+    updateWalletData();
+    subscribeToElectrumChanges();
   }, []);
-  useEffect(() => {
-    getTransactionList();
-  }, []);
-  useEffect(() => {
-    mintUnspentTransactions();
-  }, []);
-  useEffect(() => {
-    updateMintMetadata();
-  }, []);
-  useEffect(() => {
-    subscribeToElectrum();
-  }, []);
+
+  let transactionList;
+  if (txHistory === undefined) {
+    transactionList = <View />;
+  } else if (txHistory.length === 0) {
+    transactionList = <FiroTransactionEmpty />;
+  } else {
+    transactionList = <TransactionList transactionList={txHistory} />;
+  }
 
   return (
     <View style={styles.root}>
       <FiroToolbarWithoutBack title={localization.my_wallet_screen.title} />
       <View style={styles.balanceCardContainer}>
-        <BalanceCard style={styles.balanceCard} balance={balance} />
+        <BalanceCard
+          style={styles.balanceCard}
+          balance={balance}
+          unconfirmedBalance={unconfirmedBalance}
+        />
       </View>
-      <View style={styles.transactionContainer}>
-        {/* <FiroTransactionEmpty /> */}
-        <TransactionList transactionList={txHistory} />
-      </View>
+      <View style={styles.transactionContainer}>{transactionList}</View>
     </View>
   );
 };

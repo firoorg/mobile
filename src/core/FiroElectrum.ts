@@ -120,7 +120,6 @@ export default class FiroElectrum implements AbstractElectrum {
         this.serverName = ver[0];
         this.mainConnected = true;
         this.wasConnectedAtLeastOnce = true;
-        let header = await this.mainClient.blockchainHeaders_subscribe();
         this.mainClient.subscribe.on(
           'blockchain.headers.subscribe',
           (params: any) => {
@@ -128,6 +127,7 @@ export default class FiroElectrum implements AbstractElectrum {
             this.latestBlockheightTimestamp = Math.floor(+new Date() / 1000);
           },
         );
+        const header = await this.mainClient.blockchainHeaders_subscribe();
         if (header && header.height) {
           this.latestBlockheight = header.height;
           this.latestBlockheightTimestamp = Math.floor(+new Date() / 1000);

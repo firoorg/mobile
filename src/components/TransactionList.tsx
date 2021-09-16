@@ -1,22 +1,13 @@
 import React, {FC, useContext} from 'react';
 import * as NavigationService from '../NavigationService';
-import {ListItem, Text} from 'react-native-elements';
-import {View, StyleSheet, Image} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
+import {ListItem} from 'react-native-elements';
+import {StyleSheet, FlatList} from 'react-native';
 import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
 import {TransactionItem} from '../data/TransactionItem';
-import localization from '../localization';
+import {TransactionRow} from './TransactionRow';
 
 const {colors} = CurrentFiroTheme;
-
-var options = {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-};
 
 const keys = (_: TransactionItem, index: number) => index.toString();
 
@@ -28,36 +19,15 @@ const renderItem: (
   const onTransactionClick = () => {
     NavigationService.navigate('TransactionDetailsScreen', {item});
   };
-  const ic = item.received
-    ? require('../img/ic_received_tx.png')
-    : require('../img/ic_sent_tx.png');
 
   return (
     <ListItem containerStyle={styles.listItem} onPress={onTransactionClick}>
-      <View style={styles.listItemCard}>
-        <Image style={styles.icon} source={ic} />
-        <View style={styles.textContainer}>
-          <View style={styles.row}>
-            <Text style={styles.title}>
-              {item.value} {localization.global.firo}
-            </Text>
-            <Text style={styles.title}>
-              ${(item.value * firoRate).toFixed(2)}{' '}
-              {(localization.currencies as any)[currentCurrency]}
-            </Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.subtitle}>
-              {item.received
-                ? localization.transaction_list_item.received
-                : localization.transaction_list_item.sent}
-            </Text>
-            <Text style={styles.subtitle}>
-              {item.date.toLocaleDateString('en-US', options)}
-            </Text>
-          </View>
-        </View>
-      </View>
+      <TransactionRow
+        style={styles.listItemCard}
+        item={item}
+        firoRate={firoRate}
+        currentCurrency={currentCurrency}
+      />
     </ListItem>
   );
 };
@@ -127,5 +97,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#0F0E0E',
     opacity: 0.7,
+  },
+  uncondirmed: {
+    color: '#9F0E0E',
   },
 });

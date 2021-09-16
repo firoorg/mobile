@@ -7,17 +7,17 @@ import {
   LelantusSpendFeeParams,
   LelantusSpendTxParams,
 } from './AbstractWallet';
-import { network, Network } from './FiroNetwork';
+import {network, Network} from './FiroNetwork';
 import BigNumber from 'bignumber.js';
-import { randomBytes } from '../utils/crypto';
-import { TransactionItem } from '../data/TransactionItem';
-import { BalanceData } from '../data/BalanceData';
-import { firoElectrum } from './FiroElectrum';
-import { FullTransactionModel } from './AbstractElectrum';
-import { BIP32Interface } from 'bip32/types/bip32';
-import { LelantusWrapper } from './LelantusWrapper';
-import { LelantusCoin } from '../data/LelantusCoin';
-import { LelantusEntry } from '../data/LelantusEntry';
+import {randomBytes} from '../utils/crypto';
+import {TransactionItem} from '../data/TransactionItem';
+import {BalanceData} from '../data/BalanceData';
+import {firoElectrum} from './FiroElectrum';
+import {FullTransactionModel} from './AbstractElectrum';
+import {BIP32Interface} from 'bip32/types/bip32';
+import {LelantusWrapper} from './LelantusWrapper';
+import {LelantusCoin} from '../data/LelantusCoin';
+import {LelantusEntry} from '../data/LelantusEntry';
 
 const bitcoin = require('bitcoinjs-lib');
 const bip32 = require('bip32');
@@ -32,7 +32,17 @@ const HEIGHT_NOT_SET = -1;
 
 const TRANSACTION_LELANTUS = 8;
 
+const MINT_CONFIRM_BLOCK_COUNT = 2;
+
 export const SATOSHI = 100000000;
+
+export const TX_DATE_FORMAT = {
+  year: '2-digit',
+  month: '2-digit',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+};
 
 export class FiroWallet implements AbstractWallet {
   secret: string | undefined = undefined;
@@ -68,7 +78,6 @@ export class FiroWallet implements AbstractWallet {
   _node1: BIP32Interface | undefined = undefined;
   usedAddresses = [];
   gap_limit = 20;
-  confirm_block_count = 2;
 
   async generate(): Promise<void> {
     const buf = await randomBytes(32);
@@ -90,27 +99,33 @@ export class FiroWallet implements AbstractWallet {
 
   getBalance() {
     const coins = [...Object.values(this._lelantus_coins)];
-    return coins.reduce<number>(
-      (previousValue: number, currentValue: LelantusCoin): number => {
-        if (!currentValue.isUsed && currentValue.isConfirmed) {
-          return previousValue + currentValue.value / SATOSHI;
-        }
-        return previousValue;
-      },
-      0,
+    return (
+      coins
+        .filter(coin => {
+          return !coin.isUsed && coin.isConfirmed;
+        })
+        .reduce<number>(
+          (previousValue: number, currentValue: LelantusCoin): number => {
+            return previousValue + currentValue.value;
+          },
+          0,
+        ) / SATOSHI
     );
   }
 
   getUnconfirmedBalance() {
     const coins = [...Object.values(this._lelantus_coins)];
-    return coins.reduce<number>(
-      (previousValue: number, currentValue: LelantusCoin): number => {
-        if (!currentValue.isUsed && !currentValue.isConfirmed) {
-          return previousValue + currentValue.value / SATOSHI;
-        }
-        return previousValue;
-      },
-      0,
+    return (
+      coins
+        .filter(coin => {
+          return !coin.isUsed && !coin.isConfirmed;
+        })
+        .reduce<number>(
+          (previousValue: number, currentValue: LelantusCoin): number => {
+            return previousValue + currentValue.value;
+          },
+          0,
+        ) / SATOSHI
     );
   }
 
@@ -143,7 +158,7 @@ export class FiroWallet implements AbstractWallet {
     const fee = 500000;
     let value: number = -fee;
 
-    const tx = new bitcoin.Psbt({ network: this.network });
+    const tx = new bitcoin.Psbt({network: this.network});
     tx.setVersion(2);
 
     for (let index = 0; index < params.utxos.length; index++) {
@@ -194,7 +209,9 @@ export class FiroWallet implements AbstractWallet {
     };
   }
 
-  async estimateJoinSplitFee(params: LelantusSpendFeeParams): Promise<FiroTxFeeReturn> {
+  async estimateJoinSplitFee(
+    params: LelantusSpendFeeParams,
+  ): Promise<FiroTxFeeReturn> {
     let spendAmount = params.spendAmount;
 
     const lelantusEntries = this._getLelantusEntry();
@@ -205,7 +222,7 @@ export class FiroWallet implements AbstractWallet {
       lelantusEntries,
     );
 
-    return estimateFeeData
+    return estimateFeeData;
   }
 
   _getLelantusEntry(): LelantusEntry[] {
@@ -225,7 +242,7 @@ export class FiroWallet implements AbstractWallet {
       );
     });
 
-    return lelantusEntries
+    return lelantusEntries;
   }
 
   async createLelantusSpendTx(
@@ -236,17 +253,17 @@ export class FiroWallet implements AbstractWallet {
 
     const estimateJoinSplitFee = await this.estimateJoinSplitFee({
       spendAmount,
-      subtractFeeFromAmount: params.subtractFeeFromAmount
-    })
+      subtractFeeFromAmount: params.subtractFeeFromAmount,
+    });
     let chageToMint = estimateJoinSplitFee.chageToMint;
     let fee = estimateJoinSplitFee.fee;
     let spendCoinIndexes = estimateJoinSplitFee.spendCoinIndexes;
 
-    const tx = new bitcoin.Psbt({ network: this.network });
+    const tx = new bitcoin.Psbt({network: this.network});
     tx.setLocktime(firoElectrum.getLatestBlockHeight());
 
     // lelantusjoinsplitbuilder.cpp, lines 299-305
-    tx.setVersion(3 | (8 << 16));
+    tx.setVersion(3 | (TRANSACTION_LELANTUS << 16));
 
     tx.addInput({
       hash: '0000000000000000000000000000000000000000000000000000000000000000',
@@ -331,11 +348,11 @@ export class FiroWallet implements AbstractWallet {
     );
     console.log('spendScript', spendScript);
 
-    const finalTx = new bitcoin.Psbt({ network: this.network });
+    const finalTx = new bitcoin.Psbt({network: this.network});
     finalTx.setLocktime(firoElectrum.getLatestBlockHeight());
 
     // lelantusjoinsplitbuilder.cpp, lines 299-305
-    finalTx.setVersion(3 | (8 << 16));
+    finalTx.setVersion(3 | (TRANSACTION_LELANTUS << 16));
 
     finalTx.addInput({
       hash: '0000000000000000000000000000000000000000000000000000000000000000',
@@ -458,7 +475,7 @@ export class FiroWallet implements AbstractWallet {
     if (
       coin.height === HEIGHT_NOT_SET &&
       height !== HEIGHT_NOT_SET &&
-      height + this.confirm_block_count - 1 <= latestBlockHeight
+      latestBlockHeight - height >= MINT_CONFIRM_BLOCK_COUNT - 1
     ) {
       coin.isConfirmed = true;
       coin.height = height;
@@ -1013,9 +1030,7 @@ export class FiroWallet implements AbstractWallet {
             vin.addresses[0] &&
             ownedAddressesHashmap.has(vin.addresses[0]))
         ) {
-          tx.value -= new BigNumber(vin.value)
-            .multipliedBy(SATOSHI)
-            .toNumber();
+          tx.value -= new BigNumber(vin.value).multipliedBy(SATOSHI).toNumber();
         }
       }
 

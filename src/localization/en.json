@@ -39,8 +39,10 @@
   },
 
   "transaction_list_item": {
-    "received": "Received",
-    "sent": "Sent"
+    "receive": "Received",
+    "send": "Sent",
+    "anonymize": "Anonymized",
+    "uncondirmed": "Pending"
   },
 
   "welcome_screen": {
@@ -89,6 +91,7 @@
     "received": "Received",
     "sent_to": "Sent to",
     "received_from": "Received from",
+    "address": "Address",
     "label": "Label",
     "fee": "Fee"
   },
