@@ -44,7 +44,11 @@ export interface IString extends LocalizedStringsMethods {
     receive: string;
     send: string;
     anonymize: string;
-    uncondirmed: string;
+    unconfirmed: string;
+  };
+
+  balance_card: {
+    balance_firo: string;
   };
 
   welcome_screen: {

@@ -42,7 +42,11 @@
     "receive": "Received",
     "send": "Sent",
     "anonymize": "Anonymized",
-    "uncondirmed": "Pending"
+    "unconfirmed": "Pending"
+  },
+
+  "balance_card": {
+    "balance_firo": "Firo Balance"
   },
 
   "welcome_screen": {

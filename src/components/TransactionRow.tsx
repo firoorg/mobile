@@ -4,6 +4,7 @@ import {View, StyleSheet, Image, ViewStyle, StyleProp} from 'react-native';
 import {TransactionItem} from '../data/TransactionItem';
 import localization from '../localization';
 import {TX_DATE_FORMAT} from '../core/FiroWallet';
+import { Currency } from '../utils/currency';
 
 type TransactionRowProps = {
   style: StyleProp<ViewStyle>;
@@ -26,11 +27,11 @@ export const TransactionRow: FC<TransactionRowProps> = props => {
     ? localization.transaction_list_item.anonymize
     : localization.transaction_list_item.send;
 
-  let uncondirmed = <Text />;
-  if (!item.condirmed) {
-    uncondirmed = (
-      <Text style={styles.uncondirmed}>
-        ({localization.transaction_list_item.uncondirmed.toLowerCase()})
+  let unconfirmed = <Text />;
+  if (!item.confirmed) {
+    unconfirmed = (
+      <Text style={styles.unconfirmed}>
+        ({localization.transaction_list_item.unconfirmed.toLowerCase()})
       </Text>
     );
   }
@@ -41,11 +42,10 @@ export const TransactionRow: FC<TransactionRowProps> = props => {
       <View style={styles.textContainer}>
         <View style={styles.row}>
           <Text style={styles.title}>
-            {item.value} {localization.global.firo} {uncondirmed}
+            {Currency.formatFiroAmountWithCurrency(item.value)} {unconfirmed}
           </Text>
           <Text style={styles.title}>
-            ${(item.value * props.firoRate).toFixed(2)}{' '}
-            {(localization.currencies as any)[props.currentCurrency]}
+            {Currency.formatFiroAmountWithCurrency(item.value, props.firoRate, props.currentCurrency)}
           </Text>
         </View>
         <View style={styles.row}>
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     color: '#0F0E0E',
     opacity: 0.7,
   },
-  uncondirmed: {
+  unconfirmed: {
     color: '#9F0E0E',
   },
 });

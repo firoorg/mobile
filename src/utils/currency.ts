@@ -1,4 +1,5 @@
 import {AppStorage} from '../app-storage';
+import localization from '../localization';
 
 export class Currency {
   private static interval: number = 0;
@@ -26,6 +27,20 @@ export class Currency {
     Currency.updateContextRate = updateRate;
   }
 
+  public static formatFiroAmount(amount: number, rate: number = 1, currency: string = ''): number {
+    switch (currency) {
+      case '':
+        return parseFloat(amount.toFixed(8));
+      default:
+        // for other currencies 2 digits is enough for now
+        return parseFloat((amount * rate).toFixed(2));
+    }
+  }
+
+  public static formatFiroAmountWithCurrency(amount: number, rate: number = 1, currency: string = ''): string {
+    return Currency.formatFiroAmount(amount, rate, currency) + ' ' + (currency ? (localization.currencies as any)[currency] : localization.global.firo);
+  }
+
   private static async startUpdater() {
     if (Currency.interval) {
       clearInterval(Currency.interval);
@@ -46,14 +61,14 @@ export class Currency {
       return;
     }
     const appStorage = new AppStorage();
-    let storedRates: {[key: string]: number} = {};
+    let storedRates: { [key: string]: number } = {};
     try {
       storedRates = JSON.parse(await appStorage.getItem(AppStorage.EXCHANGE_RATES));
-    } catch (error) {}
+    } catch (error) { }
     try {
       const response: Response = await fetch(
         'https://api.coingecko.com/api/v3/simple/price?ids=zcoin&vs_currencies=' +
-          Currency.currentCurrency,
+        Currency.currentCurrency,
       );
       const jsonResult = await response.json();
       Currency.currentRate = jsonResult.zcoin[Currency.currentCurrency];

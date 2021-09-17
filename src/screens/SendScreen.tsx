@@ -11,6 +11,7 @@ import {FiroContext} from '../FiroContext';
 import {firoElectrum} from '../core/FiroElectrum';
 import localization from '../localization';
 import {SATOSHI} from '../core/FiroWallet';
+import { Currency } from '../utils/currency';
 
 const {colors} = CurrentFiroTheme;
 var timerHandler: number = -1;
@@ -141,10 +142,10 @@ const SendScreen = () => {
             </Text>
           </View>
           <Text style={styles.firo}>
-            {balance} {localization.global.firo}
+            {Currency.formatFiroAmountWithCurrency(balance)}
           </Text>
           <Text style={styles.currency}>
-            {(balance * getFiroRate()).toFixed(2)} {currentCurrencyName} (1{' '}
+            {Currency.formatFiroAmountWithCurrency(balance, getFiroRate(), getSettings().defaultCurrency)} (1{' '}
             {localization.global.firo} ={' '}
             {getFiroRate().toString() + ' ' + currentCurrencyName})
           </Text>
@@ -160,12 +161,12 @@ const SendScreen = () => {
           <FiroVerticalInfoText
             style={styles.feeDetail}
             title={localization.send_screen.transaction_fee}
-            text={`${fee / SATOSHI} ${localization.global.firo}`}
+            text={Currency.formatFiroAmountWithCurrency(fee / SATOSHI)}
           />
           <FiroVerticalInfoText
             style={styles.feeDetail}
             title={localization.send_screen.total_send_amount}
-            text={`${total / SATOSHI} ${localization.global.firo}`}
+            text={Currency.formatFiroAmountWithCurrency(total / SATOSHI)}
           />
           <View style={styles.reduceFeeContainer}>
             <Text style={styles.reduceFeeTitle}>

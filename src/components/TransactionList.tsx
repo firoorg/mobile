@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     color: '#0F0E0E',
     opacity: 0.7,
   },
-  uncondirmed: {
+  unconfirmed: {
     color: '#9F0E0E',
   },
 });

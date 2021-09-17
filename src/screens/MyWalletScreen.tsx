@@ -87,7 +87,7 @@ const MyWalletScreen = () => {
           transactionItem.address = tx.address;
           transactionItem.date = new Date(tx.time * 1000);
           transactionItem.txId = tx.txid;
-          transactionItem.condirmed = true;
+          transactionItem.confirmed = true;
 
           if (
             tx.outputs.length === 1 &&
@@ -97,7 +97,7 @@ const MyWalletScreen = () => {
             transactionItem.received = false;
             transactionItem.isMint = true;
             transactionItem.value = tx.outputs[0].value;
-            transactionItem.condirmed = tx.confirmations >= 2; // TODO: move to wallet and use MINT_CONFIRM_BLOCK_COUNT
+            transactionItem.confirmed = tx.confirmations >= 2; // TODO: move to wallet and use MINT_CONFIRM_BLOCK_COUNT
           } else {
             tx.outputs.forEach(vout => {
               if (vout.addresses && vout.addresses.includes(address)) {

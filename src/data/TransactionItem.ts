@@ -3,7 +3,7 @@ export class TransactionItem {
   received: boolean = false;
   isMint: boolean = false;
   date: Date = new Date();
-  condirmed: boolean = false;
+  confirmed: boolean = false;
   txId: string = '';
   address: string = '';
   fee: number = 0;
