@@ -2,7 +2,7 @@ export class TransactionItem {
   value: number = 0;
   received: boolean = false;
   isMint: boolean = false;
-  date: Date = new Date();
+  date: number = new Date().getTime();
   confirmed: boolean = false;
   txId: string = '';
   address: string = '';

@@ -1,7 +1,5 @@
-import { BalanceData } from '../data/BalanceData';
-import { LelantusCoin } from '../data/LelantusCoin';
-import { LelantusEntry } from '../data/LelantusEntry';
-import { TransactionItem } from '../data/TransactionItem';
+import {BalanceData} from '../data/BalanceData';
+import {TransactionItem} from '../data/TransactionItem';
 
 export type LelantusMintTxParams = {
   utxos: {
@@ -22,7 +20,7 @@ export type FiroTxFeeReturn = {
   fee: number;
   chageToMint: number;
   spendCoinIndexes: number[];
-}
+};
 
 export type LelantusSpendTxParams = {
   spendAmount: number;
@@ -43,7 +41,7 @@ export type FiroSpendTxReturn = {
   txHex: string;
   value: number;
   fee: number;
-  changeToMint: number;
+  jmintValue: number;
   publicCoin: string;
   spendCoinIndexes: number[];
 };
@@ -55,21 +53,22 @@ export interface AbstractWallet {
   _lastBalanceFetch: Date;
   _balances_by_external_index: Array<BalanceData>; //  0 => { c: 0, u: 0 } // confirmed/unconfirmed
   _balances_by_internal_index: Array<BalanceData>;
-  _txs_by_external_index: Array<Array<TransactionItem>>;
-  _txs_by_internal_index: Array<Array<TransactionItem>>;
+  _txs_by_external_index: TransactionItem[];
+  _txs_by_internal_index: TransactionItem[];
 
   generate(): Promise<void>;
-  setSecret(secret: string): Promise<void>
+  setSecret(secret: string): Promise<void>;
   getSecret(): string;
 
   getAddressAsync(): Promise<string>;
   getChangeAddressAsync(): Promise<string>;
-
   getTransactionsAddresses(): Promise<Array<string>>;
 
   getBalance(): number;
   getUnconfirmedBalance(): number;
-  getTransactions(): Promise<Array<TransactionItem>>;
+
+  getTransactions(): TransactionItem[];
+  fetchTransactions(): Promise<void>;
 
   prepareForSerialization(): void;
 
@@ -81,11 +80,8 @@ export interface AbstractWallet {
     params: LelantusSpendTxParams,
   ): Promise<FiroSpendTxReturn>;
   addLelantusMintToCache(txId: string, value: number, publicCoin: string): void;
-  markCoinsSpend(
-    txId: string,
-    jmintValue: number,
-    publicCoin: string,
-    spendCoinIndexes: number[],
-  ): void;
+  markCoinsSpend(spendCoinIndexes: number[]): void;
+  addMintTxToCache(txId: string, value: number, address: string): void;
+  addSendTxToCache(txId: string, spendAmount: number, address: string): void;
   updateMintMetadata(): Promise<boolean>;
 }

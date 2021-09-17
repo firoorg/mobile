@@ -9,6 +9,7 @@ import {firoElectrum} from '../core/FiroElectrum';
 import {TransactionItem} from '../data/TransactionItem';
 import localization from '../localization';
 import {FiroTransactionEmpty} from '../components/EmptyState';
+import {SATOSHI} from '../core/FiroWallet';
 
 const {colors} = CurrentFiroTheme;
 
@@ -62,63 +63,13 @@ const MyWalletScreen = () => {
 
         if (txId === mint.txId) {
           wallet.addLelantusMintToCache(txId, mint.value, mint.publicCoin);
+          wallet.addMintTxToCache(txId, mint.value / SATOSHI, address);
           await saveToDisk();
         }
       } catch (e) {
         console.log('error when creating mint transaction', e);
       }
     }
-  };
-
-  const retriveTxList = async () => {
-    const wallet = getWallet();
-    if (!wallet) {
-      return;
-    }
-    const address2Check = await wallet.getTransactionsAddresses();
-    const txList: TransactionItem[] = [];
-    for (const address of address2Check) {
-      try {
-        const fullTxs = await firoElectrum.getTransactionsFullByAddress(
-          address,
-        );
-        fullTxs.forEach(tx => {
-          let transactionItem = new TransactionItem();
-          transactionItem.address = tx.address;
-          transactionItem.date = new Date(tx.time * 1000);
-          transactionItem.txId = tx.txid;
-          transactionItem.confirmed = true;
-
-          if (
-            tx.outputs.length === 1 &&
-            tx.outputs[0].scriptPubKey &&
-            tx.outputs[0].scriptPubKey.type === 'lelantusmint'
-          ) {
-            transactionItem.received = false;
-            transactionItem.isMint = true;
-            transactionItem.value = tx.outputs[0].value;
-            transactionItem.confirmed = tx.confirmations >= 2; // TODO: move to wallet and use MINT_CONFIRM_BLOCK_COUNT
-          } else {
-            tx.outputs.forEach(vout => {
-              if (vout.addresses && vout.addresses.includes(address)) {
-                transactionItem.value += vout.value;
-                transactionItem.received = true;
-              }
-            });
-          }
-
-          if (transactionItem.received || transactionItem.isMint) {
-            txList.push(transactionItem);
-          }
-        });
-      } catch (e) {
-        console.log('error when getting transaction list', e);
-      }
-    }
-    txList.sort((tx1: TransactionItem, tx2: TransactionItem) => {
-      return tx2.date.getTime() - tx1.date.getTime();
-    });
-    setTxHistory(txList);
   };
 
   const updateBalance = () => {
@@ -129,6 +80,14 @@ const MyWalletScreen = () => {
       setUnconfirmedBalance(walletUnconfirmedBalance ?? 0);
     } catch (e) {
       console.log('error when getting balance', e);
+    }
+  };
+
+  const updateTxHistory = () => {
+    try {
+      setTxHistory(getWallet()?.getTransactions() ?? []);
+    } catch (e) {
+      console.log('error when getting transaction history', e);
     }
   };
 
@@ -147,8 +106,13 @@ const MyWalletScreen = () => {
     }
   };
 
-  const getTransactionList = async () => {
-    retriveTxList();
+  const fetchTransactionList = async () => {
+    const wallet = getWallet();
+    if (!wallet) {
+      return;
+    }
+    await wallet.fetchTransactions();
+    await saveToDisk();
   };
 
   const subscribeToElectrumChanges = async () => {
@@ -161,12 +125,15 @@ const MyWalletScreen = () => {
     await updateMintMetadata();
     updateBalance();
 
-    await getTransactionList();
     await mintUnspentTransactions();
+
+    await fetchTransactionList();
+    updateTxHistory();
   };
 
   useEffect(() => {
     updateBalance();
+    updateTxHistory();
     updateWalletData();
     subscribeToElectrumChanges();
   }, []);

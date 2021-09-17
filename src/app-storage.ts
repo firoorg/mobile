@@ -84,7 +84,9 @@ export class AppStorage {
     const schema = [
       {
         name: 'Transaction',
+        primaryKey: 'id',
         properties: {
+          id: {type: 'int', indexed: true},
           _txs_by_external_index: 'string', // stringified json
           _txs_by_internal_index: 'string', // stringified json
         },
@@ -187,21 +189,23 @@ export class AppStorage {
   }
 
   inflateTransactionsFromRealm(realm: typeof Realm, wallet: FiroWallet) {
-    const realmTxData = realm.objects('Transaction');
-    try {
-      if (realmTxData._txs_by_external_index) {
-        const txsByExternalIndex = JSON.parse(
-          realmTxData._txs_by_external_index,
-        );
-        const txsByInternalIndex = JSON.parse(
-          realmTxData._txs_by_internal_index,
-        );
+    const realmTxHistoryData = realm.objects('Transaction');
+    for (const realmTxData of realmTxHistoryData) {
+      try {
+        if (realmTxData._txs_by_external_index) {
+          const txsByExternalIndex = JSON.parse(
+            realmTxData._txs_by_external_index,
+          );
+          const txsByInternalIndex = JSON.parse(
+            realmTxData._txs_by_internal_index,
+          );
 
-        wallet._txs_by_external_index = txsByExternalIndex;
-        wallet._txs_by_internal_index = txsByInternalIndex;
+          wallet._txs_by_external_index = txsByExternalIndex;
+          wallet._txs_by_internal_index = txsByInternalIndex;
+        }
+      } catch (error) {
+        console.warn(error.message);
       }
-    } catch (error) {
-      console.warn(error.message);
     }
   }
 
@@ -213,6 +217,7 @@ export class AppStorage {
         realm.create(
           'Transaction',
           {
+            id: 1,
             _txs_by_external_index: j1,
             _txs_by_internal_index: j2,
           },

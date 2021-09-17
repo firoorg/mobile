@@ -51,7 +51,7 @@ export const TransactionRow: FC<TransactionRowProps> = props => {
         <View style={styles.row}>
           <Text style={styles.subtitle}>{title}</Text>
           <Text style={styles.subtitle}>
-            {item.date.toLocaleDateString('en-US', TX_DATE_FORMAT)}
+            {new Date(item.date).toLocaleDateString('en-US', TX_DATE_FORMAT)}
           </Text>
         </View>
       </View>
@@ -99,6 +99,6 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   unconfirmed: {
-    color: '#9F0E0E',
+    color: '#9B1C2E',
   },
 });

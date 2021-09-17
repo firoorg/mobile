@@ -56,7 +56,7 @@ const SendScreen = () => {
 
   const doSpend = async (
     amount: number,
-    subtractFeeFromAmount: boolean,
+    _subtractFeeFromAmount: boolean,
     address: string,
   ) => {
     const wallet = getWallet();
@@ -64,22 +64,23 @@ const SendScreen = () => {
       return;
     }
     try {
-      const spendTx = await wallet.createLelantusSpendTx({
+      const spendData = await wallet.createLelantusSpendTx({
         spendAmount: amount,
-        subtractFeeFromAmount: subtractFeeFromAmount,
+        subtractFeeFromAmount: _subtractFeeFromAmount,
         address: address,
       });
 
-      const txId = await firoElectrum.broadcast(spendTx.txHex);
+      const txId = await firoElectrum.broadcast(spendData.txHex);
       console.log(`broadcast tx: ${JSON.stringify(txId)}`);
 
-      if (txId === spendTx.txId) {
-        wallet.markCoinsSpend(
+      if (txId === spendData.txId) {
+        wallet.addSendTxToCache(txId, spendData.value / SATOSHI, address);
+        wallet.addLelantusMintToCache(
           txId,
-          spendTx.changeToMint,
-          spendTx.publicCoin,
-          spendTx.spendCoinIndexes,
+          spendData.jmintValue,
+          spendData.publicCoin,
         );
+        wallet.markCoinsSpend(spendData.spendCoinIndexes);
         await saveToDisk();
       }
     } catch (e) {

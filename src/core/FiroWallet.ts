@@ -13,7 +13,6 @@ import {randomBytes} from '../utils/crypto';
 import {TransactionItem} from '../data/TransactionItem';
 import {BalanceData} from '../data/BalanceData';
 import {firoElectrum} from './FiroElectrum';
-import {FullTransactionModel} from './AbstractElectrum';
 import {BIP32Interface} from 'bip32/types/bip32';
 import {LelantusWrapper} from './LelantusWrapper';
 import {LelantusCoin} from '../data/LelantusCoin';
@@ -58,8 +57,8 @@ export class FiroWallet implements AbstractWallet {
   _lastBalanceFetch: Date = new Date();
   _balances_by_external_index: Array<BalanceData> = [];
   _balances_by_internal_index: Array<BalanceData> = [];
-  _txs_by_external_index: Array<Array<TransactionItem>> = [];
-  _txs_by_internal_index: Array<Array<TransactionItem>> = [];
+  _txs_by_external_index: TransactionItem[] = [];
+  _txs_by_internal_index: TransactionItem[] = [];
   _address_to_wif_cache: {
     [key: string]: string;
   } = {};
@@ -98,34 +97,24 @@ export class FiroWallet implements AbstractWallet {
   }
 
   getBalance() {
-    const coins = [...Object.values(this._lelantus_coins)];
     return (
-      coins
-        .filter(coin => {
-          return !coin.isUsed && coin.isConfirmed;
-        })
-        .reduce<number>(
-          (previousValue: number, currentValue: LelantusCoin): number => {
-            return previousValue + currentValue.value;
-          },
-          0,
-        ) / SATOSHI
+      this._getUnspentCoins().reduce<number>(
+        (previousValue: number, currentValue: LelantusCoin): number => {
+          return previousValue + currentValue.value;
+        },
+        0,
+      ) / SATOSHI
     );
   }
 
   getUnconfirmedBalance() {
-    const coins = [...Object.values(this._lelantus_coins)];
     return (
-      coins
-        .filter(coin => {
-          return !coin.isUsed && !coin.isConfirmed;
-        })
-        .reduce<number>(
-          (previousValue: number, currentValue: LelantusCoin): number => {
-            return previousValue + currentValue.value;
-          },
-          0,
-        ) / SATOSHI
+      this._getUnconfirmedCoins().reduce<number>(
+        (previousValue: number, currentValue: LelantusCoin): number => {
+          return previousValue + currentValue.value;
+        },
+        0,
+      ) / SATOSHI
     );
   }
 
@@ -386,9 +375,9 @@ export class FiroWallet implements AbstractWallet {
     return {
       txId: txId,
       txHex: txHex,
-      value: spendAmount,
+      value: amount,
       fee: fee,
-      changeToMint: chageToMint,
+      jmintValue: chageToMint,
       publicCoin: jmintData.publicCoin,
       spendCoinIndexes: spendCoinIndexes,
     };
@@ -415,33 +404,30 @@ export class FiroWallet implements AbstractWallet {
     this.next_free_mint_index += 1;
   }
 
-  markCoinsSpend(
-    txId: string,
-    jmintValue: number,
-    publicCoin: string,
-    spendCoinIndexes: number[],
-  ): void {
-    if (this._lelantus_coins[txId]) {
-      return;
-    }
-    this._lelantus_coins[txId] = {
-      index: this.next_free_mint_index,
-      value: jmintValue,
-      publicCoin: publicCoin,
-      isConfirmed: false,
-      txId: txId,
-      height: HEIGHT_NOT_SET,
-      anonymitySetId: 0,
-      isUsed: false,
-    };
-    this.next_free_mint_index += 1;
-
+  markCoinsSpend(spendCoinIndexes: number[]): void {
     const coins = Object.values(this._lelantus_coins);
     coins.forEach(coin => {
       if (spendCoinIndexes.includes(coin.index)) {
         coin.isUsed = true;
       }
     });
+  }
+
+  addMintTxToCache(txId: string, value: number, address: string) {
+    const tx = new TransactionItem();
+    tx.address = address;
+    tx.value = value;
+    tx.txId = txId;
+    tx.isMint = true;
+    this._txs_by_external_index.unshift(tx);
+  }
+
+  addSendTxToCache(txId: string, spendAmount: number, address: string): void {
+    const tx = new TransactionItem();
+    tx.address = address;
+    tx.value = spendAmount;
+    tx.txId = txId;
+    this._txs_by_external_index.unshift(tx);
   }
 
   async updateMintMetadata(): Promise<boolean> {
@@ -460,6 +446,7 @@ export class FiroWallet implements AbstractWallet {
           metadata.anonimitySetId,
           latestBlockHeight,
         );
+        this._updateMintTxStatus(unconfirmedCoins[index]);
       });
       return true;
     }
@@ -485,21 +472,26 @@ export class FiroWallet implements AbstractWallet {
     }
   }
 
+  _updateMintTxStatus(coin: LelantusCoin) {
+    const tx = this._txs_by_external_index.find(
+      item => item.txId === coin.txId,
+    );
+    if (tx) {
+      tx.condirmed = coin.isConfirmed;
+    }
+  }
+
   _getUnconfirmedCoins(): LelantusCoin[] {
     const coins = Object.values(this._lelantus_coins);
     return coins.filter(coin => {
-      if (!coin.isConfirmed) {
-        return coin;
-      }
+      return !coin.isUsed && !coin.isConfirmed;
     });
   }
 
   _getUnspentCoins(): LelantusCoin[] {
     const coins = Object.values(this._lelantus_coins);
     return coins.filter(coin => {
-      if (!coin.isUsed && coin.isConfirmed) {
-        return coin;
-      }
+      return !coin.isUsed && coin.isConfirmed;
     });
   }
 
@@ -743,325 +735,65 @@ export class FiroWallet implements AbstractWallet {
   }
 
   async fetchTransactions() {
-    // if txs are absent for some internal address in hierarchy - this is a sign
-    // we should fetch txs for that address
-    // OR if some address has unconfirmed balance - should fetch it's txs
-    // OR some tx for address is unconfirmed
-    // OR some tx has < 7 confirmations
-
-    // fetching transactions in batch: first, getting batch history for all addresses,
-    // then batch fetching all involved txids
-    // finally, batch fetching txids of all inputs (needed to see amounts & addresses of those inputs)
-    // then we combine it all together
-
-    const addresses2fetch = [];
-
-    for (let c = 0; c < this.next_free_address_index + this.gap_limit; c++) {
-      // external addresses first
-      let hasUnconfirmed = false;
-      this._txs_by_external_index[c] = this._txs_by_external_index[c] || [];
-      for (const tx of this._txs_by_external_index[c]) {
-        hasUnconfirmed =
-          hasUnconfirmed || !tx.confirmations || tx.confirmations < 7;
-      }
-
-      if (
-        hasUnconfirmed ||
-        this._txs_by_external_index[c].length === 0 ||
-        this._balances_by_external_index[c].u !== 0
-      ) {
-        addresses2fetch.push(await this._getExternalAddressByIndex(c));
-      }
-    }
-
-    for (
-      let c = 0;
-      c < this.next_free_change_address_index + this.gap_limit;
-      c++
-    ) {
-      // next, internal addresses
-      let hasUnconfirmed = false;
-      this._txs_by_internal_index[c] = this._txs_by_internal_index[c] || [];
-      for (const tx of this._txs_by_internal_index[c]) {
-        hasUnconfirmed =
-          hasUnconfirmed || !tx.confirmations || tx.confirmations < 7;
-      }
-
-      if (
-        hasUnconfirmed ||
-        this._txs_by_internal_index[c].length === 0 ||
-        this._balances_by_internal_index[c].u !== 0
-      ) {
-        addresses2fetch.push(await this._getInternalAddressByIndex(c));
-      }
-    }
-
-    // first: batch fetch for all addresses histories
-    const histories = await firoElectrum.multiGetHistoryByAddress(
-      addresses2fetch,
-    );
-    const txs: Map<string, FullTransactionModel> = new Map();
-    for (const history of Object.values(histories)) {
-      for (const tx of history) {
-        txs.set(tx.tx_hash, tx);
-      }
-    }
-
-    // next, batch fetching each txid we got
-    const txdatas = await firoElectrum.multiGetTransactionByTxid(
-      Object.keys(txs),
-    );
-
-    // now, tricky part. we collect all transactions from inputs (vin), and batch fetch them too.
-    // then we combine all this data (we need inputs to see source addresses and amounts)
-    const vinTxids = [];
-    for (const txdata of Object.values(txdatas)) {
-      for (const vin of txdata.vin) {
-        vinTxids.push(vin.txid);
-      }
-    }
-    const vintxdatas = await firoElectrum.multiGetTransactionByTxid(vinTxids);
-
-    // fetched all transactions from our inputs. now we need to combine it.
-    // iterating all _our_ transactions:
-    for (const txid of Object.keys(txdatas)) {
-      // iterating all inputs our our single transaction:
-      const tx = txdatas.get(txid)!;
-      for (let inpNum = 0; inpNum < tx.vin.length; inpNum++) {
-        const inpTxid = tx.vin[inpNum].txid;
-        const inpVout = tx.vin[inpNum].vout;
-        // got txid and output number of _previous_ transaction we shoud look into
-        const inpTx = vintxdatas.get(inpTxid);
-        if (inpTx && inpTx.vout[inpVout]) {
-          // extracting amount & addresses from previous output and adding it to _our_ input:
-          tx.vin[inpNum].addresses = inpTx.vout[inpVout].scriptPubKey.addresses;
-          tx.vin[inpNum].value = inpTx.vout[inpVout].value;
-        }
-      }
-    }
-
-    // now purge all unconfirmed txs from internal hashmaps, since some may be evicted from mempool because they became invalid
-    // or replaced. hashmaps are going to be re-populated anyways, since we fetched TXs for addresses with unconfirmed TXs
-    for (let c = 0; c < this.next_free_address_index + this.gap_limit; c++) {
-      this._txs_by_external_index[c] = this._txs_by_external_index[c].filter(
-        tx => !!tx.confirmations,
-      );
-    }
-    for (
-      let c = 0;
-      c < this.next_free_change_address_index + this.gap_limit;
-      c++
-    ) {
-      this._txs_by_internal_index[c] = this._txs_by_internal_index[c].filter(
-        tx => !!tx.confirmations,
-      );
-    }
-
-    // now, we need to put transactions in all relevant `cells` of internal hashmaps: this._txs_by_internal_index && this._txs_by_external_index
-
-    for (let c = 0; c < this.next_free_address_index + this.gap_limit; c++) {
-      for (const tx of Object.values(txdatas)) {
-        for (const vin of tx.vin) {
-          if (
-            vin.addresses &&
-            vin.addresses.indexOf(this._getExternalAddressByIndex(c)) !== -1
-          ) {
-            // this TX is related to our address
-            this._txs_by_external_index[c] =
-              this._txs_by_external_index[c] || [];
-            const clonedTx = Object.assign({}, tx);
-            clonedTx.inputs = tx.vin.slice(0);
-            clonedTx.outputs = tx.vout.slice(0);
-            delete clonedTx.vin;
-            delete clonedTx.vout;
-
-            // trying to replace tx if it exists already (because it has lower confirmations, for example)
-            let replaced = false;
-            for (let cc = 0; cc < this._txs_by_external_index[c].length; cc++) {
-              if (this._txs_by_external_index[c][cc].txid === clonedTx.txid) {
-                replaced = true;
-                this._txs_by_external_index[c][cc] = clonedTx;
-              }
+    const address2Check = await this.getTransactionsAddresses();
+    const sizeBefore = this._txs_by_external_index.length;
+    for (const address of address2Check) {
+      try {
+        const fullTxs = await firoElectrum.getTransactionsFullByAddress(
+          address,
+        );
+        fullTxs.forEach(tx => {
+          const exist = this._txs_by_external_index.some(
+            item => item.txId === tx.txid,
+          );
+          if (!exist) {
+            let transactionItem = new TransactionItem();
+            transactionItem.address = tx.address;
+            if (tx.time) {
+              transactionItem.date = tx.time * 1000;
             }
-            if (!replaced) {
-              this._txs_by_external_index[c].push(clonedTx);
+            transactionItem.txId = tx.txid;
+            transactionItem.condirmed = true;
+
+            if (
+              tx.outputs.length === 1 &&
+              tx.outputs[0].scriptPubKey &&
+              tx.outputs[0].scriptPubKey.type === 'lelantusmint'
+            ) {
+              transactionItem.received = false;
+              transactionItem.isMint = true;
+              transactionItem.value = tx.outputs[0].value;
+              transactionItem.condirmed =
+                tx.confirmations >= MINT_CONFIRM_BLOCK_COUNT;
+            } else {
+              tx.outputs.forEach(vout => {
+                if (vout.addresses && vout.addresses.includes(address)) {
+                  transactionItem.value += vout.value;
+                  transactionItem.received = true;
+                }
+              });
+            }
+
+            if (transactionItem.received || transactionItem.isMint) {
+              this._txs_by_external_index.push(transactionItem);
             }
           }
-        }
-        for (const vout of tx.vout) {
-          if (
-            vout.scriptPubKey.addresses &&
-            vout.scriptPubKey.addresses.indexOf(
-              this._getExternalAddressByIndex(c),
-            ) !== -1
-          ) {
-            // this TX is related to our address
-            this._txs_by_external_index[c] =
-              this._txs_by_external_index[c] || [];
-            const clonedTx = Object.assign({}, tx);
-            clonedTx.inputs = tx.vin.slice(0);
-            clonedTx.outputs = tx.vout.slice(0);
-            delete clonedTx.vin;
-            delete clonedTx.vout;
-
-            // trying to replace tx if it exists already (because it has lower confirmations, for example)
-            let replaced = false;
-            for (let cc = 0; cc < this._txs_by_external_index[c].length; cc++) {
-              if (this._txs_by_external_index[c][cc].txid === clonedTx.txid) {
-                replaced = true;
-                this._txs_by_external_index[c][cc] = clonedTx;
-              }
-            }
-            if (!replaced) {
-              this._txs_by_external_index[c].push(clonedTx);
-            }
-          }
-        }
+        });
+      } catch (e) {
+        console.log('error when getting transaction list', e);
+      }
+      if (sizeBefore !== this._txs_by_external_index.length) {
+        this._txs_by_external_index.sort(
+          (tx1: TransactionItem, tx2: TransactionItem) => {
+            return tx2.date - tx1.date;
+          },
+        );
       }
     }
-
-    for (
-      let c = 0;
-      c < this.next_free_change_address_index + this.gap_limit;
-      c++
-    ) {
-      for (const tx of Object.values(txdatas)) {
-        for (const vin of tx.vin) {
-          if (
-            vin.addresses &&
-            vin.addresses.indexOf(this._getInternalAddressByIndex(c)) !== -1
-          ) {
-            // this TX is related to our address
-            this._txs_by_internal_index[c] =
-              this._txs_by_internal_index[c] || [];
-            const clonedTx = Object.assign({}, tx);
-            clonedTx.inputs = tx.vin.slice(0);
-            clonedTx.outputs = tx.vout.slice(0);
-            delete clonedTx.vin;
-            delete clonedTx.vout;
-
-            // trying to replace tx if it exists already (because it has lower confirmations, for example)
-            let replaced = false;
-            for (let cc = 0; cc < this._txs_by_internal_index[c].length; cc++) {
-              if (this._txs_by_internal_index[c][cc].txid === clonedTx.txid) {
-                replaced = true;
-                this._txs_by_internal_index[c][cc] = clonedTx;
-              }
-            }
-            if (!replaced) {
-              this._txs_by_internal_index[c].push(clonedTx);
-            }
-          }
-        }
-        for (const vout of tx.vout) {
-          if (
-            vout.scriptPubKey.addresses &&
-            vout.scriptPubKey.addresses.indexOf(
-              this._getInternalAddressByIndex(c),
-            ) !== -1
-          ) {
-            // this TX is related to our address
-            this._txs_by_internal_index[c] =
-              this._txs_by_internal_index[c] || [];
-            const clonedTx = Object.assign({}, tx);
-            clonedTx.inputs = tx.vin.slice(0);
-            clonedTx.outputs = tx.vout.slice(0);
-            delete clonedTx.vin;
-            delete clonedTx.vout;
-
-            // trying to replace tx if it exists already (because it has lower confirmations, for example)
-            let replaced = false;
-            for (let cc = 0; cc < this._txs_by_internal_index[c].length; cc++) {
-              if (this._txs_by_internal_index[c][cc].txid === clonedTx.txid) {
-                replaced = true;
-                this._txs_by_internal_index[c][cc] = clonedTx;
-              }
-            }
-            if (!replaced) {
-              this._txs_by_internal_index[c].push(clonedTx);
-            }
-          }
-        }
-      }
-    }
-
-    this._lastTxFetch = +new Date();
   }
 
-  async getTransactions(): Promise<Array<TransactionItem>> {
-    let txs: Array<TransactionItem> = [];
-
-    for (const addressTxs of Object.values(this._txs_by_external_index)) {
-      txs = txs.concat(addressTxs);
-    }
-    for (const addressTxs of Object.values(this._txs_by_internal_index)) {
-      txs = txs.concat(addressTxs);
-    }
-
-    if (txs.length === 0) {
-      return [];
-    } // guard clause; so we wont spend time calculating addresses
-
-    // its faster to pre-build hashmap of owned addresses than to query `this.weOwnAddress()`, which in turn
-    // iterates over all addresses in hierarchy
-    const ownedAddressesHashmap: Map<string, boolean> = new Map();
-    for (let c = 0; c < this.next_free_address_index + 1; c++) {
-      ownedAddressesHashmap.set(await this._getExternalAddressByIndex(c), true);
-    }
-    for (let c = 0; c < this.next_free_change_address_index + 1; c++) {
-      ownedAddressesHashmap.set(await this._getInternalAddressByIndex(c), true);
-    }
-
-    const ret = [];
-    for (const tx of txs) {
-      tx.received = tx.blocktime * 1000;
-      if (!tx.blocktime) {
-        tx.received = +new Date() - 30 * 1000;
-      } // unconfirmed
-      tx.confirmations = tx.confirmations || 0; // unconfirmed
-      tx.hash = tx.txid;
-      tx.value = 0;
-
-      for (const vin of tx.inputs) {
-        // if input (spending) goes from our address - we are loosing!
-        if (
-          (vin.address && ownedAddressesHashmap.get(vin.address)) ||
-          (vin.addresses &&
-            vin.addresses[0] &&
-            ownedAddressesHashmap.has(vin.addresses[0]))
-        ) {
-          tx.value -= new BigNumber(vin.value).multipliedBy(SATOSHI).toNumber();
-        }
-      }
-
-      for (const vout of tx.outputs) {
-        // when output goes to our address - this means we are gaining!
-        if (
-          vout.scriptPubKey.addresses &&
-          vout.scriptPubKey.addresses[0] &&
-          ownedAddressesHashmap.has(vout.scriptPubKey.addresses[0])
-        ) {
-          tx.value += new BigNumber(vout.value)
-            .multipliedBy(SATOSHI)
-            .toNumber();
-        }
-      }
-      ret.push(tx);
-    }
-
-    // now, deduplication:
-    const usedTxIds: Map<string, number> = new Map();
-    const ret2 = [];
-    for (const tx of ret) {
-      if (!usedTxIds.has(tx.txid)) {
-        ret2.push(tx);
-      }
-      usedTxIds.set(tx.txid, 1);
-    }
-
-    return ret2.sort(function (a, b) {
-      return b.received - a.received;
-    });
+  getTransactions(): TransactionItem[] {
+    return this._txs_by_external_index;
   }
 
   prepareForSerialization(): void {
