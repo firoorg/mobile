@@ -477,7 +477,7 @@ export class FiroWallet implements AbstractWallet {
       item => item.txId === coin.txId,
     );
     if (tx) {
-      tx.condirmed = coin.isConfirmed;
+      tx.confirmed = coin.isConfirmed;
     }
   }
 
@@ -753,7 +753,7 @@ export class FiroWallet implements AbstractWallet {
               transactionItem.date = tx.time * 1000;
             }
             transactionItem.txId = tx.txid;
-            transactionItem.condirmed = true;
+            transactionItem.confirmed = true;
 
             if (
               tx.outputs.length === 1 &&
@@ -763,7 +763,7 @@ export class FiroWallet implements AbstractWallet {
               transactionItem.received = false;
               transactionItem.isMint = true;
               transactionItem.value = tx.outputs[0].value;
-              transactionItem.condirmed =
+              transactionItem.confirmed =
                 tx.confirmations >= MINT_CONFIRM_BLOCK_COUNT;
             } else {
               tx.outputs.forEach(vout => {

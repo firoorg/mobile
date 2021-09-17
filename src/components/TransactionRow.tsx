@@ -4,7 +4,7 @@ import {View, StyleSheet, Image, ViewStyle, StyleProp} from 'react-native';
 import {TransactionItem} from '../data/TransactionItem';
 import localization from '../localization';
 import {TX_DATE_FORMAT} from '../core/FiroWallet';
-import { Currency } from '../utils/currency';
+import {Currency} from '../utils/currency';
 
 type TransactionRowProps = {
   style: StyleProp<ViewStyle>;
