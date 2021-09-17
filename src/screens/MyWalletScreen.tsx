@@ -17,9 +17,7 @@ const MyWalletScreen = () => {
   const {getWallet} = useContext(FiroContext);
   const [balance, setBalance] = useState(0);
   const [unconfirmedBalance, setUnconfirmedBalance] = useState(0);
-  const [txHistory, setTxHistory] = useState<TransactionItem[] | undefined>(
-    undefined,
-  );
+  const [txHistory, setTxHistory] = useState<TransactionItem[]>([]);
   const {saveToDisk} = useContext(FiroContext);
 
   const doMint = async () => {
@@ -139,9 +137,7 @@ const MyWalletScreen = () => {
   }, []);
 
   let transactionList;
-  if (txHistory === undefined) {
-    transactionList = <View />;
-  } else if (txHistory.length === 0) {
+  if (txHistory.length === 0) {
     transactionList = <FiroTransactionEmpty />;
   } else {
     transactionList = <TransactionList transactionList={txHistory} />;
