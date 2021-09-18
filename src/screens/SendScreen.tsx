@@ -30,6 +30,7 @@ const SendScreen = () => {
     getSettings().defaultCurrency
   ];
 
+  const rate = getFiroRate()
   const estimateFee = () => {
     if (timerHandler !== -1) {
       clearTimeout(timerHandler);
@@ -98,15 +99,12 @@ const SendScreen = () => {
   };
   const onAmountSelect = (amount: number) => {
     const staoshi = amount * SATOSHI;
-    if (isNaN(staoshi)) {
-      setSpendAmount(0);
-    } else {
-      setSpendAmount(staoshi);
-    }
+    setSpendAmount(staoshi);
   };
   const onAddressSelect = (address: string) => {
     setSendAddress(address);
   };
+
   const onClickSend = async () => {
     try {
       await doSpend(spendAmount, subtractFeeFromAmount, sendAddress);
@@ -146,13 +144,16 @@ const SendScreen = () => {
             {Currency.formatFiroAmountWithCurrency(balance)}
           </Text>
           <Text style={styles.currency}>
-            {Currency.formatFiroAmountWithCurrency(balance, getFiroRate(), getSettings().defaultCurrency)} (1{' '}
+            {Currency.formatFiroAmountWithCurrency(balance, rate, getSettings().defaultCurrency)} (1{' '}
             {localization.global.firo} ={' '}
-            {getFiroRate().toString() + ' ' + currentCurrencyName})
+            {`${rate} ${currentCurrencyName}`})
           </Text>
         </View>
         <Divider style={styles.divider} />
-        <SendAmountInputCard onAmountSelect={onAmountSelect} />
+        <SendAmountInputCard
+          maxBalance={balance}
+          onAmountSelect={onAmountSelect}
+        />
         <SendAddress style={styles.address} onAddressSelect={onAddressSelect} />
         <TextInput
           style={styles.label}

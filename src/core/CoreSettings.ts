@@ -1,4 +1,4 @@
 export interface CoreSettings {
     notificationsEnabled: boolean;
-    defaultCurrency: string;
+    defaultCurrency: 'usd' | 'eur' | 'gbp' | 'aud' | 'btc';
 }
