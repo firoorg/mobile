@@ -69,6 +69,7 @@ export interface AbstractWallet {
 
   getTransactions(): TransactionItem[];
   fetchTransactions(): Promise<void>;
+  getTransactionsByAddress(address: string): TransactionItem[];
 
   prepareForSerialization(): void;
 
