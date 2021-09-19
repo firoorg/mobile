@@ -7,6 +7,7 @@ import {FiroContext} from '../FiroContext';
 import {TransactionItem} from '../data/TransactionItem';
 import localization from '../localization';
 import {TransactionRow} from '../components/TransactionRow';
+import { Currency } from '../utils/currency';
 
 type WalletStackRouteProps = {
   TransactionDetails: {item: TransactionItem};
@@ -57,7 +58,7 @@ const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
         <FiroInfoText
           style={styles.infoText}
           title={localization.transaction_details.fee}
-          text={item.fee.toString()}
+          text={Currency.formatFiroAmount(item.fee).toString()}
         />
         {label}
       </View>

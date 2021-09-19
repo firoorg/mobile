@@ -144,7 +144,7 @@ export class FiroWallet implements AbstractWallet {
       throw Error('there are no any unspent transaction is empty');
     }
     const keyPairs: Array<BIP32Interface> = [];
-    const fee = 500000;
+    const fee = 50000;
     let value: number = -fee;
 
     const tx = new bitcoin.Psbt({network: this.network});
@@ -413,20 +413,22 @@ export class FiroWallet implements AbstractWallet {
     });
   }
 
-  addMintTxToCache(txId: string, value: number, address: string) {
+  addMintTxToCache(txId: string, value: number, fee: number, address: string) {
     const tx = new TransactionItem();
     tx.address = address;
     tx.value = value;
     tx.txId = txId;
     tx.isMint = true;
+    tx.fee = fee;
     this._txs_by_external_index.unshift(tx);
   }
 
-  addSendTxToCache(txId: string, spendAmount: number, address: string): void {
+  addSendTxToCache(txId: string, spendAmount: number, fee: number, address: string): void {
     const tx = new TransactionItem();
     tx.address = address;
     tx.value = spendAmount;
     tx.txId = txId;
+    tx.fee = fee;
     this._txs_by_external_index.unshift(tx);
   }
 
@@ -438,7 +440,7 @@ export class FiroWallet implements AbstractWallet {
       });
       const mintMetadata = await firoElectrum.getMintMedata(publicCoinList);
       const latestBlockHeight = firoElectrum.getLatestBlockHeight();
-      console.log('mint metadata', mintMetadata);
+
       mintMetadata.forEach((metadata, index) => {
         this._updateIsMintConfirmed(
           unconfirmedCoins[index],
@@ -460,7 +462,6 @@ export class FiroWallet implements AbstractWallet {
     latestBlockHeight: number,
   ) {
     if (
-      coin.height === HEIGHT_NOT_SET &&
       height !== HEIGHT_NOT_SET &&
       latestBlockHeight - height >= MINT_CONFIRM_BLOCK_COUNT - 1
     ) {
@@ -479,6 +480,7 @@ export class FiroWallet implements AbstractWallet {
     if (tx) {
       tx.confirmed = coin.isConfirmed;
     }
+    
   }
 
   _getUnconfirmedCoins(): LelantusCoin[] {
@@ -752,17 +754,25 @@ export class FiroWallet implements AbstractWallet {
           address,
         );
         fullTxs.forEach(tx => {
-          const exist = this._txs_by_external_index.some(
+          const external_index = this._txs_by_external_index.findIndex(
             item => item.txId === tx.txid,
           );
-          if (!exist) {
+          
+          if (external_index === -1) {
             let transactionItem = new TransactionItem();
             transactionItem.address = tx.address;
             if (tx.time) {
               transactionItem.date = tx.time * 1000;
             }
             transactionItem.txId = tx.txid;
-            transactionItem.confirmed = true;
+            transactionItem.confirmed =
+              tx.confirmations >= MINT_CONFIRM_BLOCK_COUNT;
+            // transactionItem.confirmed = true;
+
+            const ia = tx.inputs.reduce((acc, elm) => acc + elm.value, 0)
+            const oa = tx.outputs.reduce((acc, elm) => acc + elm.value, 0)
+
+            transactionItem.fee = ia - oa
 
             if (
               tx.outputs.length === 1 &&
@@ -786,6 +796,11 @@ export class FiroWallet implements AbstractWallet {
             if (transactionItem.received || transactionItem.isMint) {
               this._txs_by_external_index.push(transactionItem);
             }
+          } else if (this._txs_by_external_index[external_index]?.confirmed === false) {
+            console.log(this._txs_by_external_index[external_index]);
+            
+            this._txs_by_external_index[external_index].confirmed =
+              tx.confirmations >= MINT_CONFIRM_BLOCK_COUNT;
           }
         });
       } catch (e) {

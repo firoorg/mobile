@@ -83,7 +83,7 @@ export interface AbstractWallet {
   ): Promise<FiroSpendTxReturn>;
   addLelantusMintToCache(txId: string, value: number, publicCoin: string): void;
   markCoinsSpend(spendCoinIndexes: number[]): void;
-  addMintTxToCache(txId: string, value: number, address: string): void;
-  addSendTxToCache(txId: string, spendAmount: number, address: string): void;
+  addMintTxToCache(txId: string, value: number, fee: number, address: string): void;
+  addSendTxToCache(txId: string, spendAmount: number, fee: number, address: string): void;
   updateMintMetadata(): Promise<boolean>;
 }

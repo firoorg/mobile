@@ -27,14 +27,19 @@ const MyWalletScreen = () => {
       return;
     }
     const address2Check = await wallet.getTransactionsAddresses();
+    const latestBlockHeight = firoElectrum.getLatestBlockHeight();
     for (const address of address2Check) {
       try {
-        const utxos = await firoElectrum.getUnspentTransactionsByAddress(
+        const uctxos = await firoElectrum.getUnspentTransactionsByAddress(
           address,
         );
+        const utxos = uctxos.filter(tx => 
+          latestBlockHeight - tx.height >= 2
+        )
         if (utxos && utxos.length === 0) {
           continue;
         }
+
         console.log(`trying to mint address ${address}`);
         const txIds = utxos.map(tx => tx.tx_hash);
         const txs = await firoElectrum.multiGetTransactionByTxid(txIds);
@@ -62,8 +67,9 @@ const MyWalletScreen = () => {
 
         if (txId === mint.txId) {
           wallet.addLelantusMintToCache(txId, mint.value, mint.publicCoin);
-          wallet.addMintTxToCache(txId, mint.value / SATOSHI, address);
+          wallet.addMintTxToCache(txId, mint.value / SATOSHI, mint.fee / SATOSHI, address);
           await saveToDisk();
+          console.log(`saved mint tx: ${JSON.stringify(txId)}`);
         }
       } catch (e) {
         console.log('error when creating mint transaction', e);
@@ -114,7 +120,7 @@ const MyWalletScreen = () => {
     await saveToDisk();
   };
 
-  const subscribeToElectrumChanges = async () => {
+  const subscribeToElectrumChanges = () => {
     firoElectrum.subscribeToChanges(() => {
       updateWalletData();
     });
@@ -130,7 +136,7 @@ const MyWalletScreen = () => {
     }, [])
   );
 
-  const updateWalletData = async () => {
+  const updateWalletData = () => {
     updateMintMetadata();
     updateBalance();
 
@@ -141,8 +147,6 @@ const MyWalletScreen = () => {
   };
 
   useEffect(() => {
-    updateBalance();
-    updateTxHistory();
     updateWalletData();
     subscribeToElectrumChanges();
   }, []);

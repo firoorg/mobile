@@ -103,7 +103,7 @@ const SendScreen = () => {
       console.log(`broadcast tx: ${JSON.stringify(txId)}`);
 
       if (txId === spendData.txId) {
-        wallet.addSendTxToCache(txId, spendData.value / SATOSHI, address);
+        wallet.addSendTxToCache(txId, spendData.value / SATOSHI, spendData.fee / SATOSHI, address);
         wallet.addLelantusMintToCache(
           txId,
           spendData.jmintValue,
