@@ -12,6 +12,9 @@ import {firoElectrum} from '../core/FiroElectrum';
 import localization from '../localization';
 import {SATOSHI} from '../core/FiroWallet';
 import { Currency } from '../utils/currency';
+import { CheckBox } from 'react-native-elements/dist/checkbox/CheckBox';
+import { color } from 'react-native-elements/dist/helpers';
+import { address } from 'bitcoinjs-lib';
 
 const {colors} = CurrentFiroTheme;
 var timerHandler: number = -1;
@@ -20,40 +23,60 @@ const SendScreen = () => {
   const {saveToDisk} = useContext(FiroContext);
   const {getWallet} = useContext(FiroContext);
   const {getFiroRate, getSettings} = useContext(FiroContext);
-  const [balance, setBalance] = useState(0.0);
-  const [spendAmount, setSpendAmount] = useState(0.0);
+  const [balance, setBalance] = useState(0);
+  const [spendAmount, setSpendAmount] = useState(0);
   const [sendAddress, setSendAddress] = useState('');
-  const [fee, setFee] = useState(0.0);
-  const [total, setTotal] = useState(0.0);
-  const [subtractFeeFromAmount, setSubtractFeeFromAmount] = useState(false);
+  const [fee, setFee] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [subtractFeeFromAmount, setSubtractFeeFromAmount] = useState(true);
+  const [processing, setProcessing] = useState(true);
   const currentCurrencyName: string = (localization.currencies as any)[
     getSettings().defaultCurrency
   ];
 
   const rate = getFiroRate()
-  const estimateFee = () => {
+  const estimateFee = (amount: number, subtractFeeFromAmount: boolean) => {
     if (timerHandler !== -1) {
       clearTimeout(timerHandler);
-      console.log('clearTimeout', timerHandler);
     }
     timerHandler = setTimeout(async () => {
+      setProcessing(true)
       const wallet = getWallet();
       if (!wallet) {
         return;
       }
+      if (amount === 0) {
+        return
+      }
       try {
         const estimate = await wallet.estimateJoinSplitFee({
-          spendAmount,
+          spendAmount: amount,
           subtractFeeFromAmount,
         });
+        const changedFee = estimate.fee
 
-        console.log('fee', fee);
-        setFee(estimate.fee);
+        setFee(changedFee);
+        if (changedFee === 0) {
+          setTotal(0);
+        } else {
+          const sub = subtractFeeFromAmount ? 0 : 1;
+          setTotal(amount + sub * changedFee);
+        }
+        checkIsProcessing(changedFee, sendAddress)
       } catch (e) {
         console.log('estimateFee', e);
       }
     }, 300);
   };
+
+  const checkIsProcessing = (fee: number, address: string) => {
+    const wallet = getWallet();
+    if (!wallet) {
+      return;
+    } 
+
+    setProcessing(fee === 0 || !wallet.validate(address))
+  }
 
   const doSpend = async (
     amount: number,
@@ -63,6 +86,9 @@ const SendScreen = () => {
     const wallet = getWallet();
     if (!wallet) {
       return;
+    }
+    if (!wallet.validate(address)) {
+      throw Error('address not valid')
     }
     try {
       const spendData = await wallet.createLelantusSpendTx({
@@ -98,11 +124,22 @@ const SendScreen = () => {
     }
   };
   const onAmountSelect = (amount: number) => {
+    setProcessing(true)
     const staoshi = amount * SATOSHI;
     setSpendAmount(staoshi);
+    estimateFee(staoshi, subtractFeeFromAmount)
   };
+
+  const onSubtractFeeFromAmountChanged = () => {
+    setProcessing(true)
+    const changed = !subtractFeeFromAmount
+    setSubtractFeeFromAmount(changed)
+    estimateFee(spendAmount, changed)
+  };
+
   const onAddressSelect = (address: string) => {
     setSendAddress(address);
+    checkIsProcessing(fee, address)
   };
 
   const onClickSend = async () => {
@@ -116,15 +153,6 @@ const SendScreen = () => {
   useEffect(() => {
     updateBalance();
   }, []);
-
-  useEffect(() => {
-    const sub = subtractFeeFromAmount ? 1 : 0;
-    setTotal(spendAmount + sub * fee);
-  }, [fee, subtractFeeFromAmount]);
-
-  useEffect(() => {
-    estimateFee();
-  }, [spendAmount]);
 
   return (
     <View style={styles.root}>
@@ -177,11 +205,12 @@ const SendScreen = () => {
             <Switch
               value={subtractFeeFromAmount}
               color={colors.primary}
-              onValueChange={value => setSubtractFeeFromAmount(value)}
+              onValueChange={onSubtractFeeFromAmountChanged}
             />
           </View>
         </View>
         <FiroPrimaryButton
+          disable={processing}
           buttonStyle={styles.sendButton}
           text={localization.send_screen.send}
           onClick={onClickSend}

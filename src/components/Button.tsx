@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {Text} from 'react-native-elements';
+import {Button, Text} from 'react-native-elements';
 import {
   TouchableOpacity,
   Image,
@@ -16,6 +16,7 @@ type ButtonProps = {
   text: string;
   onClick: () => void;
   buttonStyle?: StyleProp<ViewStyle>;
+  disable?: boolean;
 };
 
 type IconButtonProps = {
@@ -26,7 +27,12 @@ type IconButtonProps = {
 export const FiroPrimaryButton: FC<ButtonProps> = props => {
   return (
     <TouchableOpacity
-      style={[styles.button, props.buttonStyle]}
+      disabled={props.disable ?? false}
+      style={
+        (props.disable)
+        ? [styles.button, styles.buttonDisabled, props.buttonStyle]
+        : [styles.button, props.buttonStyle]
+      } 
       onPress={props.onClick}>
       <Text style={styles.text}>{props.text}</Text>
     </TouchableOpacity>
@@ -139,6 +145,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
   },
+  buttonDisabled: {
+    backgroundColor: colors.primaryDisabled,
+    borderColor: colors.primaryDisabled,
+  },
   primaryGreenButton: {
     height: 28,
     backgroundColor: 'rgba(47, 162, 153, 0.05)',
@@ -222,4 +232,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
   },
+  titleStyle: {
+    textAlign: 'center'
+  }
 });

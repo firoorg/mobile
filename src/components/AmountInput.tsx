@@ -36,15 +36,6 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
     )
 
   const onTextChnaged = (text: string) => {
-    const value = parseFloat(text) ?? 0
-    let crypto = 0
-    if (isCrypto) {
-      crypto = value
-    } else {
-      crypto = Currency.fiatToFiro(value)
-    }
-
-    props.onAmountSelect(value)
     setInput(text)
   }
 
@@ -58,8 +49,8 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
       txt = Currency.fiatToFiro(i).toString()
     }
 
-    setType(!isCrypto)
     setInput(txt)
+    setType(!isCrypto)
   }
 
   const onClickMax = () => {
@@ -76,14 +67,19 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
   useEffect(() => {
     const i = parseFloat(input)
     let txt = ''
+    let crypto = 0
     if (isNaN(i)) {
+      crypto = 0
       txt = `${localization.amount_input.amount} (${getPlaceholder(!isCrypto)})`
     } else if (isCrypto) {
+      crypto = i
       txt = Currency.firoToFiat(i).toString()
     } else {
-      txt = Currency.fiatToFiro(i).toString()
+      crypto = Currency.fiatToFiro(i)
+      txt = crypto.toString()
     }
 
+    props.onAmountSelect(crypto)
     setConverted(txt)
   }, [input, isCrypto])
 

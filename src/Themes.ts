@@ -19,6 +19,7 @@ type FiroColors = {
   switchThumb: string;
   secondaryBackground: string;
   unchecked: string;
+  primaryDisabled: string;
 };
 
 type FiroTheme = {
@@ -34,6 +35,7 @@ export const FiroDefaultTheme: FiroTheme = {
     textOnBackground: '#3C3939',
     text: '#3C3939',
     primary: '#9B1C2E',
+    primaryDisabled: 'rgba(155, 28, 46, 0.5)',
     colorOnPrimary: '#FFFFFF',
     secondary: '#2FA299',
     cardBackground: '#FFFFFF',

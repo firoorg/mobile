@@ -594,8 +594,8 @@ export class FiroWallet implements AbstractWallet {
       let txs = [];
       try {
         txs = await firoElectrum.getTransactionsByAddress(address);
-      } catch (Err) {
-        console.warn('FiroElectrum.getTransactionsByAddress()', Err.message);
+      } catch (e) {
+        console.warn('FiroElectrum.getTransactionsByAddress()', e);
       }
       if (txs.length === 0) {
         // found free address
@@ -632,8 +632,8 @@ export class FiroWallet implements AbstractWallet {
       let txs = [];
       try {
         txs = await firoElectrum.getTransactionsByAddress(address);
-      } catch (Err) {
-        console.warn('FiroElectrum.getTransactionsByAddress()', Err.message);
+      } catch (e) {
+        console.warn('FiroElectrum.getTransactionsByAddress()', e);
       }
       if (txs.length === 0) {
         // found free address
@@ -732,6 +732,15 @@ export class FiroWallet implements AbstractWallet {
     }
 
     return address2Fetch;
+  }
+
+  validate(address: string): boolean {
+    try {
+      bitcoin.address.toOutputScript(address, network)
+      return true
+    } catch (e) {
+      return false
+    }
   }
 
   async fetchTransactions() {
