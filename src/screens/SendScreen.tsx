@@ -16,6 +16,7 @@ import { CheckBox } from 'react-native-elements/dist/checkbox/CheckBox';
 import { color } from 'react-native-elements/dist/helpers';
 import { address } from 'bitcoinjs-lib';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useFocusEffect } from '@react-navigation/native';
 
 const {colors} = CurrentFiroTheme;
 var timerHandler: number = -1;
@@ -162,6 +163,15 @@ const SendScreen = () => {
     updateBalance();
     subscribeToElectrumChanges();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("useFocusEffect send");
+      updateBalance()
+
+      return () => {};
+    }, [])
+  );
 
   return (
     <ScrollView>

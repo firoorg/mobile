@@ -10,6 +10,7 @@ import {TransactionItem} from '../data/TransactionItem';
 import localization from '../localization';
 import {FiroTransactionEmpty} from '../components/EmptyState';
 import {SATOSHI} from '../core/FiroWallet';
+import { useFocusEffect } from '@react-navigation/native';
 
 const {colors} = CurrentFiroTheme;
 
@@ -118,6 +119,16 @@ const MyWalletScreen = () => {
       updateWalletData();
     });
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("useFocusEffect my wallet");
+      
+      updateBalance()
+
+      return () => {};
+    }, [])
+  );
 
   const updateWalletData = async () => {
     updateMintMetadata();

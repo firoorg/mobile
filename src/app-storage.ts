@@ -168,7 +168,6 @@ export class AppStorage {
     const walletJson = JSON.stringify(wallet);
     const keyCloned = FiroWallet.fromJson(walletJson);
     keyCloned.prepareForSerialization();
-    console.log('keyCloned', keyCloned);
 
     this.offloadWalletToRealm(realm, wallet);
     let walletToSave = JSON.stringify(keyCloned);
