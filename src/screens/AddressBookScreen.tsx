@@ -16,6 +16,7 @@ import {CurrentFiroTheme} from '../Themes';
 import {AppStorage} from '../app-storage';
 import {AddressBookItem} from '../data/AddressBookItem';
 import localization from '../localization';
+import {useFocusEffect} from '@react-navigation/native';
 
 const appStorage = new AppStorage();
 
@@ -34,6 +35,12 @@ const AddressBookScreen = () => {
   useEffect(() => {
     loadAddressBook();
   }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      loadAddressBook();
+      return () => {};
+    }, []),
+  );
 
   const onAddNewClick = () => {
     NavigationService.navigate('AddEditAddressScreen', {undefined});

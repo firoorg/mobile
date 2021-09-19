@@ -15,10 +15,12 @@ export const Confirmation: FC<ConfirmationProps> = props => {
   return (
     <View style={[styles.root, props.style]}>
       <FiroSubtleButton
+        buttonStyle={styles.button}
         text={localization.component_button.cancel}
         onClick={props.onDiscardAction}
       />
       <FiroPrimaryButton
+        buttonStyle={styles.button}
         text={props.confirmButtonText}
         onClick={props.onConfirmAction}
       />
@@ -31,5 +33,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-evenly',
+  },
+  button: {
+    flex: 1,
   },
 });

@@ -37,13 +37,15 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
   const onDiscard = () => {
     NavigationService.back();
   };
-  const onConfirm = () => {
+  const onConfirm = async () => {
     if (hasInputAddress) {
       item.address = address;
       item.name = name;
-      appStorage.updateAddressBookItem(item);
+      await appStorage.updateAddressBookItem(item);
     } else {
-      appStorage.addNewAddressBookItem(new AddressBookItem(name, address));
+      await appStorage.addNewAddressBookItem(
+        new AddressBookItem(name, address),
+      );
     }
     NavigationService.back();
   };
