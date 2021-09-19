@@ -9,6 +9,7 @@ import {ReceiveAmountInputCard} from '../components/AmountInput';
 import QRCode from 'react-native-qrcode-svg';
 import localization from '../localization';
 import {FiroContext} from '../FiroContext';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const {colors} = CurrentFiroTheme;
 
@@ -28,31 +29,33 @@ const ReceiveScreen = () => {
   }, []);
 
   return (
-    <View style={styles.root}>
-      <FiroToolbarWithoutBack title={localization.receive_screen.title} />
-      <View style={styles.content}>
-        <FiroTextBig
-          style={styles.qrLabel}
-          text={localization.receive_screen.scan_qr}
-        />
-        <View style={styles.qr}>
-          <QRCode
-            value={address}
-            size={226}
-            color="#000000"
-            backgroundColor="#F7F9FB"
-            ecl="H"
+    <ScrollView>
+      <View style={styles.root}>
+        <FiroToolbarWithoutBack title={localization.receive_screen.title} />
+        <View style={styles.content}>
+          <FiroTextBig
+            style={styles.qrLabel}
+            text={localization.receive_screen.scan_qr}
           />
+          <View style={styles.qr}>
+            <QRCode
+              value={address}
+              size={226}
+              color="#000000"
+              backgroundColor="#F7F9FB"
+              ecl="H"
+            />
+          </View>
+          <CreateAddressCard address={address} onClick={onClickCreateAddress} />
+          <FiroSelectFromSavedAddress
+            onClick={onClickSelectFromAddress}
+            buttonStyle={styles.savedAddress}
+            text={localization.receive_screen.select_from_saved_address}
+          />
+          <ReceiveAmountInputCard />
         </View>
-        <CreateAddressCard address={address} onClick={onClickCreateAddress} />
-        <FiroSelectFromSavedAddress
-          onClick={onClickSelectFromAddress}
-          buttonStyle={styles.savedAddress}
-          text={localization.receive_screen.select_from_saved_address}
-        />
-        <ReceiveAmountInputCard />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -63,6 +66,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     paddingTop: 30,
+    paddingBottom: 20
   },
   content: {
     width: '100%',

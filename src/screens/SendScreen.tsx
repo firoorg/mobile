@@ -15,6 +15,7 @@ import { Currency } from '../utils/currency';
 import { CheckBox } from 'react-native-elements/dist/checkbox/CheckBox';
 import { color } from 'react-native-elements/dist/helpers';
 import { address } from 'bitcoinjs-lib';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const {colors} = CurrentFiroTheme;
 var timerHandler: number = -1;
@@ -123,6 +124,13 @@ const SendScreen = () => {
       console.log('error when getting balance', e);
     }
   };
+
+  const subscribeToElectrumChanges = async () => {
+    firoElectrum.subscribeToChanges(() => {
+      updateBalance();
+    });
+  };
+
   const onAmountSelect = (amount: number) => {
     setProcessing(true)
     const staoshi = amount * SATOSHI;
@@ -152,71 +160,74 @@ const SendScreen = () => {
 
   useEffect(() => {
     updateBalance();
+    subscribeToElectrumChanges();
   }, []);
 
   return (
-    <View style={styles.root}>
-      <FiroToolbarWithoutBack title={localization.send_screen.title} />
-      <View style={styles.content}>
-        <View style={styles.balanceContainer}>
-          <View style={styles.titleContainer}>
-            <Image
-              style={styles.icon}
-              source={require('../img/ic_firo_balance.png')}
-            />
-            <Text style={styles.title}>
-              {localization.global.firo} {localization.global.balance}
+    <ScrollView>
+      <View style={styles.root}>
+        <FiroToolbarWithoutBack title={localization.send_screen.title} />
+        <View style={styles.content}>
+          <View style={styles.balanceContainer}>
+            <View style={styles.titleContainer}>
+              <Image
+                style={styles.icon}
+                source={require('../img/ic_firo_balance.png')}
+              />
+              <Text style={styles.title}>
+                {localization.global.firo} {localization.global.balance}
+              </Text>
+            </View>
+            <Text style={styles.firo}>
+              {Currency.formatFiroAmountWithCurrency(balance)}
+            </Text>
+            <Text style={styles.currency}>
+              {Currency.formatFiroAmountWithCurrency(balance, rate, getSettings().defaultCurrency)} (1{' '}
+              {localization.global.firo} ={' '}
+              {`${rate} ${currentCurrencyName}`})
             </Text>
           </View>
-          <Text style={styles.firo}>
-            {Currency.formatFiroAmountWithCurrency(balance)}
-          </Text>
-          <Text style={styles.currency}>
-            {Currency.formatFiroAmountWithCurrency(balance, rate, getSettings().defaultCurrency)} (1{' '}
-            {localization.global.firo} ={' '}
-            {`${rate} ${currentCurrencyName}`})
-          </Text>
-        </View>
-        <Divider style={styles.divider} />
-        <SendAmountInputCard
-          maxBalance={balance}
-          onAmountSelect={onAmountSelect}
-        />
-        <SendAddress style={styles.address} onAddressSelect={onAddressSelect} />
-        <TextInput
-          style={styles.label}
-          placeholder={localization.send_screen.label_optional}
-        />
-        <View style={styles.feeDetailsContainer}>
-          <FiroVerticalInfoText
-            style={styles.feeDetail}
-            title={localization.send_screen.transaction_fee}
-            text={Currency.formatFiroAmountWithCurrency(fee / SATOSHI)}
+          <Divider style={styles.divider} />
+          <SendAmountInputCard
+            maxBalance={balance}
+            onAmountSelect={onAmountSelect}
           />
-          <FiroVerticalInfoText
-            style={styles.feeDetail}
-            title={localization.send_screen.total_send_amount}
-            text={Currency.formatFiroAmountWithCurrency(total / SATOSHI)}
+          <SendAddress style={styles.address} onAddressSelect={onAddressSelect} />
+          <TextInput
+            style={styles.label}
+            placeholder={localization.send_screen.label_optional}
           />
-          <View style={styles.reduceFeeContainer}>
-            <Text style={styles.reduceFeeTitle}>
-              {localization.send_screen.reduce_fee}
-            </Text>
-            <Switch
-              value={subtractFeeFromAmount}
-              color={colors.primary}
-              onValueChange={onSubtractFeeFromAmountChanged}
+          <View style={styles.feeDetailsContainer}>
+            <FiroVerticalInfoText
+              style={styles.feeDetail}
+              title={localization.send_screen.transaction_fee}
+              text={Currency.formatFiroAmountWithCurrency(fee / SATOSHI)}
             />
+            <FiroVerticalInfoText
+              style={styles.feeDetail}
+              title={localization.send_screen.total_send_amount}
+              text={Currency.formatFiroAmountWithCurrency(total / SATOSHI)}
+            />
+            <View style={styles.reduceFeeContainer}>
+              <Text style={styles.reduceFeeTitle}>
+                {localization.send_screen.reduce_fee}
+              </Text>
+              <Switch
+                value={subtractFeeFromAmount}
+                color={colors.primary}
+                onValueChange={onSubtractFeeFromAmountChanged}
+              />
+            </View>
           </View>
+          <FiroPrimaryButton
+            disable={processing}
+            buttonStyle={styles.sendButton}
+            text={localization.send_screen.send}
+            onClick={onClickSend}
+          />
         </View>
-        <FiroPrimaryButton
-          disable={processing}
-          buttonStyle={styles.sendButton}
-          text={localization.send_screen.send}
-          onClick={onClickSend}
-        />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -227,6 +238,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     paddingTop: 30,
+    paddingBottom: 20,
   },
   content: {
     width: '100%',
