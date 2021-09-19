@@ -99,7 +99,7 @@ const AddressBookScreen = () => {
         addressBookList={addressBookList}
         onMenuClick={onMenuIconClick}
       />
-      <BottomSheet isVisible={isMenuVisible}>
+      <BottomSheet modalProps={{}} isVisible={isMenuVisible}>
         <ListItem onPress={onCopyPress}>
           <Avatar source={require('../img/ic_copy.png')} />
           <ListItem.Content>

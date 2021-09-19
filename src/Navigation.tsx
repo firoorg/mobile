@@ -35,47 +35,9 @@ type ScanQRCodeStackParamList = {
 };
 const ScanQRCodeStack = createStackNavigator<ScanQRCodeStackParamList>();
 const ScanQRCode = () => (
-  <ScanQRCodeStack.Navigator mode="modal" screenOptions={{headerShown: false}}>
+  <ScanQRCodeStack.Navigator screenOptions={{headerShown: false, presentation: 'modal'}}>
     <ScanQRCodeStack.Screen name="ScanQRCodeScreen" component={ScanQRCodeScreen} />
   </ScanQRCodeStack.Navigator>
-);
-
-type WalletStackParamList = {
-  MainScreen: undefined;
-  TransactionDetailsScreen: undefined;
-};
-const WalletStack = createStackNavigator<WalletStackParamList>();
-const Wallet = () => (
-  <WalletStack.Navigator screenOptions={{headerShown: false}}>
-    <WalletStack.Screen name="MainScreen" component={MyWalletScreen} />
-    <WalletStack.Screen
-      name="TransactionDetailsScreen"
-      component={TransactionDetailsScreen}
-    />
-  </WalletStack.Navigator>
-);
-
-type AddressBookStackParamList = {
-  AddressBookScreen: undefined;
-  AddressDetailsScreen: undefined;
-  AddEditAddressScreen: undefined;
-};
-const AddressBookStack = createStackNavigator<AddressBookStackParamList>();
-const AddressBook = () => (
-  <AddressBookStack.Navigator screenOptions={{headerShown: false}}>
-    <AddressBookStack.Screen
-      name="AddressBookScreen"
-      component={AddressBookScreen}
-    />
-    <AddressBookStack.Screen
-      name="AddressDetailsScreen"
-      component={AddressDetailsScreen}
-    />
-    <AddressBookStack.Screen
-      name="AddEditAddressScreen"
-      component={AddEditAddressScreen}
-    />
-  </AddressBookStack.Navigator>
 );
 
 type TabStackParamList = {
@@ -87,10 +49,10 @@ type TabStackParamList = {
 const TabStack = createBottomTabNavigator<TabStackParamList>();
 const TabScreen = () => (
   <TabStack.Navigator screenOptions={{headerShown: false}} tabBar={props => <BottomTabBar {...props} />}>
-    <TabStack.Screen name="Wallet" component={Wallet} />
+    <TabStack.Screen name="Wallet" component={MyWalletScreen} />
     <TabStack.Screen name="Receive" component={ReceiveScreen} />
     <TabStack.Screen name="Send" component={SendScreen} />
-    <TabStack.Screen name="AddressBook" component={AddressBook} />
+    <TabStack.Screen name="AddressBook" component={AddressBookScreen} />
   </TabStack.Navigator>
 );
 
@@ -100,6 +62,11 @@ type CreateWalletStackParamList = {
   MnemonicInputScreen: undefined;
   PassphraseScreen: undefined;
   MainScreen: undefined;
+  AddressDetailsScreen: undefined;
+  AddEditAddressScreen: undefined;
+  TransactionDetailsScreen: undefined;
+  Settings: undefined;
+  ScanQRCode: undefined;
 };
 const CreateWalletStack = createStackNavigator<CreateWalletStackParamList>();
 const CreateWallet = () => (
@@ -118,12 +85,31 @@ const CreateWallet = () => (
       component={PassphraseScreen}
     />
     <CreateWalletStack.Screen name="MainScreen" component={TabScreen} />
+    <CreateWalletStack.Screen
+      name="AddressDetailsScreen"
+      component={AddressDetailsScreen}
+    />
+    <CreateWalletStack.Screen
+      name="AddEditAddressScreen"
+      component={AddEditAddressScreen}
+    />
+    <CreateWalletStack.Screen
+      name="TransactionDetailsScreen"
+      component={TransactionDetailsScreen}
+    />
+    <CreateWalletStack.Screen name="Settings" component={Settings} />
+    <CreateWalletStack.Screen name="ScanQRCode" component={ScanQRCode} />
   </CreateWalletStack.Navigator>
 );
 
 type EnterWalletStackParamList = {
   EnterPassphraseScreen: undefined;
   MainScreen: undefined;
+  AddressDetailsScreen: undefined;
+  AddEditAddressScreen: undefined;
+  TransactionDetailsScreen: undefined;
+  Settings: undefined;
+  ScanQRCode: undefined;
 };
 const EnterWalletStack = createStackNavigator<EnterWalletStackParamList>();
 const EnterWallet = () => (
@@ -133,6 +119,29 @@ const EnterWallet = () => (
       component={EnterPassphraseScreen}
     />
     <EnterWalletStack.Screen name="MainScreen" component={TabScreen} />
+    <EnterWalletStack.Screen
+      name="AddressDetailsScreen"
+      component={AddressDetailsScreen}
+    />
+    <EnterWalletStack.Screen
+      name="AddEditAddressScreen"
+      component={AddEditAddressScreen}
+    />
+    <EnterWalletStack.Screen
+      name="TransactionDetailsScreen"
+      component={TransactionDetailsScreen}
+    />
+    <EnterWalletStack.Screen name="Settings" component={Settings} />
+    <EnterWalletStack.Screen
+      name="ScanQRCode"
+      component={ScanQRCode}
+      options={{
+        ...(Platform.OS === 'ios'
+          ? TransitionPresets.ModalTransition
+          : TransitionPresets.ScaleFromCenterAndroid),
+        headerShown: false,
+      }}
+    />
   </EnterWalletStack.Navigator>
 );
 
@@ -149,17 +158,6 @@ const SplashRoot = () => (
     <SplashStack.Screen name="SplashScreen" component={SplashScreen} />
     <SplashStack.Screen name="CreateWallet" component={CreateWallet} />
     <SplashStack.Screen name="EnterWallet" component={EnterWallet} />
-    <SplashStack.Screen name="Settings" component={Settings} />
-    <SplashStack.Screen
-      name="ScanQRCode"
-      component={ScanQRCode}
-      options={{
-        ...(Platform.OS === 'ios'
-          ? TransitionPresets.ModalTransition
-          : TransitionPresets.ScaleFromCenterAndroid),
-        headerShown: false,
-      }}
-    />
   </SplashStack.Navigator>
 );
 
