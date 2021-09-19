@@ -18,12 +18,6 @@ export const BottomTabBar: FC<BottomTabBarProps> = ({
   descriptors,
   navigation,
 }) => {
-  const focusedOptions = descriptors[state.routes[state.index].key].options;
-
-  if (focusedOptions.tabBarVisible === false) {
-    return null;
-  }
-
   return (
     <View style={styles.navigation}>
       {state.routes.map((route, index) => {
