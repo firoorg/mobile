@@ -46,7 +46,8 @@
   },
 
   "balance_card": {
-    "balance_firo": "Firo Balance"
+    "balance_firo": "Firo Balance",
+    "pending_balance": "Pending"
   },
 
   "welcome_screen": {

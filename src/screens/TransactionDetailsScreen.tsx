@@ -20,8 +20,11 @@ const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
   const {getFiroRate, getSettings} = useContext(FiroContext);
   const {item} = props.route.params;
 
-  const backgroundColor =
-    item.received || item.isMint ? '#2fa29920' : '#a22f7220';
+  const backgroundColor = item.received
+    ? '#2fa29920'
+    : item.isMint
+    ? '#9B1C2E20'
+    : '#a22f7220';
 
   let label = <Text />;
   if (item.label !== undefined) {

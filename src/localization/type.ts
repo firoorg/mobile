@@ -49,6 +49,7 @@ export interface IString extends LocalizedStringsMethods {
 
   balance_card: {
     balance_firo: string;
+    pending_balance: string;
   };
 
   welcome_screen: {

@@ -18,7 +18,7 @@ export const TransactionRow: FC<TransactionRowProps> = props => {
   const ic = item.received
     ? require('../img/ic_received_tx.png')
     : item.isMint
-    ? require('../img/ic_receive.png')
+    ? require('../img/ic_anonymized_tx.png')
     : require('../img/ic_sent_tx.png');
 
   const title = item.received
@@ -45,7 +45,11 @@ export const TransactionRow: FC<TransactionRowProps> = props => {
             {Currency.formatFiroAmountWithCurrency(item.value)} {unconfirmed}
           </Text>
           <Text style={styles.title}>
-            {Currency.formatFiroAmountWithCurrency(item.value, props.firoRate, props.currentCurrency)}
+            {Currency.formatFiroAmountWithCurrency(
+              item.value,
+              props.firoRate,
+              props.currentCurrency,
+            )}
           </Text>
         </View>
         <View style={styles.row}>
