@@ -28,17 +28,12 @@ const AddressBookScreen = () => {
 
   const loadAddressBook = async () => {
     let addressBook = await appStorage.loadAddressBook();
-    // for (var i = 0; i < addressBook.length; i++) {
-    //   await appStorage.deleteAddressBookItem(addressBook[i]);
-    // }
-    // addressBook = await appStorage.loadAddressBook();
-    // console.log(addressBook);
     setAddressBookList(addressBook);
   };
 
   useEffect(() => {
     loadAddressBook();
-  });
+  }, []);
 
   const onAddNewClick = () => {
     NavigationService.navigate('AddEditAddressScreen', {undefined});

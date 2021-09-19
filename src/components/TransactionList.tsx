@@ -9,7 +9,7 @@ import {TransactionRow} from './TransactionRow';
 
 const {colors} = CurrentFiroTheme;
 
-const keys = (_: TransactionItem, index: number) => index.toString();
+const keys = (item: TransactionItem) => item.txId;
 
 const renderItem: (
   item: TransactionItem,
@@ -55,7 +55,8 @@ export const TransactionList: FC<TransactionListProps> = props => {
 
 const styles = StyleSheet.create({
   listItem: {
-    marginVertical: -5,
+    paddingTop: 10,
+    paddingBottom: 10,
     backgroundColor: colors.background,
   },
   listItemCard: {

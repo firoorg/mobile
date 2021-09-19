@@ -174,6 +174,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   transactionContainer: {
+    paddingBottom: 90,
     flexGrow: 1,
     display: 'flex',
     justifyContent: 'center',
