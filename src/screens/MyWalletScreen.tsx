@@ -120,12 +120,12 @@ const MyWalletScreen = () => {
   };
 
   const updateWalletData = async () => {
-    await updateMintMetadata();
+    updateMintMetadata();
     updateBalance();
 
-    await mintUnspentTransactions();
+    mintUnspentTransactions();
 
-    await fetchTransactionList();
+    fetchTransactionList();
     updateTxHistory();
   };
 

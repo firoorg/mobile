@@ -15,13 +15,11 @@ const {colors} = CurrentFiroTheme;
 const ReceiveScreen = () => {
   const {getWallet} = useContext(FiroContext);
   const [address, setAddress] = useState('loading...');
-  const onClickSelectFromAddress = async () => {};
-  const onClickCreateAddress = async () => {
+  const onClickSelectFromAddress = () => {};
+  const onClickCreateAddress = () => {
     const wallet = getWallet();
     if (wallet) {
-      const addr = await wallet?.getAddressAsync();
-      setAddress(addr);
-      console.log(addr);
+      wallet.getAddressAsync().then(setAddress)
     }
   };
 

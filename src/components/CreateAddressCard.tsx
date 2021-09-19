@@ -3,7 +3,7 @@ import {Text, Divider} from 'react-native-elements';
 import {View, StyleSheet, Image, TextInput, ToastAndroid} from 'react-native';
 import {FiroPrimaryGreenButton} from './Button';
 import localization from '../localization';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import {TouchableOpacity, TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 type CreateAddressProp = {
@@ -15,10 +15,12 @@ export const CreateAddressCard: FC<CreateAddressProp> = props => {
   const onAddressSaveClick = () => {};
   const onCopyClick = () => {
     Clipboard.setString(props.address);
-    ToastAndroid.showWithGravity(
+    ToastAndroid.showWithGravityAndOffset(
       localization.create_address_card.address_copied,
       ToastAndroid.SHORT,
       ToastAndroid.TOP,
+      0,
+      100
     );
   };
   return (
@@ -28,15 +30,17 @@ export const CreateAddressCard: FC<CreateAddressProp> = props => {
       </Text>
       <View style={styles.currentAddress}>
         <Text style={styles.address}>{props.address}</Text>
-        <TouchableWithoutFeedback onPress={onCopyClick}>
-          <Image style={styles.icon} source={require('../img/ic_copy.png')} />
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={props.onClick}>
-          <Image
-            style={styles.icon}
-            source={require('../img/ic_refresh.png')}
-          />
-        </TouchableWithoutFeedback>
+        <View style={styles.actions}>
+          <TouchableOpacity onPress={onCopyClick}>
+            <Image style={styles.icon} source={require('../img/ic_copy.png')} />
+          </TouchableOpacity>
+          <TouchableWithoutFeedback onPress={props.onClick}>
+            <Image
+              style={styles.icon}
+              source={require('../img/ic_refresh.png')}
+            />
+          </TouchableWithoutFeedback>
+        </View>
       </View>
       <TextInput
         style={styles.addressName}
@@ -74,6 +78,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  actions: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
   address: {
     fontFamily: 'Rubik-Medium',
     fontWeight: '500',
@@ -83,6 +91,7 @@ const styles = StyleSheet.create({
   icon: {
     width: 24,
     height: 24,
+    marginLeft: 8
   },
   addressName: {
     height: 36,

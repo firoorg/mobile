@@ -115,7 +115,7 @@ const SendScreen = () => {
     }
   };
 
-  const updateBalance = async () => {
+  const updateBalance = () => {
     try {
       let walletBalance = getWallet()?.getBalance();
       setBalance(walletBalance ?? 0);
@@ -142,9 +142,9 @@ const SendScreen = () => {
     checkIsProcessing(fee, address)
   };
 
-  const onClickSend = async () => {
+  const onClickSend = () => {
     try {
-      await doSpend(spendAmount, subtractFeeFromAmount, sendAddress);
+      doSpend(spendAmount, subtractFeeFromAmount, sendAddress);
     } catch (e) {
       console.log('somting went wrong in spend tx', e);
     }
