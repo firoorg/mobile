@@ -269,7 +269,6 @@ export class FiroWallet implements AbstractWallet {
       jmintKeyPair,
       index,
     );
-    console.log('keyPath', keyPath);
 
     const aesKeyPair = this._getNode(JMINT_INDEX, keyPath);
     const aesPrivateKey = aesKeyPair.privateKey?.toString('hex');
@@ -283,7 +282,6 @@ export class FiroWallet implements AbstractWallet {
       index,
       aesPrivateKey,
     );
-    console.log('jmintScript', jmintData.script);
 
     tx.addOutput({
       // eslint-disable-next-line no-undef
@@ -305,7 +303,6 @@ export class FiroWallet implements AbstractWallet {
     // eslint-disable-next-line no-undef
     extractedTx.setPayload(Buffer.alloc(0));
     const txHash = extractedTx.getId();
-    console.log('txHash', txHash.toString('hex'));
 
     const setIds: number[] = [];
     const anonimitySets: string[][] = [];
@@ -335,7 +332,6 @@ export class FiroWallet implements AbstractWallet {
       anonymitySetHashes,
       groupBlockHashes,
     );
-    console.log('spendScript', spendScript);
 
     const finalTx = new bitcoin.Psbt({network: this.network});
     finalTx.setLocktime(firoElectrum.getLatestBlockHeight());
@@ -370,8 +366,6 @@ export class FiroWallet implements AbstractWallet {
     const txHex = extTx.toHex();
     const txId = extTx.getId();
 
-    console.log('txHex', txHex);
-    console.log('txId', txId);
     return {
       txId: txId,
       txHex: txHex,
@@ -480,7 +474,6 @@ export class FiroWallet implements AbstractWallet {
     if (tx) {
       tx.confirmed = coin.isConfirmed;
     }
-    
   }
 
   _getUnconfirmedCoins(): LelantusCoin[] {
@@ -765,9 +758,7 @@ export class FiroWallet implements AbstractWallet {
               transactionItem.date = tx.time * 1000;
             }
             transactionItem.txId = tx.txid;
-            transactionItem.confirmed =
-              tx.confirmations >= MINT_CONFIRM_BLOCK_COUNT;
-            // transactionItem.confirmed = true;
+            transactionItem.confirmed = true;
 
             const ia = tx.inputs.reduce((acc, elm) => acc + elm.value, 0)
             const oa = tx.outputs.reduce((acc, elm) => acc + elm.value, 0)
@@ -796,12 +787,7 @@ export class FiroWallet implements AbstractWallet {
             if (transactionItem.received || transactionItem.isMint) {
               this._txs_by_external_index.push(transactionItem);
             }
-          } else if (this._txs_by_external_index[external_index]?.confirmed === false) {
-            console.log(this._txs_by_external_index[external_index]);
-            
-            this._txs_by_external_index[external_index].confirmed =
-              tx.confirmations >= MINT_CONFIRM_BLOCK_COUNT;
-          }
+          } 
         });
       } catch (e) {
         console.log('error when getting transaction list', e);

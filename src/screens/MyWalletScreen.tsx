@@ -30,12 +30,9 @@ const MyWalletScreen = () => {
     const latestBlockHeight = firoElectrum.getLatestBlockHeight();
     for (const address of address2Check) {
       try {
-        const uctxos = await firoElectrum.getUnspentTransactionsByAddress(
+        const utxos = await firoElectrum.getUnspentTransactionsByAddress(
           address,
         );
-        const utxos = uctxos.filter(tx => 
-          latestBlockHeight - tx.height >= 2
-        )
         if (utxos && utxos.length === 0) {
           continue;
         }
@@ -129,8 +126,11 @@ const MyWalletScreen = () => {
   useFocusEffect(
     React.useCallback(() => {
       console.log("useFocusEffect my wallet");
+      console.log(getWallet());
+      
       
       updateBalance()
+      updateTxHistory();
 
       return () => {};
     }, [])

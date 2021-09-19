@@ -111,6 +111,8 @@ const SendScreen = () => {
         );
         wallet.markCoinsSpend(spendData.spendCoinIndexes);
         await saveToDisk();
+        console.log('doSpend saved', txId);
+        
       }
     } catch (e) {
       console.log('error when creating spend transaction', e);
