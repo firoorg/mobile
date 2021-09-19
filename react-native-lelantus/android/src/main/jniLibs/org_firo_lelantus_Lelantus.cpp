@@ -56,6 +56,7 @@ JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 		LelantusEntry lelantusEntry{isUsed, height, anonymitySetId, amount, (uint32_t) index,
 									env->GetStringUTFChars(keydata, nullptr)};
 		coins.push_back(lelantusEntry);
+		env->DeleteLocalRef(mintCoin);
 	}
 
 	uint64_t changeToMint;
@@ -128,6 +129,7 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
 		LelantusEntry lelantusEntry{isUsed, height, anonymitySetId, amount, (uint32_t) coinIndex,
 									env->GetStringUTFChars(keydata, nullptr)};
 		coins.push_back(lelantusEntry);
+		env->DeleteLocalRef(mintCoin);
 	}
 
 	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
@@ -150,15 +152,18 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
 			auto jSerializedCoin = (jstring) (env->GetObjectArrayElement(jAnonymitySet, j));
 			const char *serializedCoin = env->GetStringUTFChars(jSerializedCoin, nullptr);
 			anonymitySets[i].push_back(serializedCoin);
+			env->DeleteLocalRef(jSerializedCoin);
 		}
 
 		auto jAnonymitySetHash = (jstring) (env->GetObjectArrayElement(jAnonymitySetHashes, i));
 		const char *setHash = env->GetStringUTFChars(jAnonymitySetHash, nullptr);
 		anonymitySetHashes.push_back(setHash);
+		env->DeleteLocalRef(jAnonymitySetHash);
 
 		auto jGroupBlockHash = (jstring) (env->GetObjectArrayElement(jBlockGroupHashes, i));
 		const char *groupBlockHash = env->GetStringUTFChars(jGroupBlockHash, nullptr);
 		groupBlockHashes.push_back(groupBlockHash);
+		env->DeleteLocalRef(jGroupBlockHash);
 	}
 
 	const char *script = CreateJoinSplitScript(
