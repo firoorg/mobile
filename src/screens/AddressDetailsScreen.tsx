@@ -1,8 +1,9 @@
-import React, {FC} from 'react';
+import React, {FC, useContext} from 'react';
 import {StyleSheet, View, Text} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {FiroToolbar} from '../components/Toolbar';
 import {FiroInfoText} from '../components/Texts';
+import {FiroContext} from '../FiroContext';
 import {TransactionList} from '../components/TransactionList';
 import {CurrentFiroTheme} from '../Themes';
 import {AddressBookItem} from '../data/AddressBookItem';
@@ -20,9 +21,14 @@ type AddressDetailsProps = {
 };
 
 const AddressDetailsScreen: FC<AddressDetailsProps> = props => {
+  const {getWallet} = useContext(FiroContext);
   const {item} = props.route.params;
 
-  const txList: TransactionItem[] = [];
+  const wallet = getWallet();
+  let txList: TransactionItem[] = [];
+  if (wallet) {
+    txList = wallet.getTransactionsByAddress(item.address);
+  }
 
   return (
     <View style={styles.root}>
@@ -41,10 +47,12 @@ const AddressDetailsScreen: FC<AddressDetailsProps> = props => {
           title={localization.address_details_screen.name}
           text={item.name}
         />
-        <View style={styles.infoText}>
-          <Text style={styles.transactionHistory}>Transaction History</Text>
-          <TransactionList transactionList={txList} />
-        </View>
+        {txList.length > 0 && (
+          <View style={styles.infoText}>
+            <Text style={styles.transactionHistory}>Transaction History</Text>
+            <TransactionList transactionList={txList} />
+          </View>
+        )}
       </View>
     </View>
   );

@@ -805,6 +805,12 @@ export class FiroWallet implements AbstractWallet {
     return this._txs_by_external_index;
   }
 
+  getTransactionsByAddress(address: string): TransactionItem[] {
+    return this._txs_by_external_index.filter(tx => {
+      return tx.address === address;
+    });
+  }
+
   prepareForSerialization(): void {
     this._txs_by_external_index = [];
     this._txs_by_internal_index = [];
