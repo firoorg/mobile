@@ -40,14 +40,14 @@ export const BalanceCard: FC<BalanceCardProp> = props => {
           <Text style={styles.title}>{localization.balance_card.balance_firo}</Text>
         </View>
         <Text style={styles.firo}>{Currency.formatFiroAmount(props.balance)}</Text>
-        {props.unconfirmedBalance > 0 && (
-          <Text style={styles.firo_unconfirmed}>
-            ({Currency.formatFiroAmount(props.unconfirmedBalance)})
-          </Text>
-        )}
         <Text style={styles.currency}>
           {Currency.formatFiroAmountWithCurrency(props.balance, getFiroRate(), getSettings().defaultCurrency)}
         </Text>
+        {props.unconfirmedBalance > 0 && (
+          <Text style={styles.firo_unconfirmed}>
+            Pending {Currency.formatFiroAmountWithCurrency(props.unconfirmedBalance)}
+          </Text>
+        )}
         {props.balance === 0 && (
           <FiroGetFiroButton
             buttonStyle={styles.getFiro}
@@ -126,8 +126,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   firo_unconfirmed: {
-    fontFamily: 'Rubik-Medium',
-    fontSize: 16,
+    fontFamily: 'Rubik-Regular',
+    fontSize: 14,
     color: '#ffffff',
     textAlign: 'center',
   },
