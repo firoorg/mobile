@@ -12,7 +12,7 @@ import {CurrentFiroTheme} from '../Themes';
 import {FiroGetFiroButton} from './Button';
 import localization from '../localization';
 import {FiroContext} from '../FiroContext';
-import { Currency } from '../utils/currency';
+import {Currency} from '../utils/currency';
 
 const colors = CurrentFiroTheme.colors;
 
@@ -37,18 +37,27 @@ export const BalanceCard: FC<BalanceCardProp> = props => {
             style={styles.icon}
             source={require('../img/ic_firo_balance_white.png')}
           />
-          <Text style={styles.title}>{localization.balance_card.balance_firo}</Text>
+          <Text style={styles.title}>
+            {localization.balance_card.balance_firo}
+          </Text>
         </View>
-        <Text style={styles.firo}>{Currency.formatFiroAmount(props.balance)}</Text>
+        <Text style={styles.firo}>
+          {Currency.formatFiroAmount(props.balance)}
+        </Text>
         <Text style={styles.currency}>
-          {Currency.formatFiroAmountWithCurrency(props.balance, getFiroRate(), getSettings().defaultCurrency)}
+          {Currency.formatFiroAmountWithCurrency(
+            props.balance,
+            getFiroRate(),
+            getSettings().defaultCurrency,
+          )}
         </Text>
         {props.unconfirmedBalance > 0 && (
           <Text style={styles.firo_unconfirmed}>
-            Pending {Currency.formatFiroAmountWithCurrency(props.unconfirmedBalance)}
+            {localization.balance_card.pending_balance}{' '}
+            {Currency.formatFiroAmountWithCurrency(props.unconfirmedBalance)}
           </Text>
         )}
-        {props.balance === 0 && (
+        {props.balance === 0 && props.unconfirmedBalance === 0 && (
           <FiroGetFiroButton
             buttonStyle={styles.getFiro}
             text={localization.component_button.get_firo}
