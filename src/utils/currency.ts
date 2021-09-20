@@ -15,12 +15,15 @@ export class Currency {
     return Currency.startUpdater();
   }
 
-  public static firoToFiat(amount: number): number {
-    return Currency.currentRate * amount;
+  public static firoToFiat(amount: number, format?: boolean): number {
+    return format
+      ? Currency.formatFiroAmount(amount, Currency.currentRate, Currency.currentCurrency)
+      : Currency.currentRate * amount;
   }
 
-  public static fiatToFiro(amount: number): number {
-    return Currency.currentRate ? amount / Currency.currentRate : amount;
+  public static fiatToFiro(amount: number, format?: boolean): number {
+    const result: number = Currency.currentRate ? amount / Currency.currentRate : amount;
+    return format ? Currency.formatFiroAmount(result) : result;
   }
 
   public static setUpdateContextRate(updateRate: (rate: number) => void) {
@@ -29,6 +32,8 @@ export class Currency {
 
   public static formatFiroAmount(amount: number, rate: number = 1, currency: string = ''): number {
     switch (currency) {
+      case 'btc':
+        return parseFloat((amount * rate).toFixed(8));
       case '':
         return parseFloat(amount.toFixed(8));
       default:
