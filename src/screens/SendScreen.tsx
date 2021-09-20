@@ -48,6 +48,8 @@ const SendScreen = () => {
         return;
       }
       if (amount === 0) {
+        setFee(0);
+        setTotal(0);
         return
       }
       try {
@@ -134,11 +136,16 @@ const SendScreen = () => {
     });
   };
 
-  const onAmountSelect = (amount: number) => {
+  const onAmountSelect = (amount: number, isMax: boolean) => {
+    console.log('onAmountSelect', amount, isMax);
+    
     setProcessing(true)
+    const substract = subtractFeeFromAmount || isMax
     const staoshi = amount * SATOSHI;
+
     setSpendAmount(staoshi);
-    estimateFee(staoshi, subtractFeeFromAmount)
+    setSubtractFeeFromAmount(substract)
+    estimateFee(staoshi, substract)
   };
 
   const onSubtractFeeFromAmountChanged = () => {

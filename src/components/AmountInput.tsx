@@ -17,7 +17,7 @@ const CRYPTO = 0
 const CURRANCY = 1
 type SendAmountInputCardProp = {
   maxBalance: number;
-  onAmountSelect: (amount: number) => void;
+  onAmountSelect: (amount: number, isMax: boolean) => void;
 };
 
 export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
@@ -35,36 +35,7 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
     `${localization.amount_input.amount} (${getPlaceholder(isCrypto)})`
     )
 
-  const onTextChnaged = (text: string) => {
-    setInput(text)
-  }
-
-  const onClickToSwap = () => {
-    const i = parseFloat(input)
-    let txt = ''
-    if (isNaN(i)) {
-    } else if (isCrypto) {
-      txt =  Currency.firoToFiat(i).toString()
-    } else {
-      txt = Currency.fiatToFiro(i).toString()
-    }
-
-    setInput(txt)
-    setType(!isCrypto)
-  }
-
-  const onClickMax = () => {
-    let txt = ''
-    if (isCrypto) {
-      txt = props.maxBalance.toString()
-    } else {
-      txt = Currency.firoToFiat(props.maxBalance).toString()
-    }
-
-    setInput(txt)
-  }
-
-  useEffect(() => {
+  const notifyAmountChanged = (input: string, isCrypto: boolean, isMax: boolean) => {
     const i = parseFloat(input)
     let txt = ''
     let crypto = 0
@@ -79,9 +50,42 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
       txt = crypto.toString()
     }
 
-    props.onAmountSelect(crypto)
+    props.onAmountSelect(crypto, isMax)
     setConverted(txt)
-  }, [input, isCrypto])
+  }
+
+  const onTextChnaged = (text: string) => {
+    setInput(text)
+    notifyAmountChanged(text, isCrypto, false)
+  }
+
+  const onClickToSwap = () => {``
+    const i = parseFloat(input)
+    let txt = ''
+    if (isNaN(i)) {
+    } else if (isCrypto) {
+      txt =  Currency.firoToFiat(i).toString()
+    } else {
+      txt = Currency.fiatToFiro(i).toString()
+    }
+
+    const swaped = !isCrypto
+    setInput(txt)
+    setType(swaped)
+    notifyAmountChanged(txt, swaped, false)
+  }
+
+  const onClickMax = () => {
+    let txt = ''
+    if (isCrypto) {
+      txt = props.maxBalance.toString()
+    } else {
+      txt = Currency.firoToFiat(props.maxBalance).toString()
+    }
+
+    setInput(txt)
+    notifyAmountChanged(txt, isCrypto, true)
+  }
 
   return (
     <View style={styles.card}>
