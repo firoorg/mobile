@@ -9,24 +9,31 @@ import {ReceiveAmountInputCard} from '../components/AmountInput';
 import QRCode from 'react-native-qrcode-svg';
 import localization from '../localization';
 import {FiroContext} from '../FiroContext';
-import { ScrollView } from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-gesture-handler';
+import {SATOSHI} from '../core/FiroWallet';
 
 const {colors} = CurrentFiroTheme;
 
 const ReceiveScreen = () => {
   const {getWallet} = useContext(FiroContext);
   const [address, setAddress] = useState('loading...');
+  const [receiveAmount, setReceiveAmount] = useState(0);
   const onClickSelectFromAddress = () => {};
   const onClickCreateAddress = () => {
     const wallet = getWallet();
     if (wallet) {
-      wallet.getAddressAsync().then(setAddress)
+      wallet.getAddressAsync().then(setAddress);
     }
   };
 
   useEffect(() => {
     onClickCreateAddress();
   }, []);
+
+  const onAmountSelect = (amount: number) => {
+    const staoshi = amount * SATOSHI;
+    setReceiveAmount(staoshi);
+  };
 
   return (
     <ScrollView>
@@ -52,7 +59,7 @@ const ReceiveScreen = () => {
             buttonStyle={styles.savedAddress}
             text={localization.receive_screen.select_from_saved_address}
           />
-          <ReceiveAmountInputCard />
+          <ReceiveAmountInputCard onAmountSelect={onAmountSelect} />
         </View>
       </View>
     </ScrollView>
@@ -66,7 +73,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     paddingTop: 30,
-    paddingBottom: 20
+    paddingBottom: 20,
   },
   content: {
     width: '100%',

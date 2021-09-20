@@ -251,7 +251,10 @@ export class AppStorage {
       } else {
         addressBookItem.id = 0;
       }
-      addressBook[addressBook.length] = addressBookItem;
+      addressBook.push(addressBookItem);
+      addressBook.sort((ad1: AddressBookItem, ad2: AddressBookItem) => {
+        return ad1.name.localeCompare(ad2.name);
+      });
       return await this.setItem(
         AppStorage.ADDRESS_BOOK,
         JSON.stringify(addressBook),

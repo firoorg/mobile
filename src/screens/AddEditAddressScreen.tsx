@@ -89,7 +89,7 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
           style={styles.label}
           value={name}
           placeholder={localization.add_edit_address_screen.name}
-          onChangeText={txt => setName(txt)}
+          onChangeText={txt => setName(txt.trim())}
         />
       </View>
 
