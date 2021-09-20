@@ -98,7 +98,7 @@ const MyWalletScreen = () => {
   };
 
   const mintUnspentTransactions = async () => {
-    doMint();
+    await doMint();
   };
 
   const updateMintMetadata = async () => {
@@ -139,12 +139,12 @@ const MyWalletScreen = () => {
     }, []),
   );
 
-  const updateWalletData = () => {
-    updateMintMetadata();
+  const updateWalletData = async () => {
+    await updateMintMetadata();
     updateBalance();
 
-    fetchTransactionList();
-    mintUnspentTransactions();
+    await fetchTransactionList();
+    await mintUnspentTransactions();
     updateTxHistory();
   };
 
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   transactionContainer: {
-    paddingBottom: 195,
+    paddingBottom: 175,
     flexGrow: 1,
     display: 'flex',
     justifyContent: 'center',

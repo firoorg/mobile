@@ -11,12 +11,10 @@ import {FiroContext} from '../FiroContext';
 import {firoElectrum} from '../core/FiroElectrum';
 import localization from '../localization';
 import {SATOSHI} from '../core/FiroWallet';
-import { Currency } from '../utils/currency';
-import { CheckBox } from 'react-native-elements/dist/checkbox/CheckBox';
-import { color } from 'react-native-elements/dist/helpers';
-import { address } from 'bitcoinjs-lib';
-import { ScrollView } from 'react-native-gesture-handler';
-import { useFocusEffect } from '@react-navigation/native';
+import {Currency} from '../utils/currency';
+import {ScrollView} from 'react-native-gesture-handler';
+import {useFocusEffect} from '@react-navigation/native';
+import * as NavigationService from '../NavigationService';
 
 const {colors} = CurrentFiroTheme;
 var timerHandler: number = -1;
@@ -36,13 +34,13 @@ const SendScreen = () => {
     getSettings().defaultCurrency
   ];
 
-  const rate = getFiroRate()
+  const rate = getFiroRate();
   const estimateFee = (amount: number, subtractFeeFromAmount: boolean) => {
     if (timerHandler !== -1) {
       clearTimeout(timerHandler);
     }
     timerHandler = setTimeout(async () => {
-      setProcessing(true)
+      setProcessing(true);
       const wallet = getWallet();
       if (!wallet) {
         return;
@@ -50,14 +48,14 @@ const SendScreen = () => {
       if (amount === 0) {
         setFee(0);
         setTotal(0);
-        return
+        return;
       }
       try {
         const estimate = await wallet.estimateJoinSplitFee({
           spendAmount: amount,
           subtractFeeFromAmount,
         });
-        const changedFee = estimate.fee
+        const changedFee = estimate.fee;
 
         setFee(changedFee);
         if (changedFee === 0) {
@@ -66,7 +64,7 @@ const SendScreen = () => {
           const sub = subtractFeeFromAmount ? 0 : 1;
           setTotal(amount + sub * changedFee);
         }
-        checkIsProcessing(changedFee, sendAddress)
+        checkIsProcessing(changedFee, sendAddress);
       } catch (e) {
         console.log('estimateFee', e);
       }
@@ -77,10 +75,10 @@ const SendScreen = () => {
     const wallet = getWallet();
     if (!wallet) {
       return;
-    } 
+    }
 
-    setProcessing(fee === 0 || !wallet.validate(address))
-  }
+    setProcessing(fee === 0 || !wallet.validate(address));
+  };
 
   const doSpend = async (
     amount: number,
@@ -92,7 +90,7 @@ const SendScreen = () => {
       return;
     }
     if (!wallet.validate(address)) {
-      throw Error('address not valid')
+      throw Error('address not valid');
     }
     try {
       const spendData = await wallet.createLelantusSpendTx({
@@ -105,7 +103,12 @@ const SendScreen = () => {
       console.log(`broadcast tx: ${JSON.stringify(txId)}`);
 
       if (txId === spendData.txId) {
-        wallet.addSendTxToCache(txId, spendData.value / SATOSHI, spendData.fee / SATOSHI, address);
+        wallet.addSendTxToCache(
+          txId,
+          spendData.value / SATOSHI,
+          spendData.fee / SATOSHI,
+          address,
+        );
         wallet.addLelantusMintToCache(
           txId,
           spendData.jmintValue,
@@ -114,7 +117,6 @@ const SendScreen = () => {
         wallet.markCoinsSpend(spendData.spendCoinIndexes);
         await saveToDisk();
         console.log('doSpend saved', txId);
-        
       }
     } catch (e) {
       console.log('error when creating spend transaction', e);
@@ -138,31 +140,35 @@ const SendScreen = () => {
 
   const onAmountSelect = (amount: number, isMax: boolean) => {
     console.log('onAmountSelect', amount, isMax);
-    
-    setProcessing(true)
-    const substract = subtractFeeFromAmount || isMax
+
+    setProcessing(true);
+    const substract = subtractFeeFromAmount || isMax;
     const staoshi = amount * SATOSHI;
 
     setSpendAmount(staoshi);
-    setSubtractFeeFromAmount(substract)
-    estimateFee(staoshi, substract)
+    setSubtractFeeFromAmount(substract);
+    estimateFee(staoshi, substract);
   };
 
   const onSubtractFeeFromAmountChanged = () => {
-    setProcessing(true)
-    const changed = !subtractFeeFromAmount
-    setSubtractFeeFromAmount(changed)
-    estimateFee(spendAmount, changed)
+    setProcessing(true);
+    const changed = !subtractFeeFromAmount;
+    setSubtractFeeFromAmount(changed);
+    estimateFee(spendAmount, changed);
   };
 
   const onAddressSelect = (address: string) => {
     setSendAddress(address);
-    checkIsProcessing(fee, address)
+    checkIsProcessing(fee, address);
   };
 
   const onClickSend = () => {
     try {
-      doSpend(spendAmount, subtractFeeFromAmount, sendAddress);
+      setProcessing(true);
+      doSpend(spendAmount, subtractFeeFromAmount, sendAddress).then(() => {
+        setSendAddress('');
+        NavigationService.back();
+      });
     } catch (e) {
       console.log('somting went wrong in spend tx', e);
     }
@@ -175,11 +181,11 @@ const SendScreen = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log("useFocusEffect send");
-      updateBalance()
+      console.log('useFocusEffect send');
+      updateBalance();
 
       return () => {};
-    }, [])
+    }, []),
   );
 
   return (
@@ -201,9 +207,13 @@ const SendScreen = () => {
               {Currency.formatFiroAmountWithCurrency(balance)}
             </Text>
             <Text style={styles.currency}>
-              {Currency.formatFiroAmountWithCurrency(balance, rate, getSettings().defaultCurrency)} (1{' '}
-              {localization.global.firo} ={' '}
-              {`${rate} ${currentCurrencyName}`})
+              {Currency.formatFiroAmountWithCurrency(
+                balance,
+                rate,
+                getSettings().defaultCurrency,
+              )}{' '}
+              (1 {localization.global.firo} = {`${rate} ${currentCurrencyName}`}
+              )
             </Text>
           </View>
           <Divider style={styles.divider} />
@@ -211,7 +221,11 @@ const SendScreen = () => {
             maxBalance={balance}
             onAmountSelect={onAmountSelect}
           />
-          <SendAddress style={styles.address} onAddressSelect={onAddressSelect} />
+          <SendAddress
+            style={styles.address}
+            onAddressSelect={onAddressSelect}
+            address={sendAddress}
+          />
           <TextInput
             style={styles.label}
             placeholder={localization.send_screen.label_optional}

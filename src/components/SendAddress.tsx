@@ -16,6 +16,7 @@ import {useEffect} from 'react';
 type SendAddressProps = {
   style: StyleProp<ViewStyle>;
   onAddressSelect: (address: string) => void;
+  address?: string;
 };
 
 export const SendAddress: FC<SendAddressProps> = props => {
@@ -30,7 +31,7 @@ export const SendAddress: FC<SendAddressProps> = props => {
         <TextInput
           style={styles.input}
           placeholder={localization.send_address.address}
-          value={sendAddress}
+          value={props.address}
           onChangeText={text => setSendAddress(text)}
         />
       </View>
