@@ -22,19 +22,28 @@ type ReceiveAmountInputCardProp = {
 };
 
 export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
-  const {getSettings} = useContext(FiroContext);
+  const { getFiroRate, getSettings  } = useContext(FiroContext);
   const getPlaceholder = (crypto: boolean) => {
     const c = getSettings().defaultCurrency;
     return crypto ? localization.global.firo : localization.currencies[c];
   };
-
+  
+  const [currencyInfo, setCurrencyInfo] = useState({ rate: getFiroRate(), currency: getSettings().defaultCurrency });
   const [isCrypto, setType] = useState(true);
   const [input, setInput] = useState('');
   const [converted, setConverted] = useState(
-    `${localization.amount_input.amount} (${getPlaceholder(isCrypto)})`,
+    `${localization.amount_input.amount} (${getPlaceholder(!isCrypto)})`,
   );
 
-  const notifyAmountChanged = (input: string, isCrypto: boolean, isMax: boolean) => {
+  useEffect(() => {
+    const newInfo = { rate: getFiroRate(), currency: getSettings().defaultCurrency };
+    if (JSON.stringify(newInfo) != JSON.stringify(currencyInfo)) {
+      setCurrencyInfo(newInfo);
+      updateConverted(input);
+    }
+  });
+
+  const updateConverted = (input: string) => {
     const i = parseFloat(input)
     let txt = ''
     let crypto = 0
@@ -43,14 +52,18 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
       txt = `${localization.amount_input.amount} (${getPlaceholder(!isCrypto)})`
     } else if (isCrypto) {
       crypto = i
-      txt = Currency.firoToFiat(i).toString()
+      txt = Currency.firoToFiat(i, true).toString()
     } else {
-      crypto = Currency.fiatToFiro(i)
+      crypto = Currency.fiatToFiro(i, true)
       txt = crypto.toString()
     }
-
+    setConverted(txt);
+    return crypto;
+  };
+  
+  const notifyAmountChanged = (input: string, isCrypto: boolean, isMax: boolean) => {
+    const crypto = updateConverted(input);
     props.onAmountSelect(crypto, isMax)
-    setConverted(txt)
   }
 
   const onTextChnaged = (text: string) => {
