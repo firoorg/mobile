@@ -180,6 +180,47 @@ export default class FiroElectrum implements AbstractElectrum {
     return history;
   }
 
+  async multiGetTransactionsByAddress(
+    addresses: Array<string>,
+    batchsize: number = 200,
+  ): Promise<Map<string, Array<TransactionModel>>> {
+    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
+      throw new Error('Electrum client is not connected');
+    }
+
+    const ret: Map<string, Array<TransactionModel>> = new Map();
+
+    const chunks = splitIntoChunks(addresses, batchsize);
+    for (const chunk of chunks) {
+      const scripthashes = [];
+      const scripthash2addr: Map<string, string> = new Map();
+      for (const addr of chunk) {
+        const script = bitcoin.address.toOutputScript(addr, network);
+        const hash = bitcoin.crypto.sha256(script);
+        // eslint-disable-next-line no-undef
+        let reversedHash = Buffer.from(reverse(hash));
+        let reversedHashHex = reversedHash.toString('hex');
+        scripthashes.push(reversedHashHex);
+        scripthash2addr.set(reversedHashHex, addr);
+      }
+
+      const results = await this.mainClient.blockchainScripthash_getHistoryBatch(
+        scripthashes,
+      );
+
+      for (const history of results) {
+        if (history.error) {
+          console.warn('multiGetTransactionsByAddress():', history.error);
+        }
+        if (history.result.length > 0) {
+          ret.set(scripthash2addr.get(history.param)!, history.result);
+        }
+      }
+    }
+
+    return ret;
+  }
+
   async getTransactionsFullByAddress(
     address: string,
   ): Promise<Array<FullTransactionModel>> {
@@ -226,6 +267,74 @@ export default class FiroElectrum implements AbstractElectrum {
       // delete full.hex; // compact
       // delete full.hash; // compact
       ret.push(full);
+    }
+
+    return ret;
+  }
+
+  async multiGetTransactionsFullByAddress(
+    addresses: Array<string>,
+    batchsize: number = 100,
+    verbose: boolean = true,
+  ): Promise<Array<FullTransactionModel>> {
+    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
+      throw new Error('Electrum client is not connected');
+    }
+
+    const ret = [];
+    const txsMap = await this.multiGetTransactionsByAddress(
+      addresses,
+      batchsize,
+    );
+    const txId2Address: Map<string, string> = new Map();
+    const txIds: Array<string> = [];
+    for (const [key, value] of txsMap.entries()) {
+      const ids = value.map(element => {
+        return element.tx_hash;
+      });
+      ids.forEach(id => {
+        txIds.push(id);
+        txId2Address.set(id, key);
+      });
+    }
+    const fullTxsMap = await this.multiGetTransactionByTxid(
+      txIds,
+      batchsize,
+      verbose,
+    );
+    for (const [txid, fullTx] of fullTxsMap.entries()) {
+      fullTx.address = txId2Address.get(txid)!;
+      for (const input of fullTx.vin) {
+        // now we need to fetch previous TX where this VIN became an output, so we can see its amount
+        const prevTxForVin = await this.mainClient.blockchainTransaction_get(
+          input.txid,
+          verbose,
+        );
+        if (
+          prevTxForVin &&
+          prevTxForVin.vout &&
+          prevTxForVin.vout[input.vout]
+        ) {
+          input.value = prevTxForVin.vout[input.vout].value;
+          // also, we extract destination address from prev output:
+          if (
+            prevTxForVin.vout[input.vout].scriptPubKey &&
+            prevTxForVin.vout[input.vout].scriptPubKey.addresses
+          ) {
+            input.addresses =
+              prevTxForVin.vout[input.vout].scriptPubKey.addresses;
+          }
+        }
+      }
+
+      for (const output of fullTx.vout) {
+        if (output.scriptPubKey && output.scriptPubKey.addresses) {
+          output.addresses = output.scriptPubKey.addresses;
+        }
+      }
+      fullTx.inputs = fullTx.vin;
+      fullTx.outputs = fullTx.vout;
+      ret.push(fullTx);
     }
 
     return ret;
@@ -373,6 +482,33 @@ export default class FiroElectrum implements AbstractElectrum {
       reversedHash.toString('hex'),
     );
     return listUnspent;
+  }
+
+  async multiGetUnspentTransactionsByAddress(
+    addresses: Array<string>,
+  ): Promise<Map<string, Array<TransactionModel>>> {
+    const scripthashes = [];
+    const scripthash2addr: Map<string, string> = new Map();
+    for (const address of addresses) {
+      const script = bitcoin.address.toOutputScript(address, network);
+      const hash = bitcoin.crypto.sha256(script);
+      // eslint-disable-next-line no-undef
+      let reversedHash = Buffer.from(reverse(hash));
+      let reversedHashHex = reversedHash.toString('hex');
+      scripthashes.push(reversedHashHex);
+      scripthash2addr.set(reversedHashHex, address);
+    }
+    const ret: Map<string, Array<TransactionModel>> = new Map();
+    const listUnspent = await this.mainClient.blockchainScripthash_listunspentBatch(
+      scripthashes,
+    );
+    for (const utxo of listUnspent) {
+      if (utxo.result.length > 0) {
+        ret.set(scripthash2addr.get(utxo.param)!, utxo.result);
+      }
+    }
+    console.log('utxos', ret);
+    return ret;
   }
 
   subscribeToChanges(onChange: (params: any) => void): void {

@@ -26,33 +26,34 @@ const MyWalletScreen = () => {
     if (!wallet) {
       return;
     }
+    let updateWallet = false;
     const address2Check = await wallet.getTransactionsAddresses();
-    for (const address of address2Check) {
-      try {
-        const utxos = await firoElectrum.getUnspentTransactionsByAddress(
-          address,
-        );
-        if (utxos && utxos.length === 0) {
-          continue;
-        }
+    try {
+      const utxoMap = await firoElectrum.multiGetUnspentTransactionsByAddress(
+        address2Check,
+      );
 
-        console.log(`trying to mint address ${address}`);
-        const txIds = utxos.map(tx => tx.tx_hash);
-        const txs = await firoElectrum.multiGetTransactionByTxid(txIds);
+      const txIds: Array<string> = [];
+      for (const value of utxoMap.values()) {
+        const ids = value.map(element => {
+          return element.tx_hash;
+        });
+        txIds.push(...ids);
+      }
 
+      const txs = await firoElectrum.multiGetTransactionByTxid(txIds);
+
+      for (const [address, utxos] of utxoMap.entries()) {
         const lelantusUtxos = utxos.map(utxo => {
           const fTx = txs.get(utxo.tx_hash);
           return {
             txId: utxo.tx_hash,
-            txHex: fTx!!.hex,
+            txHex: fTx!.hex,
             index: utxo.tx_pos,
             value: utxo.value,
             address: address,
           };
         });
-        if (lelantusUtxos.length === 0) {
-          continue;
-        }
 
         const mint = await wallet.createLelantusMintTx({
           utxos: lelantusUtxos,
@@ -69,12 +70,15 @@ const MyWalletScreen = () => {
             mint.fee / SATOSHI,
             address,
           );
-          await saveToDisk();
+          updateWallet = true;
           console.log(`saved mint tx: ${JSON.stringify(txId)}`);
         }
-      } catch (e) {
-        console.log('error when creating mint transaction', e);
       }
+      if (updateWallet) {
+        await saveToDisk();
+      }
+    } catch (e) {
+      console.log('error when creating mint transaction', e);
     }
   };
 
@@ -191,11 +195,10 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   transactionContainer: {
-    paddingBottom: 175,
     flexGrow: 1,
     display: 'flex',
     justifyContent: 'center',
-    marginBottom: 60,
+    marginBottom: 235,
   },
 });
 

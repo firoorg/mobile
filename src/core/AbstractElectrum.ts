@@ -73,6 +73,11 @@ export interface AbstractElectrum {
   getTransactionsFullByAddress(
     address: string,
   ): Promise<Array<FullTransactionModel>>;
+  multiGetTransactionsFullByAddress(
+    addresses: Array<string>,
+    batchSize?: number,
+    verbose?: boolean,
+  ): Promise<Array<FullTransactionModel>>;
 
   multiGetBalanceByAddress(
     addresses: Array<string>,
@@ -93,6 +98,9 @@ export interface AbstractElectrum {
   getUnspentTransactionsByAddress(
     address: string,
   ): Promise<Array<TransactionModel>>;
+  multiGetUnspentTransactionsByAddress(
+    addresses: Array<string>,
+  ): Promise<Map<string, Array<TransactionModel>>>;
 
   broadcast(hex: string): Promise<string>;
 

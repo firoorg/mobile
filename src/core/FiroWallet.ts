@@ -744,63 +744,61 @@ export class FiroWallet implements AbstractWallet {
   }
 
   async fetchTransactions() {
-    const address2Check = await this.getTransactionsAddresses();
     const sizeBefore = this._txs_by_external_index.length;
-    for (const address of address2Check) {
-      try {
-        const fullTxs = await firoElectrum.getTransactionsFullByAddress(
-          address,
+    const address2Check = await this.getTransactionsAddresses();
+    try {
+      const fullTxs = await firoElectrum.multiGetTransactionsFullByAddress(
+        address2Check,
+      );
+      fullTxs.forEach(tx => {
+        const external_index = this._txs_by_external_index.findIndex(
+          item => item.txId === tx.txid,
         );
-        fullTxs.forEach(tx => {
-          const external_index = this._txs_by_external_index.findIndex(
-            item => item.txId === tx.txid,
-          );
 
-          if (external_index === -1) {
-            let transactionItem = new TransactionItem();
-            transactionItem.address = tx.address;
-            transactionItem.txId = tx.txid;
-            transactionItem.confirmed = true;
+        if (external_index === -1) {
+          let transactionItem = new TransactionItem();
+          transactionItem.address = tx.address;
+          transactionItem.txId = tx.txid;
+          transactionItem.confirmed = true;
 
-            const ia = tx.inputs.reduce((acc, elm) => acc + elm.value, 0);
-            const oa = tx.outputs.reduce((acc, elm) => acc + elm.value, 0);
+          const ia = tx.inputs.reduce((acc, elm) => acc + elm.value, 0);
+          const oa = tx.outputs.reduce((acc, elm) => acc + elm.value, 0);
 
-            transactionItem.fee = ia - oa;
+          transactionItem.fee = ia - oa;
 
-            if (
-              tx.outputs.length === 1 &&
-              tx.outputs[0].scriptPubKey &&
-              tx.outputs[0].scriptPubKey.type === 'lelantusmint'
-            ) {
-              transactionItem.received = false;
-              transactionItem.isMint = true;
-              transactionItem.value = tx.outputs[0].value;
-              transactionItem.confirmed =
-                tx.confirmations >= MINT_CONFIRM_BLOCK_COUNT;
-            } else {
-              tx.outputs.forEach(vout => {
-                if (vout.addresses && vout.addresses.includes(address)) {
-                  transactionItem.value += vout.value;
-                  transactionItem.received = true;
-                }
-              });
-            }
-
-            if (transactionItem.received || transactionItem.isMint) {
-              this._txs_by_external_index.push(transactionItem);
-            }
+          if (
+            tx.outputs.length === 1 &&
+            tx.outputs[0].scriptPubKey &&
+            tx.outputs[0].scriptPubKey.type === 'lelantusmint'
+          ) {
+            transactionItem.received = false;
+            transactionItem.isMint = true;
+            transactionItem.value = tx.outputs[0].value;
+            transactionItem.confirmed =
+              tx.confirmations >= MINT_CONFIRM_BLOCK_COUNT;
+          } else {
+            tx.outputs.forEach(vout => {
+              if (vout.addresses && vout.addresses.includes(tx.address)) {
+                transactionItem.value += vout.value;
+                transactionItem.received = true;
+              }
+            });
           }
-        });
-      } catch (e) {
-        console.log('error when getting transaction list', e);
-      }
-      if (sizeBefore !== this._txs_by_external_index.length) {
-        this._txs_by_external_index.sort(
-          (tx1: TransactionItem, tx2: TransactionItem) => {
-            return tx2.date - tx1.date;
-          },
-        );
-      }
+
+          if (transactionItem.received || transactionItem.isMint) {
+            this._txs_by_external_index.push(transactionItem);
+          }
+        }
+      });
+    } catch (e) {
+      console.log('error when getting transaction list', e);
+    }
+    if (sizeBefore !== this._txs_by_external_index.length) {
+      this._txs_by_external_index.sort(
+        (tx1: TransactionItem, tx2: TransactionItem) => {
+          return tx2.date - tx1.date;
+        },
+      );
     }
   }
 

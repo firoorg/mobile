@@ -64,9 +64,9 @@ export const FiroSecondaryButton: FC<ButtonProps> = props => {
 export const FiroSubtleButton: FC<ButtonProps> = props => {
   return (
     <TouchableOpacity
-      style={[styles.button, styles.sublteButton, props.buttonStyle]}
+      style={[styles.button, styles.subtleButton, props.buttonStyle]}
       onPress={props.onClick}>
-      <Text style={[styles.text, styles.sublteText]}>{props.text}</Text>
+      <Text style={[styles.text, styles.subtleText]}>{props.text}</Text>
     </TouchableOpacity>
   );
 };
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: 'transparent',
   },
-  sublteButton: {
+  subtleButton: {
     backgroundColor: '#00000010',
     borderColor: 'transparent',
   },
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   secondaryText: {
     color: colors.primary,
   },
-  sublteText: {
+  subtleText: {
     color: colors.textOnBackground,
   },
   getFiroText: {
