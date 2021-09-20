@@ -111,7 +111,8 @@
     "transaction_fee": "Transaction Fee",
     "total_send_amount": "Total Send Amount",
     "send": "Send",
-    "reduce_fee": "Reduce Fee From Amount"
+    "reduce_fee": "Reduce Fee From Amount",
+    "select_address": "Select Address"
   },
 
   "receive_screen": {

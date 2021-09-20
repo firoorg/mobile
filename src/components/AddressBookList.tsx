@@ -13,44 +13,65 @@ import * as NavigationService from '../NavigationService';
 import {CurrentFiroTheme} from '../Themes';
 import {AddressBookItem} from '../data/AddressBookItem';
 
-let onMenuClick: (item: AddressBookItem) => void;
+let onAddressSelect: ((item: string) => void) | undefined;
 
 type AddressBookListProp = {
   addressBookList: Array<AddressBookItem>;
-  onMenuClick: (item: AddressBookItem) => void;
+  onMenuClick?: (item: AddressBookItem) => void;
+  onAddressSelect?: (item: string) => void;
+};
+
+const onAddressClick = (item: AddressBookItem) => {
+  if (onAddressSelect) {
+    onAddressSelect(item.address);
+  } else {
+    NavigationService.navigate('AddressDetailsScreen', {item});
+  }
 };
 
 const keys = (item: AddressBookItem, index: number) => index.toString();
 
-const renderItem: ListRenderItem<AddressBookItem> = ({item}) => {
-  const onAddressClick = () => {
-    NavigationService.navigate('AddressDetailsScreen', {item});
-  };
-  const onAddressMenuClick = () => {
-    onMenuClick(item);
-  };
-  return (
-    <ListItem containerStyle={styles.listItem} onPress={onAddressClick}>
-      <View style={styles.listItemCard}>
-        <View style={[styles.icon, {backgroundColor: item.iconColor}]}>
-          <Text style={styles.iconLetter}>
-            {item.name.substring(0, 1).toUpperCase()}
-          </Text>
-        </View>
-        <View style={styles.textContainer}>
-          <Text style={styles.addressName}>{item.name}</Text>
-          <Text style={styles.address}>{item.address}</Text>
-        </View>
-        <TouchableOpacity onPress={onAddressMenuClick}>
-          <Image style={styles.menu} source={require('../img/ic_more.png')} />
-        </TouchableOpacity>
-      </View>
-    </ListItem>
-  );
-};
-
 export const AddressBookList: FC<AddressBookListProp> = props => {
-  onMenuClick = props.onMenuClick;
+  onAddressSelect = props.onAddressSelect;
+
+  const renderItem: ListRenderItem<AddressBookItem> = ({item}) => {
+    return (
+      <ListItem
+        containerStyle={styles.listItem}
+        onPress={() => onAddressClick(item)}>
+        <View style={styles.listItemCard}>
+          <View style={[styles.icon, {backgroundColor: item.iconColor}]}>
+            <Text style={styles.iconLetter}>
+              {item.name.substring(0, 1).toUpperCase()}
+            </Text>
+          </View>
+          <View style={styles.textContainer}>
+            <Text style={styles.addressName}>{item.name}</Text>
+            <Text style={styles.address}>{item.address}</Text>
+          </View>
+          {props.onMenuClick && (
+            <TouchableOpacity onPress={() => props.onMenuClick!(item)}>
+              <Image
+                style={styles.menu}
+                source={require('../img/ic_more.png')}
+              />
+            </TouchableOpacity>
+          )}
+          {props.onAddressSelect && (
+            <ListItem.CheckBox
+              checkedColor={colors.primary}
+              uncheckedColor={colors.unchecked}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+              checked={false}
+              onPress={() => onAddressClick(item)}
+            />
+          )}
+        </View>
+      </ListItem>
+    );
+  };
+
   return (
     <FlatList
       keyExtractor={keys}

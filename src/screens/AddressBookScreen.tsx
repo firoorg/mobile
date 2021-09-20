@@ -17,6 +17,7 @@ import {AppStorage} from '../app-storage';
 import {AddressBookItem} from '../data/AddressBookItem';
 import localization from '../localization';
 import {useFocusEffect} from '@react-navigation/native';
+import {Divider} from 'react-native-elements/dist/divider/Divider';
 
 const appStorage = new AppStorage();
 
@@ -94,6 +95,7 @@ const AddressBookScreen = () => {
         <Image style={styles.search} source={require('../img/ic_search.png')} />
         <TouchableOpacity style={styles.addNew} onPress={onAddNewClick}>
           <Image style={styles.search} source={require('../img/ic_add.png')} />
+          <Divider style={styles.divider} />
           <Text>{localization.address_book_screen.add_new}</Text>
         </TouchableOpacity>
       </View>
@@ -171,5 +173,8 @@ const styles = StyleSheet.create({
   search: {
     width: 24,
     height: 24,
+  },
+  divider: {
+    marginHorizontal: 5,
   },
 });

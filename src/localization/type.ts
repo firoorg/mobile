@@ -115,6 +115,7 @@ export interface IString extends LocalizedStringsMethods {
     total_send_amount: string;
     send: string;
     reduce_fee: string;
+    select_address: string;
   };
 
   receive_screen: {
