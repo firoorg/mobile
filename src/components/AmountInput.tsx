@@ -63,9 +63,9 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
     let txt = ''
     if (isNaN(i)) {
     } else if (isCrypto) {
-      txt = Currency.firoToFiat(i).toString();
+      txt = Currency.firoToFiat(i, true).toString();
     } else {
-      txt = Currency.fiatToFiro(i).toString();
+      txt = Currency.fiatToFiro(i, true).toString();
     }
 
     const swaped = !isCrypto
@@ -79,7 +79,7 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
     if (isCrypto) {
       txt = props.maxBalance.toString();
     } else {
-      txt = Currency.firoToFiat(props.maxBalance).toString();
+      txt = Currency.firoToFiat(props.maxBalance, true).toString();
     }
 
     setInput(txt)
@@ -137,9 +137,9 @@ export const ReceiveAmountInputCard: FC<ReceiveAmountInputCardProp> = props => {
     let txt = '';
     if (isNaN(i)) {
     } else if (isCrypto) {
-      txt = Currency.firoToFiat(i).toString();
+      txt = Currency.firoToFiat(i, true).toString();
     } else {
-      txt = Currency.fiatToFiro(i).toString();
+      txt = Currency.fiatToFiro(i, true).toString();
     }
 
     setInput(txt);
@@ -157,9 +157,9 @@ export const ReceiveAmountInputCard: FC<ReceiveAmountInputCardProp> = props => {
       )})`;
     } else if (isCrypto) {
       crypto = i;
-      txt = Currency.firoToFiat(i).toString();
+      txt = Currency.firoToFiat(i, true).toString();
     } else {
-      crypto = Currency.fiatToFiro(i);
+      crypto = Currency.fiatToFiro(i, true);
       txt = crypto.toString();
     }
 
