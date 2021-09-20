@@ -5,7 +5,6 @@ import {FiroTextBig} from '../components/Texts';
 import {FiroToolbarWithoutBack} from '../components/Toolbar';
 import {CurrentFiroTheme} from '../Themes';
 import {FiroSelectFromSavedAddress} from '../components/Button';
-import {ReceiveAmountInputCard} from '../components/AmountInput';
 import QRCode from 'react-native-qrcode-svg';
 import localization from '../localization';
 import {FiroContext} from '../FiroContext';
@@ -17,7 +16,6 @@ const {colors} = CurrentFiroTheme;
 const ReceiveScreen = () => {
   const {getWallet} = useContext(FiroContext);
   const [address, setAddress] = useState('loading...');
-  const [receiveAmount, setReceiveAmount] = useState(0);
   const onClickSelectFromAddress = () => {};
   const onClickCreateAddress = () => {
     const wallet = getWallet();
@@ -29,11 +27,6 @@ const ReceiveScreen = () => {
   useEffect(() => {
     onClickCreateAddress();
   }, []);
-
-  const onAmountSelect = (amount: number) => {
-    const staoshi = amount * SATOSHI;
-    setReceiveAmount(staoshi);
-  };
 
   return (
     <ScrollView>
@@ -59,7 +52,6 @@ const ReceiveScreen = () => {
             buttonStyle={styles.savedAddress}
             text={localization.receive_screen.select_from_saved_address}
           />
-          <ReceiveAmountInputCard onAmountSelect={onAmountSelect} />
         </View>
       </View>
     </ScrollView>

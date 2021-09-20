@@ -55,7 +55,7 @@ export const TransactionRow: FC<TransactionRowProps> = props => {
         <View style={styles.row}>
           <Text style={styles.subtitle}>{title}</Text>
           <Text style={styles.subtitle}>
-            {new Date(item.date).toLocaleDateString('en-US', TX_DATE_FORMAT)}
+            {new Date(item.date).toLocaleDateString('en-US', TX_DATE_FORMAT as Intl.DateTimeFormatOptions)}
           </Text>
         </View>
       </View>
