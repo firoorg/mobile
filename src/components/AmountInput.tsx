@@ -11,29 +11,28 @@ import {Divider} from 'react-native-elements';
 import {FiroPrimaryButton} from './Button';
 import localization from '../localization';
 import {FiroContext} from '../FiroContext';
-import { Currency } from '../utils/currency';
+import {Currency} from '../utils/currency';
 
-const CRYPTO = 0
-const CURRANCY = 1
 type SendAmountInputCardProp = {
   maxBalance: number;
   onAmountSelect: (amount: number, isMax: boolean) => void;
+};
+type ReceiveAmountInputCardProp = {
+  onAmountSelect: (amount: number) => void;
 };
 
 export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
   const {getSettings} = useContext(FiroContext);
   const getPlaceholder = (crypto: boolean) => {
-    const c = getSettings().defaultCurrency
-    return crypto ? 
-      localization.global.firo :
-      localization.currencies[c];
-  }
+    const c = getSettings().defaultCurrency;
+    return crypto ? localization.global.firo : localization.currencies[c];
+  };
 
   const [isCrypto, setType] = useState(true);
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState('');
   const [converted, setConverted] = useState(
-    `${localization.amount_input.amount} (${getPlaceholder(isCrypto)})`
-    )
+    `${localization.amount_input.amount} (${getPlaceholder(isCrypto)})`,
+  );
 
   const notifyAmountChanged = (input: string, isCrypto: boolean, isMax: boolean) => {
     const i = parseFloat(input)
@@ -64,9 +63,9 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
     let txt = ''
     if (isNaN(i)) {
     } else if (isCrypto) {
-      txt =  Currency.firoToFiat(i).toString()
+      txt = Currency.firoToFiat(i).toString();
     } else {
-      txt = Currency.fiatToFiro(i).toString()
+      txt = Currency.fiatToFiro(i).toString();
     }
 
     const swaped = !isCrypto
@@ -76,11 +75,11 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
   }
 
   const onClickMax = () => {
-    let txt = ''
+    let txt = '';
     if (isCrypto) {
-      txt = props.maxBalance.toString()
+      txt = props.maxBalance.toString();
     } else {
-      txt = Currency.firoToFiat(props.maxBalance).toString()
+      txt = Currency.firoToFiat(props.maxBalance).toString();
     }
 
     setInput(txt)
@@ -95,7 +94,9 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
             style={styles.input}
             keyboardType="number-pad"
             value={input}
-            placeholder={`${localization.amount_input.enter_amount} (${getPlaceholder(isCrypto)})`}
+            placeholder={`${
+              localization.amount_input.enter_amount
+            } (${getPlaceholder(isCrypto)})`}
             onChangeText={onTextChnaged}
           />
           <FiroPrimaryButton
@@ -114,33 +115,80 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
   );
 };
 
-export const ReceiveAmountInputCard: FC = () => {
-  const [firoIndex, setFiroIndex] = useState(0);
+export const ReceiveAmountInputCard: FC<ReceiveAmountInputCardProp> = props => {
   const {getSettings} = useContext(FiroContext);
-  const placeholders = [
-    localization.global.firo,
-    (localization.currencies as any)[getSettings().defaultCurrency],
-  ];
-  const currencyIndex = 1 - firoIndex;
+  const getPlaceholder = (crypto: boolean) => {
+    const c = getSettings().defaultCurrency;
+    return crypto ? localization.global.firo : localization.currencies[c];
+  };
+
+  const [isCrypto, setType] = useState(true);
+  const [input, setInput] = useState('');
+  const [converted, setConverted] = useState(
+    `${localization.amount_input.amount} (${getPlaceholder(isCrypto)})`,
+  );
+
+  const onTextChnaged = (text: string) => {
+    setInput(text);
+  };
+
+  const onClickToSwap = () => {
+    const i = parseFloat(input);
+    let txt = '';
+    if (isNaN(i)) {
+    } else if (isCrypto) {
+      txt = Currency.firoToFiat(i).toString();
+    } else {
+      txt = Currency.fiatToFiro(i).toString();
+    }
+
+    setInput(txt);
+    setType(!isCrypto);
+  };
+
+  useEffect(() => {
+    const i = parseFloat(input);
+    let txt = '';
+    let crypto = 0;
+    if (isNaN(i)) {
+      crypto = 0;
+      txt = `${localization.amount_input.amount} (${getPlaceholder(
+        !isCrypto,
+      )})`;
+    } else if (isCrypto) {
+      crypto = i;
+      txt = Currency.firoToFiat(i).toString();
+    } else {
+      crypto = Currency.fiatToFiro(i);
+      txt = crypto.toString();
+    }
+
+    props.onAmountSelect(crypto);
+    setConverted(txt);
+  }, [input, isCrypto]);
+
   return (
     <View style={styles.card}>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder={`${localization.amount_input.enter_amount} (${placeholders[firoIndex]})`}
+          keyboardType="number-pad"
+          value={input}
+          placeholder={`${
+            localization.amount_input.enter_amount
+          } (${getPlaceholder(isCrypto)})`}
+          onChangeText={onTextChnaged}
         />
         <Divider style={styles.divider} />
-        <TextInput
-          style={styles.secondaryInput}
-          placeholder={`${localization.amount_input.amount} (${placeholders[currencyIndex]})`}
-        />
+        <Text style={styles.secondaryText}>{converted}</Text>
       </View>
-      <TouchableOpacity onPress={() => setFiroIndex(1 - firoIndex)}>
+      <TouchableOpacity onPress={onClickToSwap}>
         <Image style={styles.swap} source={require('../img/ic_swap.png')} />
       </TouchableOpacity>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   card: {
     display: 'flex',

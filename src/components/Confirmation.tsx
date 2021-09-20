@@ -3,6 +3,7 @@ import React, {FC} from 'react';
 import {FiroPrimaryButton, FiroSubtleButton} from './Button';
 import {StyleSheet, StyleProp, View, ViewStyle} from 'react-native';
 import localization from '../localization';
+import {Divider} from 'react-native-elements';
 
 type ConfirmationProps = {
   style: StyleProp<ViewStyle>;
@@ -19,6 +20,7 @@ export const Confirmation: FC<ConfirmationProps> = props => {
         text={localization.component_button.cancel}
         onClick={props.onDiscardAction}
       />
+      <Divider style={styles.divider} />
       <FiroPrimaryButton
         buttonStyle={styles.button}
         text={props.confirmButtonText}
@@ -36,5 +38,8 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
+  },
+  divider: {
+    marginHorizontal: 10,
   },
 });
