@@ -417,7 +417,12 @@ export class FiroWallet implements AbstractWallet {
     this._txs_by_external_index.unshift(tx);
   }
 
-  addSendTxToCache(txId: string, spendAmount: number, fee: number, address: string): void {
+  addSendTxToCache(
+    txId: string,
+    spendAmount: number,
+    fee: number,
+    address: string,
+  ): void {
     const tx = new TransactionItem();
     tx.address = address;
     tx.value = spendAmount;
@@ -731,10 +736,10 @@ export class FiroWallet implements AbstractWallet {
 
   validate(address: string): boolean {
     try {
-      bitcoin.address.toOutputScript(address, network)
-      return true
+      bitcoin.address.toOutputScript(address, network);
+      return true;
     } catch (e) {
-      return false
+      return false;
     }
   }
 
@@ -750,20 +755,17 @@ export class FiroWallet implements AbstractWallet {
           const external_index = this._txs_by_external_index.findIndex(
             item => item.txId === tx.txid,
           );
-          
+
           if (external_index === -1) {
             let transactionItem = new TransactionItem();
             transactionItem.address = tx.address;
-            if (tx.time) {
-              transactionItem.date = tx.time * 1000;
-            }
             transactionItem.txId = tx.txid;
             transactionItem.confirmed = true;
 
-            const ia = tx.inputs.reduce((acc, elm) => acc + elm.value, 0)
-            const oa = tx.outputs.reduce((acc, elm) => acc + elm.value, 0)
+            const ia = tx.inputs.reduce((acc, elm) => acc + elm.value, 0);
+            const oa = tx.outputs.reduce((acc, elm) => acc + elm.value, 0);
 
-            transactionItem.fee = ia - oa
+            transactionItem.fee = ia - oa;
 
             if (
               tx.outputs.length === 1 &&
@@ -787,7 +789,7 @@ export class FiroWallet implements AbstractWallet {
             if (transactionItem.received || transactionItem.isMint) {
               this._txs_by_external_index.push(transactionItem);
             }
-          } 
+          }
         });
       } catch (e) {
         console.log('error when getting transaction list', e);

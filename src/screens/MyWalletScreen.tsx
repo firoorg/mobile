@@ -10,7 +10,7 @@ import {TransactionItem} from '../data/TransactionItem';
 import localization from '../localization';
 import {FiroTransactionEmpty} from '../components/EmptyState';
 import {SATOSHI} from '../core/FiroWallet';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 
 const {colors} = CurrentFiroTheme;
 
@@ -27,7 +27,6 @@ const MyWalletScreen = () => {
       return;
     }
     const address2Check = await wallet.getTransactionsAddresses();
-    const latestBlockHeight = firoElectrum.getLatestBlockHeight();
     for (const address of address2Check) {
       try {
         const utxos = await firoElectrum.getUnspentTransactionsByAddress(
@@ -64,7 +63,12 @@ const MyWalletScreen = () => {
 
         if (txId === mint.txId) {
           wallet.addLelantusMintToCache(txId, mint.value, mint.publicCoin);
-          wallet.addMintTxToCache(txId, mint.value / SATOSHI, mint.fee / SATOSHI, address);
+          wallet.addMintTxToCache(
+            txId,
+            mint.value / SATOSHI,
+            mint.fee / SATOSHI,
+            address,
+          );
           await saveToDisk();
           console.log(`saved mint tx: ${JSON.stringify(txId)}`);
         }
@@ -125,24 +129,22 @@ const MyWalletScreen = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log("useFocusEffect my wallet");
+      console.log('useFocusEffect my wallet');
       console.log(getWallet());
-      
-      
-      updateBalance()
+
+      updateBalance();
       updateTxHistory();
 
       return () => {};
-    }, [])
+    }, []),
   );
 
   const updateWalletData = () => {
     updateMintMetadata();
     updateBalance();
 
-    mintUnspentTransactions();
-
     fetchTransactionList();
+    mintUnspentTransactions();
     updateTxHistory();
   };
 
@@ -189,7 +191,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   transactionContainer: {
-    paddingBottom: 90,
+    paddingBottom: 195,
     flexGrow: 1,
     display: 'flex',
     justifyContent: 'center',
