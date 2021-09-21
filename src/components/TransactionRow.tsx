@@ -5,6 +5,7 @@ import {TransactionItem} from '../data/TransactionItem';
 import localization from '../localization';
 import {TX_DATE_FORMAT} from '../core/FiroWallet';
 import {Currency} from '../utils/currency';
+import { formatTimestamp } from '../utils/datetime';
 
 type TransactionRowProps = {
   style: StyleProp<ViewStyle>;
@@ -55,7 +56,7 @@ export const TransactionRow: FC<TransactionRowProps> = props => {
         <View style={styles.row}>
           <Text style={styles.subtitle}>{title}</Text>
           <Text style={styles.subtitle}>
-            {new Date(item.date).toLocaleDateString('en-US', TX_DATE_FORMAT as Intl.DateTimeFormatOptions)}
+            {formatTimestamp(item.date)}
           </Text>
         </View>
       </View>
