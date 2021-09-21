@@ -178,6 +178,7 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 0,
     borderTopStartRadius: 0,
     flexWrap: 'wrap',
+    alignContent: 'center',
   },
   iconButton: {
     width: 24,
