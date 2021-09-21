@@ -115,6 +115,31 @@
     "select_address": "Select Address"
   },
 
+  "send_confirm_screen": {
+    "title": "Confirm Transaction",
+    "warning": "Warning: ",
+    "warning_text": "you cannot revert the transaction after it's submitted to blockchain.",
+    "amount": "Amount",
+    "address": "Address",
+    "label": "Label",
+    "transaction_fee": "Transaction Fee",
+    "total_send_amount": "Total Send Amount",
+    "reduce_fee_from_amount": "Reduce Fee From Amount",
+    "confirm": "Confirm",
+    "confirming": "Confirming...",
+    "prompt_fingerprint": "Provide Fingerprint to Confirm Transaction",
+    "title_passphrase": "Enter passphrase",
+    "description_passphrase": "Enter passphrase to confirm transaction",
+    "button_confirm_passphrase": "Confirm",
+    "error": "Error",
+    "error_invalid_passphrase": "Invalid passphrase",
+    "error_invalid_fingerprint": "Fingerprint verification failed",
+    "error_invalid_address": "Address not valid",
+    "error_invalid_nowallet": "Failed getting wallet",
+    "title_success": "Success!",
+    "description_success":"Transaction successflly confirmed."
+  },
+
   "receive_screen": {
     "title": "Receive Firo",
     "scan_qr": "Scan this QR code",

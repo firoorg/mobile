@@ -20,16 +20,15 @@ const {colors} = CurrentFiroTheme;
 var timerHandler: number = -1;
 
 const SendScreen = () => {
-  const {saveToDisk} = useContext(FiroContext);
-  const {getWallet} = useContext(FiroContext);
-  const {getFiroRate, getSettings} = useContext(FiroContext);
+  const { getFiroRate, getSettings, getWallet } = useContext(FiroContext);
   const [balance, setBalance] = useState(0);
   const [spendAmount, setSpendAmount] = useState(0);
   const [sendAddress, setSendAddress] = useState('');
+  const [label, setLabel] = useState('');
   const [fee, setFee] = useState(0);
   const [total, setTotal] = useState(0);
   const [subtractFeeFromAmount, setSubtractFeeFromAmount] = useState(true);
-  const [processing, setProcessing] = useState(true);
+  const [isValid, setIsValid] = useState(false);
   const currentCurrencyName: string = (localization.currencies as any)[
     getSettings().defaultCurrency
   ];
@@ -40,7 +39,7 @@ const SendScreen = () => {
       clearTimeout(timerHandler);
     }
     timerHandler = setTimeout(async () => {
-      setProcessing(true);
+      setIsValid(false);
       const wallet = getWallet();
       if (!wallet) {
         return;
@@ -64,65 +63,23 @@ const SendScreen = () => {
           const sub = subtractFeeFromAmount ? 0 : 1;
           setTotal(amount + sub * changedFee);
         }
-        checkIsProcessing(changedFee, sendAddress);
+        checkIsValid(changedFee, sendAddress);
       } catch (e) {
         console.log('estimateFee', e);
       }
     }, 300);
   };
 
-  const checkIsProcessing = (fee: number, address: string) => {
+  const checkIsValid = (fee: number, address: string) => {
     const wallet = getWallet();
     if (!wallet) {
       return;
     }
 
-    setProcessing(fee === 0 || !wallet.validate(address));
+    setIsValid(fee !== 0 && wallet.validate(address));
   };
 
-  const doSpend = async (
-    amount: number,
-    _subtractFeeFromAmount: boolean,
-    address: string,
-  ) => {
-    const wallet = getWallet();
-    if (!wallet) {
-      return;
-    }
-    if (!wallet.validate(address)) {
-      throw Error('address not valid');
-    }
-    try {
-      const spendData = await wallet.createLelantusSpendTx({
-        spendAmount: amount,
-        subtractFeeFromAmount: _subtractFeeFromAmount,
-        address: address,
-      });
-
-      const txId = await firoElectrum.broadcast(spendData.txHex);
-      console.log(`broadcast tx: ${JSON.stringify(txId)}`);
-
-      if (txId === spendData.txId) {
-        wallet.addSendTxToCache(
-          txId,
-          spendData.value / SATOSHI,
-          spendData.fee / SATOSHI,
-          address,
-        );
-        wallet.addLelantusMintToCache(
-          txId,
-          spendData.jmintValue,
-          spendData.publicCoin,
-        );
-        wallet.markCoinsSpend(spendData.spendCoinIndexes);
-        await saveToDisk();
-        console.log('doSpend saved', txId);
-      }
-    } catch (e) {
-      console.log('error when creating spend transaction', e);
-    }
-  };
-
+  
   const updateBalance = () => {
     try {
       let walletBalance = getWallet()?.getBalance();
@@ -141,7 +98,7 @@ const SendScreen = () => {
   const onAmountSelect = (amount: number, isMax: boolean) => {
     console.log('onAmountSelect', amount, isMax);
 
-    setProcessing(true);
+    setIsValid(false);
     const substract = subtractFeeFromAmount || isMax;
     const staoshi = amount * SATOSHI;
 
@@ -151,7 +108,7 @@ const SendScreen = () => {
   };
 
   const onSubtractFeeFromAmountChanged = () => {
-    setProcessing(true);
+    setIsValid(false);
     const changed = !subtractFeeFromAmount;
     setSubtractFeeFromAmount(changed);
     estimateFee(spendAmount, changed);
@@ -159,19 +116,11 @@ const SendScreen = () => {
 
   const onAddressSelect = (address: string) => {
     setSendAddress(address);
-    checkIsProcessing(fee, address);
+    checkIsValid(fee, address);
   };
 
   const onClickSend = () => {
-    try {
-      setProcessing(true);
-      doSpend(spendAmount, subtractFeeFromAmount, sendAddress).then(() => {
-        setSendAddress('');
-        NavigationService.back();
-      });
-    } catch (e) {
-      console.log('somting went wrong in spend tx', e);
-    }
+      NavigationService.navigate("SendConfirmScreen", { data: { address: sendAddress, amount: spendAmount, label, fee: fee, totalAmount: total, reduceFeeFromAmount: subtractFeeFromAmount } });
   };
 
   useEffect(() => {
@@ -229,6 +178,7 @@ const SendScreen = () => {
           <TextInput
             style={styles.label}
             placeholder={localization.send_screen.label_optional}
+            onChangeText={newLabel => setLabel(newLabel)}
           />
           <View style={styles.feeDetailsContainer}>
             <FiroVerticalInfoText
@@ -253,7 +203,7 @@ const SendScreen = () => {
             </View>
           </View>
           <FiroPrimaryButton
-            disable={processing}
+            disable={!isValid}
             buttonStyle={styles.sendButton}
             text={localization.send_screen.send}
             onClick={onClickSend}

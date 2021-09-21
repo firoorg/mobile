@@ -39,11 +39,11 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
     const newInfo = { rate: getFiroRate(), currency: getSettings().defaultCurrency };
     if (JSON.stringify(newInfo) != JSON.stringify(currencyInfo)) {
       setCurrencyInfo(newInfo);
-      updateConverted(input);
+      updateConverted(input, isCrypto);
     }
   });
 
-  const updateConverted = (input: string) => {
+  const updateConverted = (input: string, isCrypto: boolean) => {
     const i = parseFloat(input)
     let txt = ''
     let crypto = 0
@@ -62,7 +62,7 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
   };
   
   const notifyAmountChanged = (input: string, isCrypto: boolean, isMax: boolean) => {
-    const crypto = updateConverted(input);
+    const crypto = updateConverted(input, isCrypto);
     props.onAmountSelect(crypto, isMax)
   }
 

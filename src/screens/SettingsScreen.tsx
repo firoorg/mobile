@@ -429,7 +429,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.cardBackground,
         height: 60,
         width: '100%'
-    },
+    }
 });
 
 export default SettingsScreen;

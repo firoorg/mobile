@@ -118,6 +118,31 @@ export interface IString extends LocalizedStringsMethods {
     select_address: string;
   };
 
+  send_confirm_screen: {
+    title: string;
+    warning: string;
+    warning_text: string;
+    amount: string;
+    address: string;
+    label: string;
+    transaction_fee: string;
+    total_send_amount: string;
+    reduce_fee_from_amount: string;
+    confirm: string;
+    confirming: string;
+    prompt_fingerprint: string;
+    title_passphrase: string;
+    description_passphrase: string;
+    button_confirm_passphrase: string;
+    error: string;
+    error_invalid_passphrase: string;
+    error_invalid_fingerprint: string;
+    error_invalid_address: string;
+    error_invalid_nowallet: string;
+    title_success: string;
+    description_success: string;
+  };
+
   receive_screen: {
     title: string;
     scan_qr: string;

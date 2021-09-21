@@ -19,6 +19,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import ScanQRCodeScreen from './screens/ScanQRCodeScreen';
 import { Platform } from 'react-native';
 import SettingsScreen from './screens/SettingsScreen';
+import SendConfirmScreen from './screens/SendConfirmScreen';
 
 type SettingsStackParamList = {
   SettingsScreen: undefined;
@@ -67,6 +68,7 @@ type CreateWalletStackParamList = {
   TransactionDetailsScreen: undefined;
   Settings: undefined;
   ScanQRCode: undefined;
+  SendConfirmScreen: undefined;
 };
 const CreateWalletStack = createStackNavigator<CreateWalletStackParamList>();
 const CreateWallet = () => (
@@ -99,6 +101,7 @@ const CreateWallet = () => (
     />
     <CreateWalletStack.Screen name="Settings" component={Settings} />
     <CreateWalletStack.Screen name="ScanQRCode" component={ScanQRCode} />
+    <CreateWalletStack.Screen name="SendConfirmScreen" component={SendConfirmScreen} />
   </CreateWalletStack.Navigator>
 );
 
@@ -110,6 +113,7 @@ type EnterWalletStackParamList = {
   TransactionDetailsScreen: undefined;
   Settings: undefined;
   ScanQRCode: undefined;
+  SendConfirmScreen: undefined;
 };
 const EnterWalletStack = createStackNavigator<EnterWalletStackParamList>();
 const EnterWallet = () => (
@@ -142,6 +146,7 @@ const EnterWallet = () => (
         headerShown: false,
       }}
     />
+    <EnterWalletStack.Screen name="SendConfirmScreen" component={SendConfirmScreen} />
   </EnterWalletStack.Navigator>
 );
 
