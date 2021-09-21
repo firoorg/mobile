@@ -6,7 +6,7 @@ import localization from '../localization';
 
 export const FiroTransactionEmpty: FC = () => {
   return (
-    <View>
+    <View style={styles.empty}>
       <Image
         source={require('../img/ic_empty_transaction.png')}
         containerStyle={styles.icon}
@@ -24,6 +24,10 @@ const styles = StyleSheet.create({
   empty: {
     display: 'flex',
     flexDirection: 'column',
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: 60
   },
   icon: {
     width: 118,
