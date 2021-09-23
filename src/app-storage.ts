@@ -3,6 +3,7 @@ import {AbstractWallet} from './core/AbstractWallet';
 import AsyncStorage from '@react-native-community/async-storage';
 import RNSecureKeyStore, {ACCESSIBLE} from 'react-native-secure-key-store';
 import {AddressBookItem} from './data/AddressBookItem';
+import {AddressItem} from './data/AddressItem';
 const Realm = require('realm');
 const createHash = require('create-hash');
 
@@ -20,6 +21,7 @@ export class AppStorage {
   static ADVANCED_MODE_ENABLED = 'advancedmodeenabled';
   static DELETE_WALLET_AFTER_UNINSTALL = 'deleteWalletAfterUninstall';
   static ADDRESS_BOOK = 'address_book';
+  static SAVED_ADDRESSES = 'saved_addresses';
   static SETTINGS = 'settings';
   static ENCRYPTED_PASSWORD = 'encrypted_password';
 
@@ -230,6 +232,7 @@ export class AppStorage {
     try {
       return (await this.getItem(AppStorage.FLAG_ENCRYPTED)) === '1';
     } catch (error) {
+      console.warn(error.message);
       return false;
     }
   }
@@ -239,6 +242,7 @@ export class AppStorage {
       let addressBookJson = await this.getItem(AppStorage.ADDRESS_BOOK);
       return JSON.parse(addressBookJson) as Array<AddressBookItem>;
     } catch (error) {
+      console.warn(error.message);
       return [];
     }
   }
@@ -296,6 +300,32 @@ export class AppStorage {
       return await this.setItem(
         AppStorage.ADDRESS_BOOK,
         JSON.stringify(addressBook),
+      );
+    } catch (error) {
+      console.warn(error.message);
+    }
+  }
+
+  async loadSavedAddresses(): Promise<Array<AddressItem>> {
+    try {
+      let savedAddressesJson = await this.getItem(AppStorage.SAVED_ADDRESSES);
+      return JSON.parse(savedAddressesJson) as Array<AddressItem>;
+    } catch (error) {
+      console.warn(error.message);
+      return [];
+    }
+  }
+
+  async addSavedAddress(addressItem: AddressItem): Promise<any> {
+    try {
+      let savedAddresses = await this.loadSavedAddresses();
+      savedAddresses.push(addressItem);
+      savedAddresses.sort((ad1: AddressItem, ad2: AddressItem) => {
+        return ad1.name.localeCompare(ad2.name);
+      });
+      return await this.setItem(
+        AppStorage.SAVED_ADDRESSES,
+        JSON.stringify(savedAddresses),
       );
     } catch (error) {
       console.warn(error.message);

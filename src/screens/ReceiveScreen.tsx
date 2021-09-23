@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {CreateAddressCard} from '../components/CreateAddressCard';
 import {FiroTextBig} from '../components/Texts';
 import {FiroToolbarWithoutBack} from '../components/Toolbar';
@@ -9,14 +9,25 @@ import QRCode from 'react-native-qrcode-svg';
 import localization from '../localization';
 import {FiroContext} from '../FiroContext';
 import {ScrollView} from 'react-native-gesture-handler';
-import {SATOSHI} from '../core/FiroWallet';
+import {AppStorage} from '../app-storage';
+import {AddressItem} from '../data/AddressItem';
+import {useFocusEffect} from '@react-navigation/native';
+import {BottomSheet} from 'react-native-elements';
+import {SavedAddressesList} from '../components/SavedAddressesList';
 
 const {colors} = CurrentFiroTheme;
+
+const appStorage = new AppStorage();
 
 const ReceiveScreen = () => {
   const {getWallet} = useContext(FiroContext);
   const [address, setAddress] = useState('loading...');
-  const onClickSelectFromAddress = () => {};
+  const [initialName, setInitialName] = useState<string | undefined>();
+  const [isSavedAddressesVisible, setSavedAddressesVisible] = useState(false);
+  const [savedAddressesList, setSavedAddressesList] = useState<AddressItem[]>(
+    [],
+  );
+
   const onClickCreateAddress = () => {
     const wallet = getWallet();
     if (wallet) {
@@ -24,9 +35,42 @@ const ReceiveScreen = () => {
     }
   };
 
+  const onClickSelectFromAddress = () => {
+    setSavedAddressesVisible(true);
+  };
+
+  const onAddressSelect = async (_address: string) => {
+    setAddress(_address);
+    setSavedAddressesVisible(false);
+  };
+
   useEffect(() => {
     onClickCreateAddress();
   }, []);
+
+  const loadSavedAddresses = async () => {
+    const savedAddresses = await appStorage.loadSavedAddresses();
+    setSavedAddressesList(savedAddresses);
+  };
+
+  const findAddressItem = async () => {
+    const foundAddress = savedAddressesList.find(
+      item => item.address === address,
+    );
+    if (foundAddress !== undefined) {
+      setInitialName(foundAddress.name);
+    }
+  };
+
+  useEffect(() => {
+    findAddressItem();
+  }, [address]);
+  useFocusEffect(
+    React.useCallback(() => {
+      loadSavedAddresses();
+      return () => {};
+    }, []),
+  );
 
   return (
     <ScrollView>
@@ -46,13 +90,37 @@ const ReceiveScreen = () => {
               ecl="H"
             />
           </View>
-          <CreateAddressCard address={address} onClick={onClickCreateAddress} />
+          <CreateAddressCard
+            address={address}
+            name={initialName}
+            onClick={onClickCreateAddress}
+          />
           <FiroSelectFromSavedAddress
             onClick={onClickSelectFromAddress}
             buttonStyle={styles.savedAddress}
             text={localization.receive_screen.select_from_saved_address}
           />
         </View>
+        <BottomSheet modalProps={{}} isVisible={isSavedAddressesVisible}>
+          <View style={{...styles.savedAddressesView}}>
+            <TouchableOpacity
+              style={styles.closeBottomSheet}
+              onPress={() => {
+                setSavedAddressesVisible(false);
+              }}>
+              <Image source={require('../img/ic_close.png')} />
+            </TouchableOpacity>
+            <View style={{display: 'flex'}}>
+              <Text style={styles.selectAddress}>
+                {localization.send_screen.select_address}
+              </Text>
+            </View>
+            <SavedAddressesList
+              savedAddressesList={savedAddressesList}
+              onAddressSelect={onAddressSelect}
+            />
+          </View>
+        </BottomSheet>
       </View>
     </ScrollView>
   );
@@ -87,6 +155,27 @@ const styles = StyleSheet.create({
   savedAddress: {
     width: '100%',
     marginTop: 20,
+  },
+  savedAddressesView: {
+    backgroundColor: colors.cardBackground,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 0,
+  },
+  closeBottomSheet: {
+    width: 30,
+    height: 30,
+    position: 'absolute',
+    right: 5,
+    top: 10,
+  },
+  selectAddress: {
+    color: colors.text,
+    fontFamily: 'Rubik-Medium',
+    fontWeight: '500',
+    fontSize: 16,
+    paddingTop: 15,
+    alignSelf: 'center',
   },
 });
 

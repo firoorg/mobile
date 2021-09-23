@@ -1,18 +1,36 @@
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import {Text, Divider} from 'react-native-elements';
 import {View, StyleSheet, Image, TextInput, ToastAndroid} from 'react-native';
 import {FiroPrimaryGreenButton} from './Button';
 import localization from '../localization';
-import {TouchableOpacity, TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import {
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native-gesture-handler';
 import Clipboard from '@react-native-clipboard/clipboard';
+import {AppStorage} from '../app-storage';
+import {AddressItem} from '../data/AddressItem';
+import {FiroInfoText} from './Texts';
+
+const appStorage = new AppStorage();
 
 type CreateAddressProp = {
   address: string;
+  name?: string | undefined;
   onClick: () => void;
 };
 
 export const CreateAddressCard: FC<CreateAddressProp> = props => {
-  const onAddressSaveClick = () => {};
+  const [name, setName] = useState(props.name);
+  const [savedName, setSavedName] = useState<string | undefined>();
+
+  const onAddressSaveClick = () => {
+    if (name !== undefined) {
+      appStorage.addSavedAddress(new AddressItem(name, props.address));
+      setSavedName(name);
+    }
+  };
+
   const onCopyClick = () => {
     Clipboard.setString(props.address);
     ToastAndroid.showWithGravityAndOffset(
@@ -20,9 +38,35 @@ export const CreateAddressCard: FC<CreateAddressProp> = props => {
       ToastAndroid.SHORT,
       ToastAndroid.TOP,
       0,
-      100
+      100,
     );
   };
+
+  let addressName;
+  if (props.name !== undefined) {
+    addressName = props.name;
+  } else if (savedName !== undefined) {
+    addressName = savedName;
+  }
+  let nameField;
+  if (addressName !== undefined) {
+    nameField = (
+      <FiroInfoText
+        style={styles.addressNameInfo}
+        title={localization.create_address_card.address_name}
+        text={addressName}
+      />
+    );
+  } else {
+    nameField = (
+      <TextInput
+        style={styles.addressName}
+        placeholder={localization.create_address_card.address_name}
+        onChangeText={txt => setName(txt.trim())}
+      />
+    );
+  }
+
   return (
     <View style={styles.card}>
       <Text style={styles.currentAddressLabel}>
@@ -42,14 +86,12 @@ export const CreateAddressCard: FC<CreateAddressProp> = props => {
           </TouchableWithoutFeedback>
         </View>
       </View>
-      <TextInput
-        style={styles.addressName}
-        placeholder={localization.create_address_card.address_name}
-      />
+      {nameField}
       <Divider style={styles.divider} />
       <FiroPrimaryGreenButton
         text={localization.create_address_card.save_address}
         onClick={onAddressSaveClick}
+        disable={addressName !== undefined}
       />
     </View>
   );
@@ -91,7 +133,7 @@ const styles = StyleSheet.create({
   icon: {
     width: 24,
     height: 24,
-    marginLeft: 8
+    marginLeft: 8,
   },
   addressName: {
     height: 36,
@@ -106,6 +148,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     marginTop: 24,
+  },
+  addressNameInfo: {
+    paddingTop: 30,
   },
   divider: {
     marginTop: 12,

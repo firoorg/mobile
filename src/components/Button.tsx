@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {Button, Text} from 'react-native-elements';
+import {Text} from 'react-native-elements';
 import {
   TouchableOpacity,
   Image,
@@ -29,10 +29,10 @@ export const FiroPrimaryButton: FC<ButtonProps> = props => {
     <TouchableOpacity
       disabled={props.disable ?? false}
       style={
-        (props.disable)
-        ? [styles.button, styles.buttonDisabled, props.buttonStyle]
-        : [styles.button, props.buttonStyle]
-      } 
+        props.disable
+          ? [styles.button, styles.buttonDisabled, props.buttonStyle]
+          : [styles.button, props.buttonStyle]
+      }
       onPress={props.onClick}>
       <Text style={styles.text}>{props.text}</Text>
     </TouchableOpacity>
@@ -42,9 +42,19 @@ export const FiroPrimaryButton: FC<ButtonProps> = props => {
 export const FiroPrimaryGreenButton: FC<ButtonProps> = props => {
   return (
     <TouchableOpacity
+      disabled={props.disable ?? false}
       style={[styles.button, styles.primaryGreenButton, props.buttonStyle]}
       onPress={props.onClick}>
-      <Text style={[styles.text, styles.primaryGreenButtonText]}>
+      <Text
+        style={
+          props.disable
+            ? [
+                styles.text,
+                styles.primaryGreenButtonText,
+                styles.primaryGreenButtonTextDisabled,
+              ]
+            : [styles.text, styles.primaryGreenButtonText]
+        }>
         {props.text}
       </Text>
     </TouchableOpacity>
@@ -150,8 +160,8 @@ const styles = StyleSheet.create({
     borderColor: colors.primaryDisabled,
   },
   primaryGreenButton: {
-    height: 28,
-    backgroundColor: 'rgba(47, 162, 153, 0.05)',
+    height: 30,
+    backgroundColor: 'transparent',
     borderColor: 'transparent',
   },
   savedAddressButton: {
@@ -203,6 +213,9 @@ const styles = StyleSheet.create({
     color: '#2FA299',
     // paddingVertical: 8,
   },
+  primaryGreenButtonTextDisabled: {
+    color: '#A2CECB',
+  },
   savedAddressText: {
     fontFamily: 'Rubik-Medium',
     fontSize: 14,
@@ -234,6 +247,6 @@ const styles = StyleSheet.create({
     height: 24,
   },
   titleStyle: {
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+  },
 });
