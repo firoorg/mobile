@@ -1,5 +1,4 @@
-import React, { FC, useState } from 'react';
-import { RouteProp } from '@react-navigation/native';
+import React, { useState } from 'react';
 import {
     View,
     StyleSheet,
@@ -20,10 +19,10 @@ import { FiroContext } from '../FiroContext';
 import { useEffect } from 'react';
 import { FiroPrimaryGreenButton, FiroSecondaryButton } from '../components/Button';
 import { Currency } from '../utils/currency';
-import { Alert } from 'react-native';
 import { Biometrics } from '../utils/biometrics';
 import { FiroInputPassword } from '../components/Input';
 import * as Progress from 'react-native-progress';
+import * as NavigationService from '../NavigationService';
 
 const { colors } = CurrentFiroTheme;
 const supportedCurrencies: string[] = ["usd", "eur", "gbp", "aud", "btc"];
@@ -40,14 +39,22 @@ enum BiometricSettingsViewMode {
     DisableBiometricSuccess,
 }
 
+enum MyMnemonicViewMode {
+    None,
+    EnterPassphrase,
+    PassphraseOk
+}
+
 let enableBiometricResult: { success: boolean, error?: string };
 let disableBiometricResult: { success: boolean, error?: string };
 let passphraseInput: string = "";
+
 
 const SettingsScreen = () => {
     const { getSettings, setSettings, verifyPassword } = useContext(FiroContext);
     const [saveInProgress, changeSaveProgress] = useState(false);
     const [chooseCurrency, changeChooseCurrency] = useState(false);
+    const [showMyMnemonic, changeMyMnemonic] = useState(MyMnemonicViewMode.None);
     const [windowHeight, changeWindowHeight] = useState(Dimensions.get('window').height);
     const currentCurrency: string = getSettings().defaultCurrency;
     const [selectedCurrency, changeSelectedCurrency] = useState(currentCurrency);
@@ -108,7 +115,9 @@ const SettingsScreen = () => {
                     <Text style={styles.description}>{localization.settings.description_passphrase}</Text>
                 </View>
             </TouchableHighlight>
-            <TouchableHighlight disabled={saveInProgress} underlayColor={colors.highlight} onPress={() => { }}>
+            <TouchableHighlight disabled={saveInProgress} underlayColor={colors.highlight} onPress={() => {
+                changeMyMnemonic(MyMnemonicViewMode.EnterPassphrase)
+             }}>
                 <View style={styles.section}>
                     <Text style={styles.title}>{localization.settings.title_mnemonic}</Text>
                     <Text style={styles.description}>{localization.settings.description_mnemonic}</Text>
@@ -190,6 +199,37 @@ const SettingsScreen = () => {
                         }} buttonStyle={{ backgroundColor: undefined, marginTop: 15 }} />
                     </TouchableOpacity>
                 </View>
+            </BottomSheet>
+            <BottomSheet isVisible={showMyMnemonic === MyMnemonicViewMode.EnterPassphrase} modalProps={{}}>
+                <View style={styles.biometricSettingsChangeView}>
+                <TouchableOpacity style={styles.closeBottomSheet} onPress={() => {
+                    changeMyMnemonic(MyMnemonicViewMode.None)
+                }}>
+                    <Image source={require('../img/ic_close.png')} />
+                </TouchableOpacity>
+                <Text style={styles.titleForBiometric}>{localization.settings.title_passphrase_biometric}</Text>
+                <Text style={styles.descriptionForBiomertic}>{localization.settings.description_passphrase_mnemonic}</Text>
+                <View style={{ padding: 15, paddingTop: 20 }}>
+                    <FiroInputPassword
+                        style={styles.password}
+                        onTextChanged={value => passphraseInput = value} />
+                </View>
+                <TouchableOpacity activeOpacity={1} style={styles.enableBiometricButton}>
+                    <FiroPrimaryGreenButton text={localization.settings.button_done}
+                        onClick={ async () => {
+
+                            const passwordOk = await verifyPassword(passphraseInput);
+                            if (passwordOk) { 
+                                changeMyMnemonic(MyMnemonicViewMode.PassphraseOk)
+                                NavigationService.navigate('MyMnemonicScreen', undefined)
+                            } else {
+                                changeMyMnemonic(MyMnemonicViewMode.None)
+                            }
+                        }}
+                        buttonStyle={{ backgroundColor: undefined, marginTop: 15 }}
+                    />
+                </TouchableOpacity>
+            </View>
             </BottomSheet>
             <BottomSheet isVisible={biometricSettingsViewMode != BiometricSettingsViewMode.None} modalProps={{}}>
                 {

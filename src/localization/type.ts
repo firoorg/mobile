@@ -206,6 +206,7 @@ export interface IString extends LocalizedStringsMethods {
     title_change_currency: string;
     title_passphrase_biometric: string;
     description_passphrase_biometric: string;
+    description_passphrase_mnemonic: string;
     button_enable_biometric: string;
     title_processing: string;
     title_success: string;

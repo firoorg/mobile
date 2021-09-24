@@ -203,6 +203,7 @@
     "title_change_currency": "Change Currency",
     "title_passphrase_biometric": "Enter passphrase",
     "description_passphrase_biometric": "Enter passphrase to enable fingerprint authentication",
+    "description_passphrase_mnemonic": "Enter passphrase to see your mnemonic",
     "button_enable_biometric": "Enable Fingerprint",
     "title_processing": "Processing...",
     "description_verifying_passphrase": "Verifying passphrase",

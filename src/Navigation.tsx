@@ -20,14 +20,17 @@ import ScanQRCodeScreen from './screens/ScanQRCodeScreen';
 import { Platform } from 'react-native';
 import SettingsScreen from './screens/SettingsScreen';
 import SendConfirmScreen from './screens/SendConfirmScreen';
+import MyMnemonicScreen from './screens/MyMnemonicScreen';
 
 type SettingsStackParamList = {
   SettingsScreen: undefined;
+  MyMnemonicScreen: undefined;
 };
 const SettingsStack = createStackNavigator<SettingsStackParamList>();
 const Settings = () => (
   <SettingsStack.Navigator screenOptions={{headerShown: false}}>
     <SettingsStack.Screen name="SettingsScreen" component={SettingsScreen} />
+    <SettingsStack.Screen name="MyMnemonicScreen" component={MyMnemonicScreen} />
   </SettingsStack.Navigator>
 );
 
@@ -154,8 +157,6 @@ type SplashStackParamList = {
   SplashScreen: undefined;
   CreateWallet: undefined;
   EnterWallet: undefined;
-  Settings: undefined;
-  ScanQRCode: undefined;
 };
 const SplashStack = createStackNavigator<SplashStackParamList>();
 const SplashRoot = () => (
