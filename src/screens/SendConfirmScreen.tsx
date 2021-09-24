@@ -98,7 +98,7 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
             }
         } catch (e) {
             console.log('Error when creating spend transaction', e);
-            return { success, error: "" + e };
+            return { success, error: localization.send_confirm_screen.error_network };
         }
 
         return { success: true };

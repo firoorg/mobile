@@ -136,6 +136,7 @@
     "error_invalid_fingerprint": "Fingerprint verification failed",
     "error_invalid_address": "Address not valid",
     "error_invalid_nowallet": "Failed getting wallet",
+    "error_network": "Network error, please try later",
     "title_success": "Success!",
     "description_success":"Transaction successflly confirmed."
   },
