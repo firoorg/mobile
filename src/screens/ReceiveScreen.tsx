@@ -35,7 +35,7 @@ const ReceiveScreen = () => {
     }
   };
 
-  const onClickSelectFromAddress = () => {
+  const onClickSelectFromAddress = async () => {
     setSavedAddressesVisible(true);
   };
 
@@ -57,6 +57,8 @@ const ReceiveScreen = () => {
     const foundAddress = savedAddressesList.find(
       item => item.address === address,
     );
+    console.log('savedAddressesList', savedAddressesList);
+    console.log('foundAddress', foundAddress);
     if (foundAddress !== undefined) {
       setInitialName(foundAddress.name);
     }
@@ -64,7 +66,7 @@ const ReceiveScreen = () => {
 
   useEffect(() => {
     findAddressItem();
-  }, [address]);
+  }, [address, savedAddressesList]);
   useFocusEffect(
     React.useCallback(() => {
       loadSavedAddresses();
@@ -93,15 +95,23 @@ const ReceiveScreen = () => {
           <CreateAddressCard
             address={address}
             name={initialName}
-            onClick={onClickCreateAddress}
+            onRefreshClick={onClickCreateAddress}
+            onAddressSave={() => loadSavedAddresses()}
           />
           <FiroSelectFromSavedAddress
             onClick={onClickSelectFromAddress}
             buttonStyle={styles.savedAddress}
             text={localization.receive_screen.select_from_saved_address}
+            disable={savedAddressesList.length === 0}
           />
         </View>
-        <BottomSheet modalProps={{}} isVisible={isSavedAddressesVisible}>
+        <BottomSheet
+          modalProps={{
+            onRequestClose: () => {
+              setSavedAddressesVisible(false);
+            },
+          }}
+          isVisible={isSavedAddressesVisible}>
           <View style={{...styles.savedAddressesView}}>
             <TouchableOpacity
               style={styles.closeBottomSheet}

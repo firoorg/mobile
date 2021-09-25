@@ -17,17 +17,19 @@ const appStorage = new AppStorage();
 type CreateAddressProp = {
   address: string;
   name?: string | undefined;
-  onClick: () => void;
+  onRefreshClick: () => void;
+  onAddressSave?: () => void;
 };
 
 export const CreateAddressCard: FC<CreateAddressProp> = props => {
   const [name, setName] = useState(props.name);
-  const [savedName, setSavedName] = useState<string | undefined>();
 
-  const onAddressSaveClick = () => {
+  const onAddressSaveClick = async () => {
     if (name !== undefined) {
-      appStorage.addSavedAddress(new AddressItem(name, props.address));
-      setSavedName(name);
+      await appStorage.addSavedAddress(new AddressItem(name, props.address));
+      if (props.onAddressSave) {
+        props.onAddressSave();
+      }
     }
   };
 
@@ -42,19 +44,13 @@ export const CreateAddressCard: FC<CreateAddressProp> = props => {
     );
   };
 
-  let addressName;
-  if (props.name !== undefined) {
-    addressName = props.name;
-  } else if (savedName !== undefined) {
-    addressName = savedName;
-  }
   let nameField;
-  if (addressName !== undefined) {
+  if (props.name !== undefined) {
     nameField = (
       <FiroInfoText
         style={styles.addressNameInfo}
         title={localization.create_address_card.address_name}
-        text={addressName}
+        text={props.name}
       />
     );
   } else {
@@ -78,7 +74,7 @@ export const CreateAddressCard: FC<CreateAddressProp> = props => {
           <TouchableOpacity onPress={onCopyClick}>
             <Image style={styles.icon} source={require('../img/ic_copy.png')} />
           </TouchableOpacity>
-          <TouchableWithoutFeedback onPress={props.onClick}>
+          <TouchableWithoutFeedback onPress={props.onRefreshClick}>
             <Image
               style={styles.icon}
               source={require('../img/ic_refresh.png')}
@@ -91,7 +87,7 @@ export const CreateAddressCard: FC<CreateAddressProp> = props => {
       <FiroPrimaryGreenButton
         text={localization.create_address_card.save_address}
         onClick={onAddressSaveClick}
-        disable={addressName !== undefined}
+        disable={props.name !== undefined || name === undefined || name === ''}
       />
     </View>
   );
@@ -150,7 +146,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   addressNameInfo: {
-    paddingTop: 30,
+    paddingTop: 20,
   },
   divider: {
     marginTop: 12,

@@ -94,7 +94,13 @@ export const SendAddress: FC<SendAddressProps> = props => {
         }}>
         <Image style={styles.icon} source={require('../img/ic_scan.png')} />
       </TouchableOpacity>
-      <BottomSheet modalProps={{}} isVisible={isAddressbookVisible}>
+      <BottomSheet
+        modalProps={{
+          onRequestClose: () => {
+            setAddressbookVisible(false);
+          },
+        }}
+        isVisible={isAddressbookVisible}>
         <View style={{...styles.addresbookView}}>
           <TouchableOpacity
             style={styles.closeBottomSheet}

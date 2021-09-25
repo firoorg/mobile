@@ -231,7 +231,11 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
                         : null
                 }
             </View>
-            <BottomSheet isVisible={bottomSheetViewMode != BottomSheetViewMode.None} modalProps={{}}>
+            <BottomSheet isVisible={bottomSheetViewMode != BottomSheetViewMode.None} modalProps={{
+                    onRequestClose: () => {
+                        changeBottomSheetViewMode(BottomSheetViewMode.None);
+                    },
+                }}>
                 {
                     bottomSheetViewMode == BottomSheetViewMode.EnterPassphrase
                         ? <View style={styles.bottomSheetProvidePasswordView}>

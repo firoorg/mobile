@@ -161,7 +161,11 @@ const SettingsScreen = () => {
                     </TouchableHighlight>
                     : null
             }
-            <BottomSheet isVisible={chooseCurrency} modalProps={{}}>
+            <BottomSheet isVisible={chooseCurrency} modalProps={{
+                    onRequestClose: () => {
+                        changeChooseCurrency(false);
+                    },
+                }}>
                 <View style={{ ...styles.currenciesView, height: windowHeight / 2 }}>
                     <TouchableOpacity style={styles.closeBottomSheet} onPress={() => {
                         changeChooseCurrency(false);
@@ -200,7 +204,11 @@ const SettingsScreen = () => {
                     </TouchableOpacity>
                 </View>
             </BottomSheet>
-            <BottomSheet isVisible={showMyMnemonic === MyMnemonicViewMode.EnterPassphrase} modalProps={{}}>
+            <BottomSheet isVisible={showMyMnemonic === MyMnemonicViewMode.EnterPassphrase} modalProps={{
+                    onRequestClose: () => {
+                        changeMyMnemonic(MyMnemonicViewMode.None);
+                    },
+                }}>
                 <View style={styles.biometricSettingsChangeView}>
                 <TouchableOpacity style={styles.closeBottomSheet} onPress={() => {
                     changeMyMnemonic(MyMnemonicViewMode.None)
@@ -231,7 +239,11 @@ const SettingsScreen = () => {
                 </TouchableOpacity>
             </View>
             </BottomSheet>
-            <BottomSheet isVisible={biometricSettingsViewMode != BiometricSettingsViewMode.None} modalProps={{}}>
+            <BottomSheet isVisible={biometricSettingsViewMode != BiometricSettingsViewMode.None} modalProps={{
+                    onRequestClose: () => {
+                        changeBiometricSettingsViewMode(BiometricSettingsViewMode.None);
+                    },
+                }}>
                 {
                     biometricSettingsViewMode == BiometricSettingsViewMode.EnterPassphrase
                         ? <View style={styles.biometricSettingsChangeView}>

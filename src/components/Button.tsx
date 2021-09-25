@@ -48,11 +48,7 @@ export const FiroPrimaryGreenButton: FC<ButtonProps> = props => {
       <Text
         style={
           props.disable
-            ? [
-                styles.text,
-                styles.primaryGreenButtonText,
-                styles.primaryGreenButtonTextDisabled,
-              ]
+            ? [styles.text, styles.primaryGreenButtonText, styles.disabled]
             : [styles.text, styles.primaryGreenButtonText]
         }>
         {props.text}
@@ -132,13 +128,21 @@ export const FiroBackButton: FC<IconButtonProps> = props => {
 export const FiroSelectFromSavedAddress: FC<ButtonProps> = props => {
   return (
     <TouchableOpacity
+      disabled={props.disable ?? false}
       style={[styles.button, styles.savedAddressButton, props.buttonStyle]}
       onPress={props.onClick}>
       <Image
-        style={styles.icon}
+        style={props.disable ? [styles.icon, styles.disabled] : styles.icon}
         source={require('../img/ic_saved_address.png')}
       />
-      <Text style={[styles.text, styles.savedAddressText]}>{props.text}</Text>
+      <Text
+        style={
+          props.disable
+            ? [styles.text, styles.savedAddressText, styles.disabled]
+            : [styles.text, styles.savedAddressText]
+        }>
+        {props.text}
+      </Text>
     </TouchableOpacity>
   );
 };
@@ -158,6 +162,9 @@ const styles = StyleSheet.create({
   buttonDisabled: {
     backgroundColor: colors.primaryDisabled,
     borderColor: colors.primaryDisabled,
+  },
+  disabled: {
+    opacity: 0.5,
   },
   primaryGreenButton: {
     height: 30,
@@ -212,9 +219,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
     color: '#2FA299',
     // paddingVertical: 8,
-  },
-  primaryGreenButtonTextDisabled: {
-    color: '#A2CECB',
   },
   savedAddressText: {
     fontFamily: 'Rubik-Medium',
