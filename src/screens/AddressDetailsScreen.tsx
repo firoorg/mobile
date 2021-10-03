@@ -1,4 +1,4 @@
-import React, {FC, useContext} from 'react';
+import React, {FC, useContext, useEffect, useState} from 'react';
 import {StyleSheet, View, Text} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {FiroToolbar} from '../components/Toolbar';
@@ -23,12 +23,16 @@ type AddressDetailsProps = {
 const AddressDetailsScreen: FC<AddressDetailsProps> = props => {
   const {getWallet} = useContext(FiroContext);
   const {item} = props.route.params;
+  const [txs, setTxs] = useState<TransactionItem[]>([])
 
-  const wallet = getWallet();
-  let txList: TransactionItem[] = [];
-  if (wallet) {
-    txList = wallet.getTransactionsByAddress(item.address);
-  }
+
+  useEffect(() => {
+    const wallet = getWallet();
+    if (wallet) {
+      const txs = wallet.getTransactionsByAddress(item.address);
+      setTxs(txs)
+    }
+  }, [])
 
   return (
     <View style={styles.root}>
@@ -47,13 +51,13 @@ const AddressDetailsScreen: FC<AddressDetailsProps> = props => {
           title={localization.address_details_screen.name}
           text={item.name}
         />
-        {txList.length > 0 && (
-          <View style={styles.infoText}>
-            <Text style={styles.transactionHistory}>Transaction History</Text>
-            <TransactionList transactionList={txList} />
-          </View>
-        )}
       </View>
+      { txs.length > 0 && (
+        <Text style={styles.transactionHistory}>Transaction History</Text>
+      )}
+      { txs.length > 0 && (
+        <TransactionList transactionList={txs} />
+      )}
     </View>
   );
 };
@@ -64,7 +68,10 @@ const styles = StyleSheet.create({
   root: {
     height: '100%',
     display: 'flex',
-    padding: 30,
+    paddingTop: 30,
+  },
+  toolbar: {
+    paddingHorizontal: 20,
   },
   addressDetails: {
     paddingTop: 34,
@@ -89,6 +96,7 @@ const styles = StyleSheet.create({
   },
   infoText: {
     paddingTop: 30,
+    paddingHorizontal: 20,
   },
   transactionHistory: {
     fontFamily: 'Rubik-Regular',
@@ -97,5 +105,8 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     fontWeight: '500',
     letterSpacing: 0.4,
+    paddingTop: 20,
+    paddingBottom: 15,
+    paddingHorizontal: 20,
   },
 });
