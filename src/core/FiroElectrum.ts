@@ -517,9 +517,17 @@ export default class FiroElectrum implements AbstractElectrum {
     }
     this.mainClient.subscribe.on(
       'blockchain.headers.subscribe',
-      (params: any) => {
-        onChange(params);
-      },
+      onChange
+    );
+  }
+
+  unsubscribeToChanges(onChange: (params: any) => void): void {
+    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
+      throw new Error('Electrum client is not connected');
+    }
+    this.mainClient.subscribe.off(
+      'blockchain.headers.subscribe',
+      onChange
     );
   }
 
@@ -527,14 +535,10 @@ export default class FiroElectrum implements AbstractElectrum {
     if (!this.mainClient) {
       throw new Error('Electrum client is not connected');
     }
-    try {
-      const broadcast = await this.mainClient.blockchainTransaction_broadcast(
-        hex,
-      );
-      return broadcast;
-    } catch (error) {
-      return error;
-    }
+    const broadcast: string = await this.mainClient.blockchainTransaction_broadcast(
+      hex,
+    );
+    return broadcast;
   }
 
   async getMintMedata(publicCoins: string[]): Promise<MintMetadataModel[]> {

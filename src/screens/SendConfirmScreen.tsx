@@ -24,6 +24,7 @@ import { SendData } from '../data/SendData';
 import {NavigationProp } from '@react-navigation/native';
 import {firoElectrum} from '../core/FiroElectrum';
 import {SATOSHI} from '../core/FiroWallet';
+import BigNumber from 'bignumber.js';
  
 const { colors } = CurrentFiroTheme;
 type SendConfirmRouteProps = {
@@ -75,7 +76,7 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
                 subtractFeeFromAmount,
                 address: address,
             });
-    
+            
             const txId = await firoElectrum.broadcast(spendData.txHex);
             success = true;
             console.log(`broadcast tx: ${JSON.stringify(txId)}`);
@@ -83,8 +84,8 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
             if (txId === spendData.txId) {
                 wallet?.addSendTxToCache(
                     txId,
-                    spendData.value / SATOSHI,
-                    spendData.fee / SATOSHI,
+                    new BigNumber(spendData.value).div(SATOSHI).toNumber(),
+                    new BigNumber(spendData.fee).div(SATOSHI).toNumber(),
                     address,
                 );
                 wallet?.addLelantusMintToCache(
@@ -187,9 +188,9 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
             </View>
             <View style={styles.body}>
                 <Text style={styles.amount}>{localization.send_confirm_screen.amount}</Text>
-                <Text style={styles.amountFiro}>{props.route.params.data.amount / SATOSHI} {localization.global.firo}</Text>
+                <Text style={styles.amountFiro}>{new BigNumber(props.route.params.data.amount).div(SATOSHI).toString()} {localization.global.firo}</Text>
                 <Divider style={styles.divider} />
-                <Text style={styles.amountFiat}>{Currency.formatFiroAmountWithCurrency(props.route.params.data.amount / SATOSHI, getFiroRate(), getSettings().defaultCurrency)}</Text>
+                <Text style={styles.amountFiat}>{Currency.formatFiroAmountWithCurrency(new BigNumber(props.route.params.data.amount).div(SATOSHI), getFiroRate(), getSettings().defaultCurrency)}</Text>
                 <Text style={styles.address}>{localization.send_confirm_screen.address}</Text>
                 <Text style={styles.addressValue}>{props.route.params.data.address}</Text>
                 {
@@ -205,11 +206,11 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
                 <View style={styles.feesPart}>
                     <View style={styles.settingRaw}>
                         <Text style={styles.titleLabel}>{localization.send_confirm_screen.transaction_fee}</Text>
-                        <Text style={styles.feeValue}>{props.route.params.data.fee / SATOSHI} {localization.global.firo}</Text>
+                        <Text style={styles.feeValue}>{new BigNumber(props.route.params.data.fee).div(SATOSHI).toString()} {localization.global.firo}</Text>
                     </View>
                     <View style={styles.settingRaw}>
                         <Text style={styles.titleLabel}>{localization.send_confirm_screen.total_send_amount}</Text>
-                        <Text style={styles.feeValue}>{props.route.params.data.totalAmount / SATOSHI} {localization.global.firo}</Text>
+                        <Text style={styles.feeValue}>{new BigNumber(props.route.params.data.totalAmount).div(SATOSHI).toString()} {localization.global.firo}</Text>
                     </View>
                     <View style={styles.settingRaw}>
                         <Text style={styles.titleLabel}>{localization.send_confirm_screen.reduce_fee_from_amount}</Text>

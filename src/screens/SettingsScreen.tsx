@@ -193,7 +193,7 @@ const SettingsScreen = () => {
                             const settings = getSettings();
                             changeSaveProgress(true);
                             try {
-                                await setSettings({ ...settings, defaultCurrency: selectedCurrency });
+                                await setSettings({ ...settings, defaultCurrency: selectedCurrency as any });
                                 Currency.setCurrentCurrency(selectedCurrency);
                             }
                             finally {

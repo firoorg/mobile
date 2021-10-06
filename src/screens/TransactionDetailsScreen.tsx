@@ -8,6 +8,7 @@ import {TransactionItem} from '../data/TransactionItem';
 import localization from '../localization';
 import {TransactionRow} from '../components/TransactionRow';
 import { Currency } from '../utils/currency';
+import BigNumber from 'bignumber.js';
 
 type WalletStackRouteProps = {
   TransactionDetails: {item: TransactionItem};
@@ -61,7 +62,7 @@ const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
         <FiroInfoText
           style={styles.infoText}
           title={localization.transaction_details.fee}
-          text={Currency.formatFiroAmount(item.fee).toString()}
+          text={Currency.formatFiroAmount(new BigNumber(item.fee)).toString()}
         />
         {label}
       </View>
