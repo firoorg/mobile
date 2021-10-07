@@ -152,7 +152,7 @@
   },
 
   "address_details_screen": {
-    "title": "Add New Address",
+    "title": "View Address",
     "address": "Address",
     "name": "Name"
   },

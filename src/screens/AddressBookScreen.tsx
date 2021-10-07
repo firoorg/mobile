@@ -80,10 +80,11 @@ const AddressBookScreen = () => {
     }
     onCancelPress();
   };
-  const onDeletePress = () => {
+  const onDeletePress = async () => {
     if (currentAddress !== undefined) {
-      appStorage.deleteAddressBookItem(currentAddress);
+      await appStorage.deleteAddressBookItem(currentAddress);
       setCurrentAddress(undefined);
+      loadAddressBook();
     }
     onCancelPress();
   };
