@@ -23,6 +23,7 @@ import { Biometrics } from '../utils/biometrics';
 import { FiroInputPassword } from '../components/Input';
 import * as Progress from 'react-native-progress';
 import * as NavigationService from '../NavigationService';
+import deviceInfoModule from 'react-native-device-info';
 
 const { colors } = CurrentFiroTheme;
 const supportedCurrencies: string[] = ["usd", "eur", "gbp", "aud", "btc"];
@@ -161,6 +162,7 @@ const SettingsScreen = () => {
                     </TouchableHighlight>
                     : null
             }
+            <Text style={styles.version}>{localization.settings.version + deviceInfoModule.getVersion()}</Text>
             <BottomSheet isVisible={chooseCurrency} modalProps={{
                     onRequestClose: () => {
                         changeChooseCurrency(false);
@@ -481,6 +483,19 @@ const styles = StyleSheet.create({
         backgroundColor: colors.cardBackground,
         height: 60,
         width: '100%'
+    },
+    version: {
+        marginLeft: 20,
+        marginRight: 20,
+        marginBottom: 20,
+        marginTop: 100,
+        textAlign: 'center',
+        color: colors.text,
+        fontFamily: 'Rubik-Medium',
+        fontWeight: '500',
+        fontSize: 14,
+        opacity: 0.4,
+        textDecorationLine: "underline"
     }
 });
 

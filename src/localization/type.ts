@@ -221,6 +221,7 @@ export interface IString extends LocalizedStringsMethods {
     error_disabled_biometric: string;
     prompt_disable_biometric: string;
     prompt_enable_biometric: string;
+    version: string;
   };
 
   currencies: {

@@ -217,7 +217,8 @@
     "error_disabled_biometric": "Failed disabling fingerprint",
     "prompt_enable_biometric": "Enable Fingerprint",
     "prompt_disable_biometric": "Disable Fingerprint",
-    "title_success": "Success!"
+    "title_success": "Success!",
+    "version": "Version: "
   },
 
   "currencies": {
