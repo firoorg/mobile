@@ -26,7 +26,9 @@ export const CreateAddressCard: FC<CreateAddressProp> = props => {
 
   const onAddressSaveClick = async () => {
     if (name !== undefined) {
-      await appStorage.addSavedAddress(new AddressItem(name, props.address));
+      await appStorage.addSavedAddress(
+        new AddressItem(name.trim(), props.address),
+      );
       if (props.onAddressSave) {
         props.onAddressSave();
       }
@@ -58,7 +60,7 @@ export const CreateAddressCard: FC<CreateAddressProp> = props => {
       <TextInput
         style={styles.addressName}
         placeholder={localization.create_address_card.address_name}
-        onChangeText={txt => setName(txt.trim())}
+        onChangeText={txt => setName(txt)}
       />
     );
   }

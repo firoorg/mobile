@@ -31,9 +31,13 @@ export const FiroToolbarWithoutBack: FC<ToolbarWithTitleProps> = props => {
       containerStyle={styles.toolbar}
       placement="left"
       centerComponent={<FiroTitleBig text={props.title} />}
-      rightComponent={<FiroMenuButton onClick={() => {
-        NavigationService.navigate("Settings", {});
-      }} />}
+      rightComponent={
+        <FiroMenuButton
+          onClick={() => {
+            NavigationService.navigate('Settings', {});
+          }}
+        />
+      }
     />
   );
 };
@@ -46,7 +50,10 @@ export const FiroToolbar: FC<ToolbarWithTitleProps> = props => {
       leftContainerStyle={styles.containerBase}
       centerContainerStyle={styles.containerBase}
       leftComponent={
-        <FiroBackButton onClick={() => NavigationService.back()} />
+        <FiroBackButton
+          onClick={() => NavigationService.back()}
+          buttonStyle={styles.backButton}
+        />
       }
       centerComponent={{
         text: props.title,
@@ -76,5 +83,11 @@ const styles = StyleSheet.create({
   },
   containerBase: {
     marginBottom: 24,
+    justifyContent: 'center',
+  },
+  backButton: {
+    paddingVertical: 20,
+    marginStart: -20,
+    paddingHorizontal: 20,
   },
 });
