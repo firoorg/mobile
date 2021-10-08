@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   root: {
     height: '100%',
     display: 'flex',
-    paddingTop: 30,
+    padding: 30,
   },
   toolbar: {
     paddingHorizontal: 20,
@@ -98,7 +98,6 @@ const styles = StyleSheet.create({
   },
   infoText: {
     paddingTop: 30,
-    paddingHorizontal: 20,
   },
   transactionHistory: {
     fontFamily: 'Rubik-Regular',

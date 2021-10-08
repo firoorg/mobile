@@ -50,7 +50,9 @@ export const AddressBookList: FC<AddressBookListProp> = props => {
             <Text style={styles.address}>{item.address}</Text>
           </View>
           {props.onMenuClick && (
-            <TouchableOpacity onPress={() => props.onMenuClick!(item)}>
+            <TouchableOpacity
+              onPress={() => props.onMenuClick!(item)}
+              style={styles.menuButton}>
               <Image
                 style={styles.menu}
                 source={require('../img/ic_more.png')}
@@ -126,6 +128,9 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 14,
     color: '#3C3939',
+  },
+  menuButton: {
+    padding: 10,
   },
   menu: {
     width: 24,
