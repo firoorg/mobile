@@ -9,6 +9,7 @@ import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
 import localization from '../localization';
 import { Biometrics } from '../utils/biometrics';
+import Logger from '../utils/logger';
 
 const {colors} = CurrentFiroTheme;
 
@@ -22,9 +23,10 @@ const EnterPassphraseScreen = () => {
     : localization.enter_passphrase_screen.login;
 
   const onClickDone = async (passphrase: string) => {
-    console.log(passphrase);
     setLoading(true);
+    Logger.info('enter_passphrase_screen:onClickDone', 'trying load wallet')
     if (await loadFromDisk(passphrase)) {
+      Logger.info('enter_passphrase_screen:onClickDone', 'wallet loaded')
       NavigationService.clearStack('MainScreen');
     }
     setLoading(false);

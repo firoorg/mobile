@@ -16,6 +16,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 import {useFocusEffect} from '@react-navigation/native';
 import * as NavigationService from '../NavigationService';
 import BigNumber from 'bignumber.js';
+import Logger from '../utils/logger';
 
 const {colors} = CurrentFiroTheme;
 var timerHandler: number = -1;
@@ -64,9 +65,10 @@ const SendScreen = () => {
           const sub = subtractFeeFromAmount ? 0 : 1;
           setTotal(amount + sub * changedFee);
         }
+        Logger.error('send_sreen:estimateFee', { changedFee, sendAddress });
         checkIsValid(changedFee, sendAddress);
       } catch (e) {
-        console.log('estimateFee', e);
+        Logger.error('send_sreen:estimateFee', e);
       }
     }, 300);
   };
@@ -86,12 +88,12 @@ const SendScreen = () => {
       let walletBalance = getWallet()?.getBalance();
       setBalance(walletBalance ?? new BigNumber(0));
     } catch (e) {
-      console.log('error when getting balance', e);
+      Logger.error('senc_screen:updateBalance', e);
     }
   };
 
   const onAmountSelect = (amount: BigNumber, isMax: boolean) => {
-    console.log('onAmountSelect', amount, isMax);
+    Logger.info('senc_screen:onAmountSelect', { amount, isMax });
 
     setIsValid(false);
     const substract = subtractFeeFromAmount || isMax;
@@ -115,7 +117,18 @@ const SendScreen = () => {
   };
 
   const onClickSend = () => {
-      NavigationService.navigate("SendConfirmScreen", { data: { address: sendAddress, amount: spendAmount, label, fee: fee, totalAmount: total, reduceFeeFromAmount: subtractFeeFromAmount } });
+    const params = {
+      data: {
+        address: sendAddress,
+        amount: spendAmount,
+        label,
+        fee: fee,
+        totalAmount: total,
+        reduceFeeFromAmount: subtractFeeFromAmount
+      }
+    }
+    Logger.info('senc_screen:onClickSend', params);
+    NavigationService.navigate("SendConfirmScreen", params);
   };
 
   useEffect(() => {
@@ -128,7 +141,6 @@ const SendScreen = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log('useFocusEffect send');
       updateBalance();
 
       return () => {};

@@ -7,6 +7,7 @@ import {FiroTitleBig, FiroTextBig} from '../components/Texts';
 import {FiroWallet} from '../core/FiroWallet';
 import {FiroContext} from '../FiroContext';
 import localization from '../localization';
+import Logger from '../utils/logger'
 
 const WelcomeScreen = () => {
   const [creating, setCreating] = useState(false);
@@ -23,7 +24,7 @@ const WelcomeScreen = () => {
       setWallet(wallet);
       NavigationService.navigate('MnemonicViewScreen', undefined);
     } catch (e) {
-      console.log(e);
+      Logger.error('welcom_screen', e)
     } finally {
       setCreating(false);
     }

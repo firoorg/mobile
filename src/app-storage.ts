@@ -4,9 +4,10 @@ import AsyncStorage from '@react-native-community/async-storage';
 import RNSecureKeyStore, {ACCESSIBLE} from 'react-native-secure-key-store';
 import {AddressBookItem} from './data/AddressBookItem';
 import {AddressItem} from './data/AddressItem';
+import Logger from './utils/logger';
+
 const Realm = require('realm');
 const createHash = require('create-hash');
-
 const encryption = require('./utils/encryption');
 
 export class AppStorage {
@@ -128,13 +129,13 @@ export class AppStorage {
         // this.tx_metadata = data.tx_metadata;
 
         realm.close();
-        console.log('load wallet', unserializedWallet);
+        Logger.info('storage:loadWalletFromDisk', unserializedWallet)
         return unserializedWallet;
       } else {
         return null; // failed loading data or loading/decryptin data
       }
     } catch (error) {
-      console.warn(error.message);
+      Logger.warn('storage:loadWalletFromDisk', error)
       return null;
     }
   }
@@ -185,7 +186,7 @@ export class AppStorage {
       await this.setItem(AppStorage.FLAG_ENCRYPTED, '1');
       return await this.setItem('data', JSON.stringify(newData));
     } catch (error) {
-      console.warn(error.message);
+      Logger.warn('storage:saveWalletToDisk', error)
     }
   }
 
@@ -205,7 +206,7 @@ export class AppStorage {
           wallet._txs_by_internal_index = txsByInternalIndex;
         }
       } catch (error) {
-        console.warn(error.message);
+        Logger.warn('storage:inflateTransactionsFromRealm', error)
       }
     }
   }
@@ -232,7 +233,7 @@ export class AppStorage {
     try {
       return (await this.getItem(AppStorage.FLAG_ENCRYPTED)) === '1';
     } catch (error) {
-      console.warn(error.message);
+      Logger.warn('storage:hasSavedWallet', error)
       return false;
     }
   }
@@ -242,7 +243,7 @@ export class AppStorage {
       let addressBookJson = await this.getItem(AppStorage.ADDRESS_BOOK);
       return JSON.parse(addressBookJson) as Array<AddressBookItem>;
     } catch (error) {
-      console.warn(error.message);
+      Logger.warn('storage:loadAddressBook', error)
       return [];
     }
   }
@@ -264,7 +265,7 @@ export class AppStorage {
         JSON.stringify(addressBook),
       );
     } catch (error) {
-      console.warn(error.message);
+      Logger.warn('storage:addNewAddressBookItem', error)
     }
   }
 
@@ -281,7 +282,7 @@ export class AppStorage {
         JSON.stringify(addressBook),
       );
     } catch (error) {
-      console.warn(error.message);
+      Logger.warn('storage:updateAddressBookItem', error)
     }
   }
 
@@ -302,7 +303,7 @@ export class AppStorage {
         JSON.stringify(addressBook),
       );
     } catch (error) {
-      console.warn(error.message);
+      Logger.warn('storage:deleteAddressBookItem', error)
     }
   }
 
@@ -311,7 +312,7 @@ export class AppStorage {
       let savedAddressesJson = await this.getItem(AppStorage.SAVED_ADDRESSES);
       return JSON.parse(savedAddressesJson) as Array<AddressItem>;
     } catch (error) {
-      console.warn(error.message);
+      Logger.warn('storage:loadSavedAddresses', error)
       return [];
     }
   }
@@ -328,7 +329,7 @@ export class AppStorage {
         JSON.stringify(savedAddresses),
       );
     } catch (error) {
-      console.warn(error.message);
+      Logger.warn('storage:addSavedAddress', error)
     }
   }
 }

@@ -4,6 +4,7 @@ import {AppStorage} from './app-storage';
 import {Currency} from './utils/currency';
 import {CoreSettings} from './core/CoreSettings';
 import BigNumber from 'bignumber.js';
+import Logger from './utils/logger';
 
 const appStorage = new AppStorage();
 
@@ -46,6 +47,7 @@ export const FiroContextProvider: FC = props => {
   });
   Currency.setUpdateContextRate(changeFiroRate);
   const setWallet = (wallet: AbstractWallet) => {
+    Logger.info('firo_context:setWallet', wallet)
     setWalletState(wallet);
   };
 
@@ -66,8 +68,11 @@ export const FiroContextProvider: FC = props => {
 
   const saveToDisk = async () => {
     let wallet = getWallet();
-    if (typeof wallet !== 'undefined') {
+    if (wallet !== undefined) {
+      Logger.info('firo_context:saveToDisk', wallet)
       appStorage.saveWalletToDisk(null, wallet);
+    } else {
+      Logger.error('firo_context:saveToDisk', 'wallet is undefined')
     }
   };
 

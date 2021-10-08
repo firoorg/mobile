@@ -16,6 +16,7 @@ import {FiroPrimaryButton} from '../components/Button';
 import {openPrivacyDesktopSettings} from '../utils/camera';
 const createHash = require('create-hash');
 import localization from '../localization';
+import Logger from '../utils/logger';
 
 type ScanQRCodeRouteProps = {
   ScanQRCode: {onBarScanned: (data: any) => void};
@@ -69,7 +70,7 @@ const ScanQRCodeScreen: FC<ScanQRCodeProps> = props => {
         setAnimatedQRCodeData(animatedQRCodeData);
       }
     } catch (error) {
-      console.warn(error);
+      Logger.error('scan_qr_screen:readBarcodeFromUniformResource', error)
       Alert.alert(localization.scan_qrcode_screen.invalid_qrcode_fragment);
     }
   };
@@ -111,7 +112,7 @@ const ScanQRCodeScreen: FC<ScanQRCodeProps> = props => {
           onBarScanned({data: ret.data});
         }
       } catch (e) {
-        console.log(e);
+        Logger.error('scan_qr_code_screen:onBarCodeRead', e)
       }
     }
     setIsLoading(false);

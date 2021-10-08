@@ -14,6 +14,7 @@ import {Confirmation} from '../components/Confirmation';
 import * as NavigationService from '../NavigationService';
 import {AppStorage} from '../app-storage';
 import localization from '../localization';
+import Logger from '../utils/logger';
 
 const appStorage = new AppStorage();
 
@@ -41,8 +42,11 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
     if (hasInputAddress) {
       item.address = address;
       item.name = name.trim();
+
+      Logger.info('add_edit_address:onConfirm', 'updateAddressBookItem')
       await appStorage.updateAddressBookItem(item);
     } else {
+      Logger.info('add_edit_address:onConfirm', 'addNewAddressBookItem')
       await appStorage.addNewAddressBookItem(
         new AddressBookItem(name.trim(), address),
       );

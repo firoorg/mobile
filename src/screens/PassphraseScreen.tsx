@@ -9,6 +9,7 @@ import {FiroInputPassword} from '../components/Input';
 import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
 import localization from '../localization';
+import Logger from '../utils/logger';
 
 const {colors} = CurrentFiroTheme;
 
@@ -28,6 +29,8 @@ const PassphraseScreen = () => {
       jobDone = true;
 
       NavigationService.clearStack('MainScreen');
+    } catch(e) {
+      Logger.error('passphrase_screen:onClickDone', e)
     } finally {
       if (!jobDone) {
         setCreating(false);

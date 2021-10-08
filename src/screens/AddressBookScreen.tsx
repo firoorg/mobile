@@ -18,6 +18,7 @@ import {AddressBookItem} from '../data/AddressBookItem';
 import localization from '../localization';
 import {useFocusEffect} from '@react-navigation/native';
 import {Divider} from 'react-native-elements/dist/divider/Divider';
+import Logger from '../utils/logger';
 
 const appStorage = new AppStorage();
 
@@ -35,15 +36,18 @@ const AddressBookScreen = () => {
 
   useEffect(() => {
     loadAddressBook();
+    Logger.info('address_book_screen:useEffect', 'loadAddressBook')
   }, []);
   useFocusEffect(
     React.useCallback(() => {
       loadAddressBook();
+      Logger.info('address_book_screen:useFocusEffect', 'loadAddressBook')
       return () => {};
     }, []),
   );
 
   const onAddNewClick = () => {
+    Logger.info('address_book_screen', 'onAddNewClick')
     NavigationService.navigate('AddEditAddressScreen', {undefined});
   };
   const onMenuIconClick = (item: AddressBookItem) => {

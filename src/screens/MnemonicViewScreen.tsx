@@ -9,6 +9,7 @@ import {FiroTitleBig, FiroTextBig, FiroTextSmall} from '../components/Texts';
 import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
 import localization from '../localization';
+import Logger from '../utils/logger';
 
 const {colors} = CurrentFiroTheme;
 
@@ -22,6 +23,7 @@ const MnemonicViewScreen = () => {
   var words = mnemonic.split(' ');
 
   const onClickContinue = () => {
+    Logger.info('mnemonic_view_screen', 'onClickContinue')
     NavigationService.navigate('PassphraseScreen', undefined);
   };
 

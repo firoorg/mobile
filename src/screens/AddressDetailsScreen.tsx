@@ -9,6 +9,7 @@ import {CurrentFiroTheme} from '../Themes';
 import {AddressBookItem} from '../data/AddressBookItem';
 import {TransactionItem} from '../data/TransactionItem';
 import localization from '../localization';
+import Logger from '../utils/logger';
 
 const {colors} = CurrentFiroTheme;
 
@@ -30,6 +31,7 @@ const AddressDetailsScreen: FC<AddressDetailsProps> = props => {
     const wallet = getWallet();
     if (wallet) {
       const txs = wallet.getTransactionsByAddress(item.address);
+      Logger.info('address_detail_scree:useEffect', txs)
       setTxs(txs)
     }
   }, [])

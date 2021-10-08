@@ -12,6 +12,7 @@ import {FiroTransactionEmpty} from '../components/EmptyState';
 import {SATOSHI} from '../core/FiroWallet';
 import {useFocusEffect} from '@react-navigation/native';
 import BigNumber from 'bignumber.js';
+import Logger from '../utils/logger';
 
 const {colors} = CurrentFiroTheme;
 
@@ -23,8 +24,10 @@ const MyWalletScreen = () => {
   const {saveToDisk} = useContext(FiroContext);
 
   const doMint = async () => {
+    Logger.info('my_wallet_screen:doMint', 'start')
     const wallet = getWallet();
     if (!wallet) {
+      Logger.error('my_wallet_screen:doMint', 'wallet is undefined')
       return;
     }
     let updateWallet = false;
@@ -43,6 +46,7 @@ const MyWalletScreen = () => {
       }
 
       const txs = await firoElectrum.multiGetTransactionByTxid(txIds);
+      Logger.info('my_wallet_screen:doMint', `utxos form mint: ${JSON.stringify(txs)}`)
 
       for (const [address, utxos] of utxoMap.entries()) {
         const lelantusUtxos = utxos.map(utxo => {
@@ -55,13 +59,15 @@ const MyWalletScreen = () => {
             address: address,
           };
         });
+        Logger.info('my_wallet_screen:doMint', `lelantus utxos: ${JSON.stringify(lelantusUtxos)}`)
 
         const mint = await wallet.createLelantusMintTx({
           utxos: lelantusUtxos,
         });
+        Logger.info('my_wallet_screen:doMint', `broadcast tx: ${JSON.stringify(mint)}`)
 
         const txId = await firoElectrum.broadcast(mint.txHex);
-        console.log(`broadcast tx: ${JSON.stringify(txId)}`);
+        Logger.info('my_wallet_screen:doMint', `broadcast txId: ${JSON.stringify(txId)}`)
 
         if (txId === mint.txId) {
           wallet.addLelantusMintToCache(txId, mint.value, mint.publicCoin);
@@ -72,14 +78,15 @@ const MyWalletScreen = () => {
             address,
           );
           updateWallet = true;
-          console.log(`saved mint tx: ${JSON.stringify(txId)}`);
+          Logger.info('my_wallet_screen:doMint', `minted tx saved local: ${JSON.stringify(txId)}`)
         }
       }
       if (updateWallet) {
         await saveToDisk();
+        Logger.info('my_wallet_screen:doMint', `saved on disk`)
       }
     } catch (e) {
-      console.log('error when creating mint transaction', e);
+      Logger.error('my_wallet_screen:doMint', e)
     }
   };
 
@@ -89,16 +96,19 @@ const MyWalletScreen = () => {
       let walletUnconfirmedBalance = getWallet()?.getUnconfirmedBalance();
       setBalance(walletBalance ?? new BigNumber(0));
       setUnconfirmedBalance(walletUnconfirmedBalance ?? new BigNumber(0));
+      Logger.info('my_wallet_screen:updateBalance', { walletBalance, walletUnconfirmedBalance })
     } catch (e) {
-      console.log('error when getting balance', e);
+      Logger.error('my_wallet_screen:updateBalance', e)
     }
   };
 
   const updateTxHistory = () => {
     try {
-      setTxHistory(getWallet()?.getTransactions() ?? []);
+      const txs = getWallet()?.getTransactions() ?? [] 
+      setTxHistory(txs);
+      Logger.info('my_wallet_screen:updateTxHistory', txs)
     } catch (e) {
-      console.log('error when getting transaction history', e);
+      Logger.error('my_wallet_screen:updateTxHistory', e)
     }
   };
 
@@ -112,8 +122,13 @@ const MyWalletScreen = () => {
       return;
     }
 
-    if (await wallet.updateMintMetadata()) {
-      await saveToDisk();
+    try {
+      if (await wallet.updateMintMetadata()) {
+        await saveToDisk();
+        Logger.info('my_wallet_screen:updateMintMetadata', 'updateMintMetadata')
+      }
+    } catch (e) {
+      Logger.error('my_wallet_screen:updateMintMetadata ', e)
     }
   };
 
@@ -122,15 +137,17 @@ const MyWalletScreen = () => {
     if (!wallet) {
       return;
     }
-    await wallet.fetchTransactions();
-    await saveToDisk();
+    try {
+      await wallet.fetchTransactions();
+      await saveToDisk();
+      Logger.info('my_wallet_screen:fetchTransactionList ', 'fetchTransactions')
+    } catch (e) {
+      Logger.error('my_wallet_screen:fetchTransactionList ', e)
+    }
   };
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log('useFocusEffect my wallet');
-      console.log(getWallet());
-
       updateBalance();
       updateTxHistory();
 
@@ -149,8 +166,10 @@ const MyWalletScreen = () => {
   useEffect(() => {
     updateWalletData();
     firoElectrum.subscribeToChanges(updateWalletData);
+    Logger.info('my_wallet_screen:useEffect', 'subscribe to changes')
     return () => {
       firoElectrum.unsubscribeToChanges(updateWalletData);
+      Logger.info('my_wallet_screen:useEffect', 'unsubscribe to changes')
     };
   }, []);
 

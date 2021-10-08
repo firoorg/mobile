@@ -25,6 +25,7 @@ import {NavigationProp } from '@react-navigation/native';
 import {firoElectrum} from '../core/FiroElectrum';
 import {SATOSHI} from '../core/FiroWallet';
 import BigNumber from 'bignumber.js';
+import Logger from '../utils/logger';
  
 const { colors } = CurrentFiroTheme;
 type SendConfirmRouteProps = {
@@ -54,32 +55,43 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
     const [bottomSheetViewMode, changeBottomSheetViewMode] = useState(BottomSheetViewMode.None);
 
     const doSpend: (amount: number, subtractFeeFromAmount: boolean, address: string) => Promise<{ success: boolean, error?: string }> = async (amount, subtractFeeFromAmount, address,) => {
+        Logger.info('send_confirm_screen:doSpend', `start doSpend`)
         try {
             const securityCheck: boolean = await checkSecurityForSpend();
             if (!securityCheck) {
                 return !securityCheckFinished ? { success: true } : { success: false, error: localization.send_confirm_screen.error_invalid_fingerprint };
             }
         } catch (error) {
+            Logger.error('send_confirm_screen:doSpend', error)
             return { success: false, error: localization.send_confirm_screen.error_invalid_fingerprint };
         }
         const wallet = getWallet();
         if (!wallet) {
+            Logger.error('send_confirm_screen:doSpend', 'wallet undefined')
             return { success: false, error: localization.send_confirm_screen.error_invalid_nowallet };
         }
         if (!wallet?.validate(address)) {
+            Logger.error('send_confirm_screen:doSpend', `${address} not valid`)
             return { success: false, error: localization.send_confirm_screen.error_invalid_address };
         }
         let success: boolean = false;
         try {
+            Logger.info('send_confirm_screen:doSpend', {
+                spendAmount: amount,
+                subtractFeeFromAmount,
+                address: address,
+            })
             const spendData = await wallet?.createLelantusSpendTx({
                 spendAmount: amount,
                 subtractFeeFromAmount,
                 address: address,
             });
             
+            Logger.info('send_confirm_screen:doSpend', spendData)
+
             const txId = await firoElectrum.broadcast(spendData.txHex);
             success = true;
-            console.log(`broadcast tx: ${JSON.stringify(txId)}`);
+            Logger.info('send_confirm_screen:doSpend', `broadcast tx: ${JSON.stringify(txId)}`)
     
             if (txId === spendData.txId) {
                 wallet?.addSendTxToCache(
@@ -95,10 +107,12 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
                 );
                 wallet?.markCoinsSpend(spendData.spendCoinIndexes);
                 await saveToDisk();
-                console.log('doSpend saved', txId);
+                Logger.info('send_confirm_screen:doSpend', `${txId} saved`)
+            } else {
+                Logger.error('send_confirm_screen:doSpend', `wrong txIds received = ${txId}, local = ${spendData.txId}`)
             }
         } catch (e) {
-            console.log('Error when creating spend transaction', e);
+            Logger.error('send_confirm_screen:doSpend', e)
             return { success, error: localization.send_confirm_screen.error_network };
         }
 
@@ -144,6 +158,7 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
             setProcessing(true);
             doSpend(props.route.params.data.amount, props.route.params.data.reduceFeeFromAmount, props.route.params.data.address).then(sendResult => {
                 if (!securityCheckFinished) {
+                    Logger.warn('send_confirm_screen:onClickConfirm', `sicurity check not finished`)
                     return;
                 }
                 if (sendResult.success) {
@@ -162,7 +177,7 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
                 setProcessing(false);
             });
         } catch (e) {
-            console.log('somting went wrong in spend tx', e);
+            Logger.warn('send_confirm_screen:onClickConfirm', e)
         }
     };
     const navBeforeRemove = (e: any) => {

@@ -11,9 +11,11 @@ import {network} from './FiroNetwork';
 import AsyncStorage from '@react-native-community/async-storage';
 import {AppStorage} from '../app-storage';
 import DefaultPreference from 'react-native-default-preference';
-const bitcoin = require('bitcoinjs-lib');
 import ElectrumClient from 'electrum-client';
 import reverse from 'buffer-reverse';
+import Logger from '../utils/logger';
+
+const bitcoin = require('bitcoinjs-lib');
 
 type Peer = {
   host: string;
@@ -88,11 +90,11 @@ export default class FiroElectrum implements AbstractElectrum {
       // RNWidgetCenter.reloadAllTimelines();
     } catch (e) {
       // Must be running on Android
-      console.log(e);
+      Logger.error('electrum_wallet:connectMain', e)
     }
 
     try {
-      console.log('begin connection:', JSON.stringify(peer));
+      Logger.info('electrum_wallet:connectMain', `begin connection ${JSON.stringify(peer)}`)
       this.mainClient = new ElectrumClient(
         peer.ssl || peer.tcp,
         peer.host,
@@ -106,7 +108,7 @@ export default class FiroElectrum implements AbstractElectrum {
           this.mainClient.close();
           this.mainConnected = false;
           setTimeout(this.connectMain, 500);
-          console.log('reconnecting after socket error');
+          Logger.info('electrum_wallet:connectMain', `reconnecting after socket error`)
           return;
         }
         this.mainConnected = false;
@@ -116,7 +118,7 @@ export default class FiroElectrum implements AbstractElectrum {
         version: '1.4',
       });
       if (ver && ver[0]) {
-        console.log('connected to ', ver);
+        Logger.info('electrum_wallet:connectMain', `connected to ${ver}`)
         this.serverName = ver[0];
         this.mainConnected = true;
         this.wasConnectedAtLeastOnce = true;
@@ -136,20 +138,18 @@ export default class FiroElectrum implements AbstractElectrum {
       }
     } catch (e) {
       this.mainConnected = false;
-      console.log('bad connection:', JSON.stringify(peer), e);
+      Logger.error('electrum_wallet:connectMain', JSON.stringify(peer) + ' ' + e)
     }
 
     if (!this.mainConnected) {
-      console.log('retry');
+      Logger.warn('electrum_wallet:connectMain', 'retry')
       this.mainClient.close && this.mainClient.close();
       setTimeout(this.connectMain, 500);
     }
   }
 
   async getBalanceByAddress(address: string): Promise<BalanceModel> {
-    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
-      throw new Error('Electrum client is not connected');
-    }
+    this.checkConnection('getBalanceByAddress')
     const script = bitcoin.address.toOutputScript(address, network);
     const hash = bitcoin.crypto.sha256(script);
     // eslint-disable-next-line no-undef
@@ -157,15 +157,15 @@ export default class FiroElectrum implements AbstractElectrum {
     const balance = await this.mainClient.blockchainScripthash_getBalance(
       reversedHash.toString('hex'),
     );
+
+    Logger.info('electrum_wallet:getBalanceByAddress', balance)
     return balance;
   }
 
   async getTransactionsByAddress(
     address: string,
   ): Promise<Array<TransactionModel>> {
-    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
-      throw new Error('Electrum client is not connected');
-    }
+    this.checkConnection('getTransactionsByAddress')
     const script = this.addressToScript(address);
     const hash = bitcoin.crypto.sha256(script);
     // eslint-disable-next-line no-undef
@@ -177,6 +177,7 @@ export default class FiroElectrum implements AbstractElectrum {
     //   if (h.tx_hash) txhashHeightCache[h.tx_hash] = h.height; // cache tx height
     // }
 
+    Logger.info('electrum_wallet:getTransactionsByAddress', history)
     return history;
   }
 
@@ -184,9 +185,7 @@ export default class FiroElectrum implements AbstractElectrum {
     addresses: Array<string>,
     batchsize: number = 200,
   ): Promise<Map<string, Array<TransactionModel>>> {
-    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
-      throw new Error('Electrum client is not connected');
-    }
+    this.checkConnection('multiGetTransactionsByAddress')
 
     const ret: Map<string, Array<TransactionModel>> = new Map();
 
@@ -210,7 +209,7 @@ export default class FiroElectrum implements AbstractElectrum {
 
       for (const history of results) {
         if (history.error) {
-          console.warn('multiGetTransactionsByAddress():', history.error);
+          Logger.warn('electrum_wallet:multiGetTransactionsByAddress', history.error)
         }
         if (history.result.length > 0) {
           ret.set(scripthash2addr.get(history.param)!, history.result);
@@ -218,12 +217,15 @@ export default class FiroElectrum implements AbstractElectrum {
       }
     }
 
+    Logger.info('electrum_wallet:multiGetTransactionsByAddress', ret)
     return ret;
   }
 
   async getTransactionsFullByAddress(
     address: string,
   ): Promise<Array<FullTransactionModel>> {
+    this.checkConnection('getTransactionsFullByAddress')
+
     const txs = await this.getTransactionsByAddress(address);
     const ret = [];
     for (const tx of txs) {
@@ -269,6 +271,7 @@ export default class FiroElectrum implements AbstractElectrum {
       ret.push(full);
     }
 
+    Logger.info('electrum_wallet:getBalanceByAddress', ret)
     return ret;
   }
 
@@ -277,9 +280,7 @@ export default class FiroElectrum implements AbstractElectrum {
     batchsize: number = 100,
     verbose: boolean = true,
   ): Promise<Array<FullTransactionModel>> {
-    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
-      throw new Error('Electrum client is not connected');
-    }
+    this.checkConnection('multiGetTransactionsFullByAddress')
 
     const ret = [];
     const txsMap = await this.multiGetTransactionsByAddress(
@@ -337,6 +338,7 @@ export default class FiroElectrum implements AbstractElectrum {
       ret.push(fullTx);
     }
 
+    Logger.info('electrum_wallet:multiGetTransactionsFullByAddress', ret)
     return ret;
   }
 
@@ -344,9 +346,7 @@ export default class FiroElectrum implements AbstractElectrum {
     addresses: Array<string>,
     batchsize: number = 200,
   ): Promise<BalanceModel> {
-    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
-      throw new Error('Electrum client is not connected');
-    }
+    this.checkConnection('multiGetBalanceByAddress')
 
     const ret = new BalanceModel();
 
@@ -372,7 +372,7 @@ export default class FiroElectrum implements AbstractElectrum {
 
       for (const bal of balances) {
         if (bal.error) {
-          console.warn('multiGetBalanceByAddress():', bal.error);
+          Logger.warn('electrum_wallet:multiGetBalanceByAddress', bal.error);
         }
         ret.confirmed += +bal.result.confirmed;
         ret.unconfirmed += +bal.result.unconfirmed;
@@ -380,6 +380,7 @@ export default class FiroElectrum implements AbstractElectrum {
       }
     }
 
+    Logger.info('electrum_wallet:multiGetBalanceByAddress', ret)
     return ret;
   }
 
@@ -387,9 +388,8 @@ export default class FiroElectrum implements AbstractElectrum {
     addresses: Array<string>,
     batchsize: number = 100,
   ): Promise<Map<string, Array<FullTransactionModel>>> {
-    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
-      throw new Error('Electrum client is not connected');
-    }
+    this.checkConnection('multiGetHistoryByAddress')
+
     const ret: Map<string, Array<FullTransactionModel>> = new Map();
 
     const chunks = splitIntoChunks(addresses, batchsize);
@@ -414,7 +414,7 @@ export default class FiroElectrum implements AbstractElectrum {
 
       for (const history of results) {
         if (history.error) {
-          console.warn('multiGetHistoryByAddress():', history.error);
+          Logger.warn('electrum_wallet:multiGetHistoryByAddress', history.error);
         }
         ret.set(scripthash2addr.get(history.param)!, history.result || []);
         for (const result of history.result || []) {
@@ -429,6 +429,7 @@ export default class FiroElectrum implements AbstractElectrum {
       }
     }
 
+    Logger.info('electrum_wallet:multiGetHistoryByAddress', ret)
     return ret;
   }
 
@@ -437,12 +438,12 @@ export default class FiroElectrum implements AbstractElectrum {
     batchsize: number = 45,
     verbose: boolean,
   ): Promise<Map<string, FullTransactionModel>> {
+    this.checkConnection('multiGetTransactionByTxid')
+
     // this value is fine-tuned so althrough wallets in test suite will occasionally
     // throw 'response too large (over 1,000,000 bytes', test suite will pass
     verbose = verbose !== false;
-    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
-      throw new Error('Electrum client is not connected');
-    }
+
     const ret: Map<string, FullTransactionModel> = new Map();
     txids = [...new Set(txids)]; // deduplicate just for any case
 
@@ -468,12 +469,15 @@ export default class FiroElectrum implements AbstractElectrum {
       }
     }
 
+    Logger.info('electrum_wallet:multiGetTransactionByTxid', ret)
     return ret;
   }
 
   async getUnspentTransactionsByAddress(
     address: string,
   ): Promise<Array<TransactionModel>> {
+    this.checkConnection('getUnspentTransactionsByAddress')
+
     const script = bitcoin.address.toOutputScript(address, network);
     const hash = bitcoin.crypto.sha256(script);
     // eslint-disable-next-line no-undef
@@ -481,12 +485,16 @@ export default class FiroElectrum implements AbstractElectrum {
     const listUnspent = await this.mainClient.blockchainScripthash_listunspent(
       reversedHash.toString('hex'),
     );
+
+    Logger.info('electrum_wallet:getUnspentTransactionsByAddress', listUnspent)
     return listUnspent;
   }
 
   async multiGetUnspentTransactionsByAddress(
     addresses: Array<string>,
   ): Promise<Map<string, Array<TransactionModel>>> {
+    this.checkConnection('multiGetUnspentTransactionsByAddress')
+
     const scripthashes = [];
     const scripthash2addr: Map<string, string> = new Map();
     for (const address of addresses) {
@@ -507,14 +515,13 @@ export default class FiroElectrum implements AbstractElectrum {
         ret.set(scripthash2addr.get(utxo.param)!, utxo.result);
       }
     }
-    console.log('utxos', ret);
+    Logger.info('electrum_wallet:multiGetUnspentTransactionsByAddress', ret)
     return ret;
   }
 
   subscribeToChanges(onChange: (params: any) => void): void {
-    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
-      throw new Error('Electrum client is not connected');
-    }
+    this.checkConnection('subscribeToChanges')
+
     this.mainClient.subscribe.on(
       'blockchain.headers.subscribe',
       onChange
@@ -522,9 +529,8 @@ export default class FiroElectrum implements AbstractElectrum {
   }
 
   unsubscribeToChanges(onChange: (params: any) => void): void {
-    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
-      throw new Error('Electrum client is not connected');
-    }
+    this.checkConnection('unsubscribeToChanges')
+
     this.mainClient.subscribe.off(
       'blockchain.headers.subscribe',
       onChange
@@ -532,28 +538,33 @@ export default class FiroElectrum implements AbstractElectrum {
   }
 
   async broadcast(hex: string): Promise<string> {
-    if (!this.mainClient) {
-      throw new Error('Electrum client is not connected');
-    }
+    this.checkConnection('broadcast')
+
+    Logger.info('electrum_wallet:broadcast', hex)
     const broadcast: string = await this.mainClient.blockchainTransaction_broadcast(
       hex,
     );
+
+    Logger.info('electrum_wallet:broadcast', broadcast)
     return broadcast;
   }
 
   async getMintMedata(publicCoins: string[]): Promise<MintMetadataModel[]> {
-    const param = [];
-    param.push({});
+    this.checkConnection('getMintMedata')
+
     const mints: {pubcoin: string}[] = [];
     publicCoins.forEach(coin => {
       mints.push({pubcoin: coin});
     });
-    param[0].mints = mints;
+
+    const param = [];
+    param.push({ mints });
+
     const result = await this.mainClient.request(
       'sigma.getmintmetadata',
       param,
     );
-    return result.map((info: {}, index: number) => {
+    const ret = result.map((info: {}, index: number) => {
       const response = result[index];
       let groupId = -1;
       let height = -1;
@@ -567,20 +578,34 @@ export default class FiroElectrum implements AbstractElectrum {
         anonimitySetId: groupId,
       };
     });
+
+    Logger.info('electrum_wallet:getMintMedata', ret)
+    return ret
   }
 
   async getAnonymitySet(setId: number): Promise<AnonymitySetModel> {
+    this.checkConnection('getAnonymitySet')
+
     const param = [];
     param.push(setId + '');
     const result = await this.mainClient.request(
       'sigma.getanonymityset',
       param,
     );
+
+    Logger.info('electrum_wallet:getAnonymitySet', result)
     return result;
   }
 
   addressToScript(address: string): string {
     return bitcoin.address.toOutputScript(address, network);
+  }
+
+  private checkConnection(tag: string) {
+    if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
+      Logger.error(`electrum_wallet:${tag}`, 'not connected')
+      throw new Error('Electrum client is not connected');
+    }
   }
 }
 

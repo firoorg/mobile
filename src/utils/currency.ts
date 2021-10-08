@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import {AppStorage} from '../app-storage';
 import localization from '../localization';
+import Logger from './logger';
 
 export class Currency {
   private static interval: number = 0;
@@ -85,7 +86,7 @@ export class Currency {
       Currency.lastUpdated = new Date();
       await appStorage.setItem(AppStorage.EXCHANGE_RATES, JSON.stringify(storedRates));
     } catch (error) {
-      console.warn("Can't retrieve current rate: " + error);
+      Logger.warn('currancy:updateExchangeRate', "Can't retrieve current rate: " + error);
       if (storedRates) {
         const lastSavedRate: number = Number(
           storedRates[Currency.currentCurrency],

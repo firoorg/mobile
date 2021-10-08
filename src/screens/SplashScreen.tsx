@@ -8,6 +8,7 @@ import {firoElectrum} from '../core/FiroElectrum';
 import {Currency} from '../utils/currency';
 import {AppStorage} from '../app-storage';
 import {CoreSettings} from '../core/CoreSettings';
+import Logger from '../utils/logger';
 
 const {colors} = CurrentFiroTheme;
 
@@ -32,12 +33,15 @@ const SplashScreen = () => {
     } else {
       NavigationService.dispatch(StackActions.replace('CreateWallet'));
     }
-    console.log('started');
   };
 
   useEffect(() => {
-    firoElectrum.connectMain();
-    replaceStackNavigation();
+    try {
+      firoElectrum.connectMain();
+      replaceStackNavigation();
+    } catch(e) {
+      Logger.error('splash_screen', e)
+    }
   }, []);
 
   return (
