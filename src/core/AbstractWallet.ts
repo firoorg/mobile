@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import {BalanceData} from '../data/BalanceData';
 import {TransactionItem} from '../data/TransactionItem';
 
@@ -65,8 +66,8 @@ export interface AbstractWallet {
   getTransactionsAddresses(): Promise<Array<string>>;
   validate(address: string): boolean
 
-  getBalance(): number;
-  getUnconfirmedBalance(): number;
+  getBalance(): BigNumber;
+  getUnconfirmedBalance(): BigNumber;
 
   getTransactions(): TransactionItem[];
   fetchTransactions(): Promise<void>;

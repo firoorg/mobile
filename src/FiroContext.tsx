@@ -3,6 +3,7 @@ import {AbstractWallet} from './core/AbstractWallet';
 import {AppStorage} from './app-storage';
 import {Currency} from './utils/currency';
 import {CoreSettings} from './core/CoreSettings';
+import BigNumber from 'bignumber.js';
 
 const appStorage = new AppStorage();
 
@@ -38,7 +39,7 @@ export const FiroContext = createContext<FiroContextType>({
 
 export const FiroContextProvider: FC = props => {
   const [walletState, setWalletState] = useState<AbstractWallet>();
-  const [firoRate, changeFiroRate] = useState<number>(Currency.firoToFiat(1));
+  const [firoRate, changeFiroRate] = useState<number>(Currency.firoToFiat(new BigNumber(1)).toNumber());
   const [settings, changeSettings] = useState<CoreSettings>({
     notificationsEnabled: true,
     defaultCurrency: 'usd',

@@ -15,13 +15,14 @@ import {Currency} from '../utils/currency';
 import {ScrollView} from 'react-native-gesture-handler';
 import {useFocusEffect} from '@react-navigation/native';
 import * as NavigationService from '../NavigationService';
+import BigNumber from 'bignumber.js';
 
 const {colors} = CurrentFiroTheme;
 var timerHandler: number = -1;
 
 const SendScreen = () => {
   const { getFiroRate, getSettings, getWallet } = useContext(FiroContext);
-  const [balance, setBalance] = useState(0);
+  const [balance, setBalance] = useState(new BigNumber(0));
   const [spendAmount, setSpendAmount] = useState(0);
   const [sendAddress, setSendAddress] = useState('');
   const [label, setLabel] = useState('');
@@ -83,28 +84,22 @@ const SendScreen = () => {
   const updateBalance = () => {
     try {
       let walletBalance = getWallet()?.getBalance();
-      setBalance(walletBalance ?? 0);
+      setBalance(walletBalance ?? new BigNumber(0));
     } catch (e) {
       console.log('error when getting balance', e);
     }
   };
 
-  const subscribeToElectrumChanges = async () => {
-    firoElectrum.subscribeToChanges(() => {
-      updateBalance();
-    });
-  };
-
-  const onAmountSelect = (amount: number, isMax: boolean) => {
+  const onAmountSelect = (amount: BigNumber, isMax: boolean) => {
     console.log('onAmountSelect', amount, isMax);
 
     setIsValid(false);
     const substract = subtractFeeFromAmount || isMax;
-    const staoshi = amount * SATOSHI;
+    const satoshi = amount.times(SATOSHI).integerValue();
 
-    setSpendAmount(staoshi);
+    setSpendAmount(satoshi.toNumber());
     setSubtractFeeFromAmount(substract);
-    estimateFee(staoshi, substract);
+    estimateFee(satoshi.toNumber(), substract);
   };
 
   const onSubtractFeeFromAmountChanged = () => {
@@ -125,7 +120,10 @@ const SendScreen = () => {
 
   useEffect(() => {
     updateBalance();
-    subscribeToElectrumChanges();
+    firoElectrum.subscribeToChanges(updateBalance);
+    return () => {
+      firoElectrum.unsubscribeToChanges(updateBalance);
+    };
   }, []);
 
   useFocusEffect(
@@ -184,12 +182,12 @@ const SendScreen = () => {
             <FiroVerticalInfoText
               style={styles.feeDetail}
               title={localization.send_screen.transaction_fee}
-              text={Currency.formatFiroAmountWithCurrency(fee / SATOSHI)}
+              text={Currency.formatFiroAmountWithCurrency(new BigNumber(fee).div(SATOSHI))}
             />
             <FiroVerticalInfoText
               style={styles.feeDetail}
               title={localization.send_screen.total_send_amount}
-              text={Currency.formatFiroAmountWithCurrency(total / SATOSHI)}
+              text={Currency.formatFiroAmountWithCurrency(new BigNumber(total).div(SATOSHI))}
             />
             <View style={styles.reduceFeeContainer}>
               <Text style={styles.reduceFeeTitle}>

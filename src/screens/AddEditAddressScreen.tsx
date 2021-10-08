@@ -40,11 +40,11 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
   const onConfirm = async () => {
     if (hasInputAddress) {
       item.address = address;
-      item.name = name;
+      item.name = name.trim();
       await appStorage.updateAddressBookItem(item);
     } else {
       await appStorage.addNewAddressBookItem(
-        new AddressBookItem(name, address),
+        new AddressBookItem(name.trim(), address),
       );
     }
     NavigationService.back();
@@ -89,7 +89,7 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
           style={styles.label}
           value={name}
           placeholder={localization.add_edit_address_screen.name}
-          onChangeText={txt => setName(txt.trim())}
+          onChangeText={txt => setName(txt)}
         />
       </View>
 

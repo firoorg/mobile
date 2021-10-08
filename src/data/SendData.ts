@@ -1,3 +1,5 @@
+import BigNumber from "bignumber.js";
+
 export class SendData {
   amount: number = 0;
   address: string = '';

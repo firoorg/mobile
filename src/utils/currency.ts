@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import {AppStorage} from '../app-storage';
 import localization from '../localization';
 
@@ -15,14 +16,14 @@ export class Currency {
     return Currency.startUpdater();
   }
 
-  public static firoToFiat(amount: number, format?: boolean): number {
+  public static firoToFiat(amount: BigNumber, format?: boolean): BigNumber {
     return format
       ? Currency.formatFiroAmount(amount, Currency.currentRate, Currency.currentCurrency)
-      : Currency.currentRate * amount;
+      : amount.times(Currency.currentRate);
   }
 
-  public static fiatToFiro(amount: number, format?: boolean): number {
-    const result: number = Currency.currentRate ? amount / Currency.currentRate : amount;
+  public static fiatToFiro(amount: BigNumber, format?: boolean): BigNumber {
+    const result: BigNumber = Currency.currentRate ? amount.div(Currency.currentRate) : amount;
     return format ? Currency.formatFiroAmount(result) : result;
   }
 
@@ -30,20 +31,20 @@ export class Currency {
     Currency.updateContextRate = updateRate;
   }
 
-  public static formatFiroAmount(amount: number, rate: number = 1, currency: string = ''): number {
+  public static formatFiroAmount(amount: BigNumber, rate: number = 1, currency: string = ''): BigNumber {
     switch (currency) {
       case 'btc':
-        return parseFloat((amount * rate).toFixed(8));
+        return new BigNumber(amount.times(rate).toFixed(8));
       case '':
-        return parseFloat(amount.toFixed(8));
+        return new BigNumber(amount.toFixed(8));
       default:
         // for other currencies 2 digits is enough for now
-        return parseFloat((amount * rate).toFixed(2));
+        return new BigNumber(amount.times(rate).toFixed(2));
     }
   }
 
-  public static formatFiroAmountWithCurrency(amount: number, rate: number = 1, currency: string = ''): string {
-    return Currency.formatFiroAmount(amount, rate, currency) + ' ' + (currency ? (localization.currencies as any)[currency] : localization.global.firo);
+  public static formatFiroAmountWithCurrency(amount: BigNumber, rate: number = 1, currency: string = ''): string {
+    return Currency.formatFiroAmount(amount, rate, currency).toString() + ' ' + (currency ? (localization.currencies as any)[currency] : localization.global.firo);
   }
 
   private static async startUpdater() {

@@ -11,13 +11,14 @@ import localization from '../localization';
 import {FiroTransactionEmpty} from '../components/EmptyState';
 import {SATOSHI} from '../core/FiroWallet';
 import {useFocusEffect} from '@react-navigation/native';
+import BigNumber from 'bignumber.js';
 
 const {colors} = CurrentFiroTheme;
 
 const MyWalletScreen = () => {
   const {getWallet} = useContext(FiroContext);
-  const [balance, setBalance] = useState(0);
-  const [unconfirmedBalance, setUnconfirmedBalance] = useState(0);
+  const [balance, setBalance] = useState(new BigNumber(0));
+  const [unconfirmedBalance, setUnconfirmedBalance] = useState(new BigNumber(0));
   const [txHistory, setTxHistory] = useState<TransactionItem[]>([]);
   const {saveToDisk} = useContext(FiroContext);
 
@@ -66,8 +67,8 @@ const MyWalletScreen = () => {
           wallet.addLelantusMintToCache(txId, mint.value, mint.publicCoin);
           wallet.addMintTxToCache(
             txId,
-            mint.value / SATOSHI,
-            mint.fee / SATOSHI,
+            new BigNumber(mint.value).div(SATOSHI).toNumber(),
+            new BigNumber(mint.fee).div(SATOSHI).toNumber(),
             address,
           );
           updateWallet = true;
@@ -86,8 +87,8 @@ const MyWalletScreen = () => {
     try {
       let walletBalance = getWallet()?.getBalance();
       let walletUnconfirmedBalance = getWallet()?.getUnconfirmedBalance();
-      setBalance(walletBalance ?? 0);
-      setUnconfirmedBalance(walletUnconfirmedBalance ?? 0);
+      setBalance(walletBalance ?? new BigNumber(0));
+      setUnconfirmedBalance(walletUnconfirmedBalance ?? new BigNumber(0));
     } catch (e) {
       console.log('error when getting balance', e);
     }
@@ -125,12 +126,6 @@ const MyWalletScreen = () => {
     await saveToDisk();
   };
 
-  const subscribeToElectrumChanges = () => {
-    firoElectrum.subscribeToChanges(() => {
-      updateWalletData();
-    });
-  };
-
   useFocusEffect(
     React.useCallback(() => {
       console.log('useFocusEffect my wallet');
@@ -145,16 +140,18 @@ const MyWalletScreen = () => {
 
   const updateWalletData = async () => {
     await updateMintMetadata();
-    updateBalance();
-
     await fetchTransactionList();
     await mintUnspentTransactions();
+    updateBalance();
     updateTxHistory();
   };
 
   useEffect(() => {
     updateWalletData();
-    subscribeToElectrumChanges();
+    firoElectrum.subscribeToChanges(updateWalletData);
+    return () => {
+      firoElectrum.unsubscribeToChanges(updateWalletData);
+    };
   }, []);
 
   let transactionList;

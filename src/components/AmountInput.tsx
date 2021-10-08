@@ -12,13 +12,14 @@ import {FiroPrimaryButton} from './Button';
 import localization from '../localization';
 import {FiroContext} from '../FiroContext';
 import {Currency} from '../utils/currency';
+import BigNumber from 'bignumber.js';
 
 type SendAmountInputCardProp = {
-  maxBalance: number;
-  onAmountSelect: (amount: number, isMax: boolean) => void;
+  maxBalance: BigNumber;
+  onAmountSelect: (amount: BigNumber, isMax: boolean) => void;
 };
 type ReceiveAmountInputCardProp = {
-  onAmountSelect: (amount: number) => void;
+  onAmountSelect: (amount: BigNumber) => void;
 };
 
 export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
@@ -44,18 +45,18 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
   });
 
   const updateConverted = (input: string, isCrypto: boolean) => {
-    const i = parseFloat(input)
-    let txt = ''
-    let crypto = 0
-    if (isNaN(i)) {
-      crypto = 0
+    const i = new BigNumber(input);
+    let txt = '';
+    let crypto = new BigNumber(0)
+    if (i.isNaN()) {
+      crypto = new BigNumber(0);
       txt = `${localization.amount_input.amount} (${getPlaceholder(!isCrypto)})`
     } else if (isCrypto) {
-      crypto = i
-      txt = Currency.firoToFiat(i, true).toString()
+      crypto = i;
+      txt = Currency.firoToFiat(i, true).toString();
     } else {
-      crypto = Currency.fiatToFiro(i, true)
-      txt = crypto.toString()
+      crypto = Currency.fiatToFiro(i, true);
+      txt = crypto.toString();
     }
     setConverted(txt);
     return crypto;
@@ -63,18 +64,18 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
   
   const notifyAmountChanged = (input: string, isCrypto: boolean, isMax: boolean) => {
     const crypto = updateConverted(input, isCrypto);
-    props.onAmountSelect(crypto, isMax)
+    props.onAmountSelect(crypto, isMax);
   }
 
   const onTextChnaged = (text: string) => {
-    setInput(text)
-    notifyAmountChanged(text, isCrypto, false)
+    setInput(text);
+    notifyAmountChanged(text, isCrypto, false);
   }
 
   const onClickToSwap = () => {``
-    const i = parseFloat(input)
+    const i = new BigNumber(input);
     let txt = ''
-    if (isNaN(i)) {
+    if (i.isNaN()) {
     } else if (isCrypto) {
       txt = Currency.firoToFiat(i, true).toString();
     } else {

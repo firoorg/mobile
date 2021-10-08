@@ -33,7 +33,7 @@ const TRANSACTION_LELANTUS = 8;
 
 const MINT_CONFIRM_BLOCK_COUNT = 2;
 
-export const SATOSHI = 100000000;
+export const SATOSHI = new BigNumber(100000000);
 
 export const TX_DATE_FORMAT = {
   year: '2-digit',
@@ -98,23 +98,23 @@ export class FiroWallet implements AbstractWallet {
 
   getBalance() {
     return (
-      this._getUnspentCoins().reduce<number>(
+      new BigNumber(this._getUnspentCoins().reduce<number>(
         (previousValue: number, currentValue: LelantusCoin): number => {
           return previousValue + currentValue.value;
         },
         0,
-      ) / SATOSHI
+      )).div(SATOSHI)
     );
   }
 
   getUnconfirmedBalance() {
     return (
-      this._getUnconfirmedCoins().reduce<number>(
+      new BigNumber(this._getUnconfirmedCoins().reduce<number>(
         (previousValue: number, currentValue: LelantusCoin): number => {
           return previousValue + currentValue.value;
         },
         0,
-      ) / SATOSHI
+      )).div(SATOSHI)
     );
   }
 
@@ -761,10 +761,10 @@ export class FiroWallet implements AbstractWallet {
           transactionItem.txId = tx.txid;
           transactionItem.confirmed = true;
 
-          const ia = tx.inputs.reduce((acc, elm) => acc + elm.value, 0);
-          const oa = tx.outputs.reduce((acc, elm) => acc + elm.value, 0);
+          const ia = tx.inputs.reduce((acc, elm) => acc.plus(elm.value), new BigNumber(0));
+          const oa = tx.outputs.reduce((acc, elm) => acc.plus(elm.value), new BigNumber(0));
 
-          transactionItem.fee = ia - oa;
+          transactionItem.fee = ia.minus(oa).toNumber();
 
           if (
             tx.outputs.length === 1 &&
@@ -777,12 +777,14 @@ export class FiroWallet implements AbstractWallet {
             transactionItem.confirmed =
               tx.confirmations >= MINT_CONFIRM_BLOCK_COUNT;
           } else {
+            let sumValue: BigNumber = new BigNumber(0);
             tx.outputs.forEach(vout => {
               if (vout.addresses && vout.addresses.includes(tx.address)) {
-                transactionItem.value += vout.value;
+                sumValue = sumValue.plus(vout.value);
                 transactionItem.received = true;
               }
             });
+            transactionItem.value = sumValue.toNumber();
           }
 
           if (transactionItem.received || transactionItem.isMint) {
