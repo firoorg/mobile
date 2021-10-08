@@ -58,7 +58,6 @@ export const FiroToolbar: FC<ToolbarWithTitleProps> = props => {
 
 const styles = StyleSheet.create({
   toolbar: {
-    height: 54,
     backgroundColor: 'transparent',
     borderBottomColor: 'transparent',
     borderBottomWidth: 0,
