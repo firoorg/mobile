@@ -61,6 +61,10 @@ const SettingsScreen = () => {
     const [selectedCurrency, changeSelectedCurrency] = useState(currentCurrency);
     const [biometricsAvailable, changeBiometricsAvailable] = useState(false);
     const [biometricSettingsViewMode, changeBiometricSettingsViewMode] = useState(BiometricSettingsViewMode.None);
+
+    const clickOnVersionCode = () => {
+        NavigationService.navigate('DebugSettings', undefined)
+    }
     
     useEffect(() => {
         const onChange = () => {
@@ -73,7 +77,7 @@ const SettingsScreen = () => {
         });
         Dimensions.addEventListener('change', onChange);
         return () => Dimensions.removeEventListener('change', onChange);
-    });
+    }, []);
     return (
         <ScrollView>
             <View style={styles.toolbar}>
@@ -162,7 +166,7 @@ const SettingsScreen = () => {
                     </TouchableHighlight>
                     : null
             }
-            <Text style={styles.version}>{localization.settings.version + deviceInfoModule.getVersion()}</Text>
+            <Text style={styles.version} onPress={clickOnVersionCode}>{localization.settings.version + deviceInfoModule.getVersion()}</Text>
             <BottomSheet isVisible={chooseCurrency} modalProps={{
                     onRequestClose: () => {
                         changeChooseCurrency(false);
