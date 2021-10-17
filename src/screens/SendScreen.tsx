@@ -286,9 +286,10 @@ const styles = StyleSheet.create({
   },
   label: {
     backgroundColor: colors.cardBackground,
+    color: colors.text,
     paddingHorizontal: 20,
     marginTop: 25,
-    fontFamily: 'Rubik-Regular',
+    fontFamily: 'Rubik-Medium',
     fontSize: 14,
     borderRadius: 25,
     elevation: 2,

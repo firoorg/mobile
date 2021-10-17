@@ -13,6 +13,8 @@ import localization from '../localization';
 import {FiroContext} from '../FiroContext';
 import {Currency} from '../utils/currency';
 import BigNumber from 'bignumber.js';
+import { CurrentFiroTheme } from '../Themes';
+const {colors} = CurrentFiroTheme;
 
 type SendAmountInputCardProp = {
   maxBalance: BigNumber;
@@ -158,14 +160,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Rubik-Medium',
     fontWeight: '500',
     fontSize: 14,
-    color: 'rgba(15, 14, 14, 0.5)',
-  },
-  secondaryInput: {
-    marginHorizontal: 20,
-    fontFamily: 'Rubik-Regular',
-    fontWeight: '400',
-    fontSize: 12,
-    color: 'rgba(15, 14, 14, 0.5)',
+    color: colors.text,
   },
   secondaryText: {
     height: 42,

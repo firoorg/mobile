@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Rubik-Medium',
     fontWeight: '500',
     fontSize: 14,
-    color: 'rgba(15, 14, 14, 0.5)',
+    color: colors.text,
   },
   divider: {
     width: 30,
@@ -149,11 +149,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.cardBackground,
     paddingHorizontal: 20,
     marginTop: 25,
-    fontFamily: 'Rubik-Regular',
+    fontFamily: 'Rubik-Medium',
     fontSize: 14,
     borderRadius: 25,
     elevation: 2,
     width: '100%',
+    color: colors.text
   },
   confirmation: {
     marginTop: 'auto',

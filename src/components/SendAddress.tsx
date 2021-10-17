@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Rubik-Medium',
     fontWeight: '500',
     fontSize: 14,
-    color: 'rgba(15, 14, 14, 0.5)',
+    color: colors.text,
   },
   divider: {
     width: 30,

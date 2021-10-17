@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     fontFamily: 'Rubik-Regular',
     fontSize: 14,
+    color: colors.text
   },
   mnemonic: {
     height: '100%',
