@@ -1,7 +1,8 @@
 {
   "global": {
     "firo": "Firo",
-    "balance": "Balance"
+    "balance": "Balance",
+    "copy_to_clipboard": "Copy to clipboard"
   },
 
   "component_button": {

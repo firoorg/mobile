@@ -12,6 +12,8 @@ type FiroTextProp = {
 
 type FiroInfoTextProp = FiroTextProp & {
   title: string;
+  onClick?: () => void;
+  onLongPress?: () => void;
 };
 
 export const FiroTitleBig: FC<FiroTextProp> = props => {
@@ -45,12 +47,23 @@ export const FiroTextSmall: FC<FiroTextProp> = props => {
 };
 
 export const FiroInfoText: FC<FiroInfoTextProp> = props => {
+  const onClickText = () => {
+    props.onClick && props.onClick()
+  }
+  const onLongPresstext = () => {
+    props.onLongPress && props.onLongPress()
+  }
   return (
     <View style={props.style}>
       <Text style={[styles.text, styles.infoText, styles.infoTextTitle]}>
         {props.title}
       </Text>
-      <Text style={[styles.text, styles.infoText]}>{props.text}</Text>
+      <Text
+        onLongPress={onLongPresstext}
+        onPress={onClickText}
+        style={[styles.text, styles.infoText]}>
+        {props.text}
+      </Text>
     </View>
   );
 };

@@ -4,6 +4,7 @@ export interface IString extends LocalizedStringsMethods {
   global: {
     firo: string;
     balance: string;
+    copy_to_clipboard: string;
   };
 
   component_button: {

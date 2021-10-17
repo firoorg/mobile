@@ -23,20 +23,22 @@ export const TransactionRow: FC<TransactionRowProps> = props => {
     ? require('../img/ic_anonymized_tx.png')
     : require('../img/ic_sent_tx.png');
 
-  const title = item.received
+  const title = !item.confirmed
+    ? localization.transaction_list_item.unconfirmed.toLowerCase()
+    : item.received
     ? localization.transaction_list_item.receive
     : item.isMint
     ? localization.transaction_list_item.anonymize
     : localization.transaction_list_item.send;
 
-  let unconfirmed = <Text />;
-  if (!item.confirmed) {
-    unconfirmed = (
-      <Text style={styles.unconfirmed}>
-        ({localization.transaction_list_item.unconfirmed.toLowerCase()})
-      </Text>
-    );
-  }
+  // let unconfirmed = <Text />;
+  // if (!item.confirmed) {
+  //   unconfirmed = (
+  //     <Text style={styles.unconfirmed}>
+  //       ({localization.transaction_list_item.unconfirmed.toLowerCase()})
+  //     </Text>
+  //   );
+  // }
 
   return (
     <View style={[styles.root, props.style]}>
@@ -44,7 +46,7 @@ export const TransactionRow: FC<TransactionRowProps> = props => {
       <View style={styles.textContainer}>
         <View style={styles.row}>
           <Text style={styles.title}>
-            {Currency.formatFiroAmountWithCurrency(new BigNumber(item.value))} {unconfirmed}
+            {Currency.formatFiroAmountWithCurrency(new BigNumber(item.value))} 
           </Text>
           <Text style={styles.title}>
             {Currency.formatFiroAmountWithCurrency(

@@ -13,6 +13,8 @@ import {SATOSHI} from '../core/FiroWallet';
 import {useFocusEffect} from '@react-navigation/native';
 import BigNumber from 'bignumber.js';
 import Logger from '../utils/logger';
+import { Text } from 'react-native-elements';
+import { number } from 'bitcoinjs-lib/types/script';
 
 const {colors} = CurrentFiroTheme;
 
@@ -21,7 +23,10 @@ const MyWalletScreen = () => {
   const [balance, setBalance] = useState(new BigNumber(0));
   const [unconfirmedBalance, setUnconfirmedBalance] = useState(new BigNumber(0));
   const [txHistory, setTxHistory] = useState<TransactionItem[]>([]);
+  const [sync, setSync] = useState(false)
   const {saveToDisk} = useContext(FiroContext);
+
+  const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
   const doMint = async () => {
     Logger.info('my_wallet_screen:doMint', 'start')
@@ -156,19 +161,26 @@ const MyWalletScreen = () => {
   );
 
   const updateWalletData = async () => {
+    setSync(true)
+    const t = Date.now()
     await updateMintMetadata();
     await fetchTransactionList();
     await mintUnspentTransactions();
+    const dt = 1000 - (Date.now() - t)
+    dt > 0 && await delay(dt)
+    setSync(false)
     updateBalance();
     updateTxHistory();
   };
 
   useEffect(() => {
-    updateWalletData();
+    updateWalletData()
+    const id = setInterval(updateWalletData, 60000)
     firoElectrum.subscribeToChanges(updateWalletData);
     Logger.info('my_wallet_screen:useEffect', 'subscribe to changes')
     return () => {
       firoElectrum.unsubscribeToChanges(updateWalletData);
+      clearInterval(id)
       Logger.info('my_wallet_screen:useEffect', 'unsubscribe to changes')
     };
   }, []);
@@ -190,6 +202,7 @@ const MyWalletScreen = () => {
           unconfirmedBalance={unconfirmedBalance}
         />
       </View>
+      <Text style={styles.syncText}>{sync ? 'Syncing...' : 'Synced'}</Text>
       <View style={styles.transactionContainer}>{transactionList}</View>
     </View>
   );
@@ -216,6 +229,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 235,
   },
+  syncText: {
+    textAlign: 'right',
+    alignSelf: 'flex-end',
+    paddingHorizontal: 20,
+  }
 });
 
 export default MyWalletScreen;
