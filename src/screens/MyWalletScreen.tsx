@@ -13,15 +13,16 @@ import {SATOSHI} from '../core/FiroWallet';
 import {useFocusEffect} from '@react-navigation/native';
 import BigNumber from 'bignumber.js';
 import Logger from '../utils/logger';
-import { Text } from 'react-native-elements';
-import { number } from 'bitcoinjs-lib/types/script';
+import {Text} from 'react-native-elements';
 
 const {colors} = CurrentFiroTheme;
 
 const MyWalletScreen = () => {
   const {getWallet} = useContext(FiroContext);
   const [balance, setBalance] = useState(new BigNumber(0));
-  const [unconfirmedBalance, setUnconfirmedBalance] = useState(new BigNumber(0));
+  const [unconfirmedBalance, setUnconfirmedBalance] = useState(
+    new BigNumber(0),
+  );
   const [txHistory, setTxHistory] = useState<TransactionItem[]>([]);
   const [sync, setSync] = useState(false)
   const {saveToDisk} = useContext(FiroContext);
@@ -29,10 +30,10 @@ const MyWalletScreen = () => {
   const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
   const doMint = async () => {
-    Logger.info('my_wallet_screen:doMint', 'start')
+    Logger.info('my_wallet_screen:doMint', 'start');
     const wallet = getWallet();
     if (!wallet) {
-      Logger.error('my_wallet_screen:doMint', 'wallet is undefined')
+      Logger.error('my_wallet_screen:doMint', 'wallet is undefined');
       return;
     }
     let updateWallet = false;
@@ -51,7 +52,10 @@ const MyWalletScreen = () => {
       }
 
       const txs = await firoElectrum.multiGetTransactionByTxid(txIds);
-      Logger.info('my_wallet_screen:doMint', `utxos form mint: ${JSON.stringify(txs)}`)
+      Logger.info(
+        'my_wallet_screen:doMint',
+        `utxos form mint: ${JSON.stringify(txs)}`,
+      );
 
       for (const [address, utxos] of utxoMap.entries()) {
         const lelantusUtxos = utxos.map(utxo => {
@@ -64,15 +68,24 @@ const MyWalletScreen = () => {
             address: address,
           };
         });
-        Logger.info('my_wallet_screen:doMint', `lelantus utxos: ${JSON.stringify(lelantusUtxos)}`)
+        Logger.info(
+          'my_wallet_screen:doMint',
+          `lelantus utxos: ${JSON.stringify(lelantusUtxos)}`,
+        );
 
         const mint = await wallet.createLelantusMintTx({
           utxos: lelantusUtxos,
         });
-        Logger.info('my_wallet_screen:doMint', `broadcast tx: ${JSON.stringify(mint)}`)
+        Logger.info(
+          'my_wallet_screen:doMint',
+          `broadcast tx: ${JSON.stringify(mint)}`,
+        );
 
         const txId = await firoElectrum.broadcast(mint.txHex);
-        Logger.info('my_wallet_screen:doMint', `broadcast txId: ${JSON.stringify(txId)}`)
+        Logger.info(
+          'my_wallet_screen:doMint',
+          `broadcast txId: ${JSON.stringify(txId)}`,
+        );
 
         if (txId === mint.txId) {
           wallet.addLelantusMintToCache(txId, mint.value, mint.publicCoin);
@@ -83,15 +96,18 @@ const MyWalletScreen = () => {
             address,
           );
           updateWallet = true;
-          Logger.info('my_wallet_screen:doMint', `minted tx saved local: ${JSON.stringify(txId)}`)
+          Logger.info(
+            'my_wallet_screen:doMint',
+            `minted tx saved local: ${JSON.stringify(txId)}`,
+          );
         }
       }
       if (updateWallet) {
         await saveToDisk();
-        Logger.info('my_wallet_screen:doMint', `saved on disk`)
+        Logger.info('my_wallet_screen:doMint', `saved on disk`);
       }
     } catch (e) {
-      Logger.error('my_wallet_screen:doMint', e)
+      Logger.error('my_wallet_screen:doMint', e);
     }
   };
 
@@ -101,19 +117,22 @@ const MyWalletScreen = () => {
       let walletUnconfirmedBalance = getWallet()?.getUnconfirmedBalance();
       setBalance(walletBalance ?? new BigNumber(0));
       setUnconfirmedBalance(walletUnconfirmedBalance ?? new BigNumber(0));
-      Logger.info('my_wallet_screen:updateBalance', { walletBalance, walletUnconfirmedBalance })
+      Logger.info('my_wallet_screen:updateBalance', {
+        walletBalance,
+        walletUnconfirmedBalance,
+      });
     } catch (e) {
-      Logger.error('my_wallet_screen:updateBalance', e)
+      Logger.error('my_wallet_screen:updateBalance', e);
     }
   };
 
   const updateTxHistory = () => {
     try {
-      const txs = getWallet()?.getTransactions() ?? [] 
+      const txs = getWallet()?.getTransactions() ?? [];
       setTxHistory(txs);
-      Logger.info('my_wallet_screen:updateTxHistory', txs)
+      Logger.info('my_wallet_screen:updateTxHistory', txs);
     } catch (e) {
-      Logger.error('my_wallet_screen:updateTxHistory', e)
+      Logger.error('my_wallet_screen:updateTxHistory', e);
     }
   };
 
@@ -130,10 +149,13 @@ const MyWalletScreen = () => {
     try {
       if (await wallet.updateMintMetadata()) {
         await saveToDisk();
-        Logger.info('my_wallet_screen:updateMintMetadata', 'updateMintMetadata')
+        Logger.info(
+          'my_wallet_screen:updateMintMetadata',
+          'updateMintMetadata',
+        );
       }
     } catch (e) {
-      Logger.error('my_wallet_screen:updateMintMetadata ', e)
+      Logger.error('my_wallet_screen:updateMintMetadata ', e);
     }
   };
 
@@ -145,9 +167,12 @@ const MyWalletScreen = () => {
     try {
       await wallet.fetchTransactions();
       await saveToDisk();
-      Logger.info('my_wallet_screen:fetchTransactionList ', 'fetchTransactions')
+      Logger.info(
+        'my_wallet_screen:fetchTransactionList ',
+        'fetchTransactions',
+      );
     } catch (e) {
-      Logger.error('my_wallet_screen:fetchTransactionList ', e)
+      Logger.error('my_wallet_screen:fetchTransactionList ', e);
     }
   };
 
@@ -161,27 +186,27 @@ const MyWalletScreen = () => {
   );
 
   const updateWalletData = async () => {
-    setSync(true)
-    const t = Date.now()
+    setSync(true);
+    const t = Date.now();
     await updateMintMetadata();
     await fetchTransactionList();
     await mintUnspentTransactions();
-    const dt = 1000 - (Date.now() - t)
-    dt > 0 && await delay(dt)
-    setSync(false)
+    const dt = 1000 - (Date.now() - t);
+    dt > 0 && (await delay(dt));
+    setSync(false);
     updateBalance();
     updateTxHistory();
   };
 
   useEffect(() => {
-    updateWalletData()
-    const id = setInterval(updateWalletData, 60000)
-    firoElectrum.subscribeToChanges(updateWalletData);
-    Logger.info('my_wallet_screen:useEffect', 'subscribe to changes')
+    updateWalletData();
+    const id = setInterval(updateWalletData, 60000);
+    firoElectrum.addChangeListener(updateWalletData);
+    Logger.info('my_wallet_screen:useEffect', 'subscribe to changes');
     return () => {
-      firoElectrum.unsubscribeToChanges(updateWalletData);
-      clearInterval(id)
-      Logger.info('my_wallet_screen:useEffect', 'unsubscribe to changes')
+      firoElectrum.removeChangeListener(updateWalletData);
+      clearInterval(id);
+      Logger.info('my_wallet_screen:useEffect', 'unsubscribe to changes');
     };
   }, []);
 
@@ -233,7 +258,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     alignSelf: 'flex-end',
     paddingHorizontal: 20,
-  }
+  },
 });
 
 export default MyWalletScreen;

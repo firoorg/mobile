@@ -22,7 +22,7 @@ const {colors} = CurrentFiroTheme;
 var timerHandler: number = -1;
 
 const SendScreen = () => {
-  const { getFiroRate, getSettings, getWallet } = useContext(FiroContext);
+  const {getFiroRate, getSettings, getWallet} = useContext(FiroContext);
   const [balance, setBalance] = useState(new BigNumber(0));
   const [spendAmount, setSpendAmount] = useState(0);
   const [sendAddress, setSendAddress] = useState('');
@@ -65,7 +65,7 @@ const SendScreen = () => {
           const sub = subtractFeeFromAmount ? 0 : 1;
           setTotal(amount + sub * changedFee);
         }
-        Logger.error('send_sreen:estimateFee', { changedFee, sendAddress });
+        Logger.error('send_sreen:estimateFee', {changedFee, sendAddress});
         checkIsValid(changedFee, sendAddress);
       } catch (e) {
         Logger.error('send_sreen:estimateFee', e);
@@ -82,7 +82,6 @@ const SendScreen = () => {
     setIsValid(fee !== 0 && wallet.validate(address));
   };
 
-  
   const updateBalance = () => {
     try {
       let walletBalance = getWallet()?.getBalance();
@@ -93,7 +92,7 @@ const SendScreen = () => {
   };
 
   const onAmountSelect = (amount: BigNumber, isMax: boolean) => {
-    Logger.info('senc_screen:onAmountSelect', { amount, isMax });
+    Logger.info('senc_screen:onAmountSelect', {amount, isMax});
 
     setIsValid(false);
     const substract = subtractFeeFromAmount || isMax;
@@ -124,18 +123,18 @@ const SendScreen = () => {
         label,
         fee: fee,
         totalAmount: total,
-        reduceFeeFromAmount: subtractFeeFromAmount
-      }
-    }
+        reduceFeeFromAmount: subtractFeeFromAmount,
+      },
+    };
     Logger.info('senc_screen:onClickSend', params);
-    NavigationService.navigate("SendConfirmScreen", params);
+    NavigationService.navigate('SendConfirmScreen', params);
   };
 
   useEffect(() => {
     updateBalance();
-    firoElectrum.subscribeToChanges(updateBalance);
+    firoElectrum.addChangeListener(updateBalance);
     return () => {
-      firoElectrum.unsubscribeToChanges(updateBalance);
+      firoElectrum.removeChangeListener(updateBalance);
     };
   }, []);
 
@@ -194,12 +193,16 @@ const SendScreen = () => {
             <FiroVerticalInfoText
               style={styles.feeDetail}
               title={localization.send_screen.transaction_fee}
-              text={Currency.formatFiroAmountWithCurrency(new BigNumber(fee).div(SATOSHI))}
+              text={Currency.formatFiroAmountWithCurrency(
+                new BigNumber(fee).div(SATOSHI),
+              )}
             />
             <FiroVerticalInfoText
               style={styles.feeDetail}
               title={localization.send_screen.total_send_amount}
-              text={Currency.formatFiroAmountWithCurrency(new BigNumber(total).div(SATOSHI))}
+              text={Currency.formatFiroAmountWithCurrency(
+                new BigNumber(total).div(SATOSHI),
+              )}
             />
             <View style={styles.reduceFeeContainer}>
               <Text style={styles.reduceFeeTitle}>

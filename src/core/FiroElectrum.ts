@@ -75,6 +75,8 @@ export default class FiroElectrum implements AbstractElectrum {
 
   txhashHeightCache: Map<string, number> = new Map();
 
+  listeners: Array<() => void> = [];
+
   getLatestBlockHeight(): number {
     return this.latestBlockheight === false ? -1 : this.latestBlockheight;
   }
@@ -90,11 +92,14 @@ export default class FiroElectrum implements AbstractElectrum {
       // RNWidgetCenter.reloadAllTimelines();
     } catch (e) {
       // Must be running on Android
-      Logger.error('electrum_wallet:connectMain', e)
+      Logger.error('electrum_wallet:connectMain', e);
     }
 
     try {
-      Logger.info('electrum_wallet:connectMain', `begin connection ${JSON.stringify(peer)}`)
+      Logger.info(
+        'electrum_wallet:connectMain',
+        `begin connection ${JSON.stringify(peer)}`,
+      );
       this.mainClient = new ElectrumClient(
         peer.ssl || peer.tcp,
         peer.host,
@@ -107,8 +112,13 @@ export default class FiroElectrum implements AbstractElectrum {
           // code which does connection retries
           this.mainClient.close();
           this.mainConnected = false;
-          setTimeout(this.connectMain, 500);
-          Logger.info('electrum_wallet:connectMain', `reconnecting after socket error`)
+          setTimeout(() => {
+            this.connectMain();
+          }, 500);
+          Logger.info(
+            'electrum_wallet:connectMain',
+            'reconnecting after socket error',
+          );
           return;
         }
         this.mainConnected = false;
@@ -118,38 +128,96 @@ export default class FiroElectrum implements AbstractElectrum {
         version: '1.4',
       });
       if (ver && ver[0]) {
-        Logger.info('electrum_wallet:connectMain', `connected to ${ver}`)
+        Logger.info('electrum_wallet:connectMain', `connected to ${ver}`);
         this.serverName = ver[0];
         this.mainConnected = true;
         this.wasConnectedAtLeastOnce = true;
-        this.mainClient.subscribe.on(
-          'blockchain.headers.subscribe',
-          (params: any) => {
-            this.latestBlockheight = params[0].height;
-            this.latestBlockheightTimestamp = Math.floor(+new Date() / 1000);
-          },
-        );
-        const header = await this.mainClient.blockchainHeaders_subscribe();
-        if (header && header.height) {
-          this.latestBlockheight = header.height;
-          this.latestBlockheightTimestamp = Math.floor(+new Date() / 1000);
-        }
         // AsyncStorage.setItem(storageKey, JSON.stringify(peers));  TODO: refactor
       }
     } catch (e) {
       this.mainConnected = false;
-      Logger.error('electrum_wallet:connectMain', JSON.stringify(peer) + ' ' + e)
+      Logger.error(
+        'electrum_wallet:connectMain',
+        JSON.stringify(peer) + ' ' + e,
+      );
     }
 
+    this.runSubscribeLoop();
+
     if (!this.mainConnected) {
-      Logger.warn('electrum_wallet:connectMain', 'retry')
+      Logger.warn('electrum_wallet:connectMain', 'retry');
       this.mainClient.close && this.mainClient.close();
-      setTimeout(this.connectMain, 500);
+      setTimeout(() => {
+        this.connectMain();
+      }, 5000);
     }
   }
 
+  private subscribeLoop = 0;
+  private runSubscribeLoop() {
+    Logger.info('electrum_wallet:runSubscribeLoop', 'start loop');
+    clearInterval(this.subscribeLoop);
+    this.subscribeLoop = setInterval(() => {
+      this.checkForSubscribe();
+    }, 5000);
+  }
+
+  private checkForSubscribe() {
+    if (this.mainClient !== undefined && this.mainClient.status === 1) {
+      if (
+        this.mainClient.subscribe._events['blockchain.headers.subscribe'] ===
+        undefined
+      ) {
+        this.subscribeHeaders();
+      }
+    }
+  }
+
+  private async subscribeHeaders() {
+    Logger.info('electrum_wallet:subscribeHeaders', 'subscribe');
+    this.mainClient.subscribe.on(
+      'blockchain.headers.subscribe',
+      (params: any) => {
+        this.onHeaderChange(params[0]);
+      },
+    );
+    const header = await this.mainClient.blockchainHeaders_subscribe();
+    if (header && header.height) {
+      this.onHeaderChange(header);
+    }
+  }
+
+  private onHeaderChange(headerData: {height: number}) {
+    if (this.latestBlockheight !== headerData.height) {
+      this.latestBlockheight = headerData.height;
+      this.latestBlockheightTimestamp = Math.floor(+new Date() / 1000);
+
+      this.notifyListeners();
+    }
+  }
+
+  private notifyListeners() {
+    Logger.info(
+      'electrum_wallet:notifyListeners',
+      `listeners count ${this.listeners.length}`,
+    );
+    this.listeners.forEach(listener => {
+      listener();
+    });
+  }
+
+  addChangeListener(onChange: () => void): void {
+    this.listeners.push(onChange);
+  }
+
+  removeChangeListener(onChange: () => void): void {
+    this.listeners = this.listeners.filter(listener => {
+      return listener !== onChange;
+    });
+  }
+
   async getBalanceByAddress(address: string): Promise<BalanceModel> {
-    this.checkConnection('getBalanceByAddress')
+    this.checkConnection('getBalanceByAddress');
     const script = bitcoin.address.toOutputScript(address, network);
     const hash = bitcoin.crypto.sha256(script);
     // eslint-disable-next-line no-undef
@@ -158,14 +226,14 @@ export default class FiroElectrum implements AbstractElectrum {
       reversedHash.toString('hex'),
     );
 
-    Logger.info('electrum_wallet:getBalanceByAddress', balance)
+    Logger.info('electrum_wallet:getBalanceByAddress', balance);
     return balance;
   }
 
   async getTransactionsByAddress(
     address: string,
   ): Promise<Array<TransactionModel>> {
-    this.checkConnection('getTransactionsByAddress')
+    this.checkConnection('getTransactionsByAddress');
     const script = this.addressToScript(address);
     const hash = bitcoin.crypto.sha256(script);
     // eslint-disable-next-line no-undef
@@ -177,7 +245,7 @@ export default class FiroElectrum implements AbstractElectrum {
     //   if (h.tx_hash) txhashHeightCache[h.tx_hash] = h.height; // cache tx height
     // }
 
-    Logger.info('electrum_wallet:getTransactionsByAddress', history)
+    Logger.info('electrum_wallet:getTransactionsByAddress', history);
     return history;
   }
 
@@ -185,7 +253,7 @@ export default class FiroElectrum implements AbstractElectrum {
     addresses: Array<string>,
     batchsize: number = 200,
   ): Promise<Map<string, Array<TransactionModel>>> {
-    this.checkConnection('multiGetTransactionsByAddress')
+    this.checkConnection('multiGetTransactionsByAddress');
 
     const ret: Map<string, Array<TransactionModel>> = new Map();
 
@@ -209,7 +277,10 @@ export default class FiroElectrum implements AbstractElectrum {
 
       for (const history of results) {
         if (history.error) {
-          Logger.warn('electrum_wallet:multiGetTransactionsByAddress', history.error)
+          Logger.warn(
+            'electrum_wallet:multiGetTransactionsByAddress',
+            history.error,
+          );
         }
         if (history.result.length > 0) {
           ret.set(scripthash2addr.get(history.param)!, history.result);
@@ -217,14 +288,14 @@ export default class FiroElectrum implements AbstractElectrum {
       }
     }
 
-    Logger.info('electrum_wallet:multiGetTransactionsByAddress', ret)
+    Logger.info('electrum_wallet:multiGetTransactionsByAddress', ret);
     return ret;
   }
 
   async getTransactionsFullByAddress(
     address: string,
   ): Promise<Array<FullTransactionModel>> {
-    this.checkConnection('getTransactionsFullByAddress')
+    this.checkConnection('getTransactionsFullByAddress');
 
     const txs = await this.getTransactionsByAddress(address);
     const ret = [];
@@ -271,7 +342,7 @@ export default class FiroElectrum implements AbstractElectrum {
       ret.push(full);
     }
 
-    Logger.info('electrum_wallet:getBalanceByAddress', ret)
+    Logger.info('electrum_wallet:getBalanceByAddress', ret);
     return ret;
   }
 
@@ -280,7 +351,7 @@ export default class FiroElectrum implements AbstractElectrum {
     batchsize: number = 100,
     verbose: boolean = true,
   ): Promise<Array<FullTransactionModel>> {
-    this.checkConnection('multiGetTransactionsFullByAddress')
+    this.checkConnection('multiGetTransactionsFullByAddress');
 
     const ret = [];
     const txsMap = await this.multiGetTransactionsByAddress(
@@ -338,7 +409,7 @@ export default class FiroElectrum implements AbstractElectrum {
       ret.push(fullTx);
     }
 
-    Logger.info('electrum_wallet:multiGetTransactionsFullByAddress', ret)
+    Logger.info('electrum_wallet:multiGetTransactionsFullByAddress', ret);
     return ret;
   }
 
@@ -346,7 +417,7 @@ export default class FiroElectrum implements AbstractElectrum {
     addresses: Array<string>,
     batchsize: number = 200,
   ): Promise<BalanceModel> {
-    this.checkConnection('multiGetBalanceByAddress')
+    this.checkConnection('multiGetBalanceByAddress');
 
     const ret = new BalanceModel();
 
@@ -380,7 +451,7 @@ export default class FiroElectrum implements AbstractElectrum {
       }
     }
 
-    Logger.info('electrum_wallet:multiGetBalanceByAddress', ret)
+    Logger.info('electrum_wallet:multiGetBalanceByAddress', ret);
     return ret;
   }
 
@@ -388,7 +459,7 @@ export default class FiroElectrum implements AbstractElectrum {
     addresses: Array<string>,
     batchsize: number = 100,
   ): Promise<Map<string, Array<FullTransactionModel>>> {
-    this.checkConnection('multiGetHistoryByAddress')
+    this.checkConnection('multiGetHistoryByAddress');
 
     const ret: Map<string, Array<FullTransactionModel>> = new Map();
 
@@ -414,7 +485,10 @@ export default class FiroElectrum implements AbstractElectrum {
 
       for (const history of results) {
         if (history.error) {
-          Logger.warn('electrum_wallet:multiGetHistoryByAddress', history.error);
+          Logger.warn(
+            'electrum_wallet:multiGetHistoryByAddress',
+            history.error,
+          );
         }
         ret.set(scripthash2addr.get(history.param)!, history.result || []);
         for (const result of history.result || []) {
@@ -429,7 +503,7 @@ export default class FiroElectrum implements AbstractElectrum {
       }
     }
 
-    Logger.info('electrum_wallet:multiGetHistoryByAddress', ret)
+    Logger.info('electrum_wallet:multiGetHistoryByAddress', ret);
     return ret;
   }
 
@@ -438,7 +512,7 @@ export default class FiroElectrum implements AbstractElectrum {
     batchsize: number = 45,
     verbose: boolean,
   ): Promise<Map<string, FullTransactionModel>> {
-    this.checkConnection('multiGetTransactionByTxid')
+    this.checkConnection('multiGetTransactionByTxid');
 
     // this value is fine-tuned so althrough wallets in test suite will occasionally
     // throw 'response too large (over 1,000,000 bytes', test suite will pass
@@ -469,14 +543,14 @@ export default class FiroElectrum implements AbstractElectrum {
       }
     }
 
-    Logger.info('electrum_wallet:multiGetTransactionByTxid', ret)
+    Logger.info('electrum_wallet:multiGetTransactionByTxid', ret);
     return ret;
   }
 
   async getUnspentTransactionsByAddress(
     address: string,
   ): Promise<Array<TransactionModel>> {
-    this.checkConnection('getUnspentTransactionsByAddress')
+    this.checkConnection('getUnspentTransactionsByAddress');
 
     const script = bitcoin.address.toOutputScript(address, network);
     const hash = bitcoin.crypto.sha256(script);
@@ -486,14 +560,14 @@ export default class FiroElectrum implements AbstractElectrum {
       reversedHash.toString('hex'),
     );
 
-    Logger.info('electrum_wallet:getUnspentTransactionsByAddress', listUnspent)
+    Logger.info('electrum_wallet:getUnspentTransactionsByAddress', listUnspent);
     return listUnspent;
   }
 
   async multiGetUnspentTransactionsByAddress(
     addresses: Array<string>,
   ): Promise<Map<string, Array<TransactionModel>>> {
-    this.checkConnection('multiGetUnspentTransactionsByAddress')
+    this.checkConnection('multiGetUnspentTransactionsByAddress');
 
     const scripthashes = [];
     const scripthash2addr: Map<string, string> = new Map();
@@ -515,42 +589,24 @@ export default class FiroElectrum implements AbstractElectrum {
         ret.set(scripthash2addr.get(utxo.param)!, utxo.result);
       }
     }
-    Logger.info('electrum_wallet:multiGetUnspentTransactionsByAddress', ret)
+    Logger.info('electrum_wallet:multiGetUnspentTransactionsByAddress', ret);
     return ret;
   }
 
-  subscribeToChanges(onChange: (params: any) => void): void {
-    this.checkConnection('subscribeToChanges')
-
-    this.mainClient.subscribe.on(
-      'blockchain.headers.subscribe',
-      onChange
-    );
-  }
-
-  unsubscribeToChanges(onChange: (params: any) => void): void {
-    this.checkConnection('unsubscribeToChanges')
-
-    this.mainClient.subscribe.off(
-      'blockchain.headers.subscribe',
-      onChange
-    );
-  }
-
   async broadcast(hex: string): Promise<string> {
-    this.checkConnection('broadcast')
+    this.checkConnection('broadcast');
 
-    Logger.info('electrum_wallet:broadcast', hex)
+    Logger.info('electrum_wallet:broadcast', hex);
     const broadcast: string = await this.mainClient.blockchainTransaction_broadcast(
       hex,
     );
 
-    Logger.info('electrum_wallet:broadcast', broadcast)
+    Logger.info('electrum_wallet:broadcast', broadcast);
     return broadcast;
   }
 
   async getMintMedata(publicCoins: string[]): Promise<MintMetadataModel[]> {
-    this.checkConnection('getMintMedata')
+    this.checkConnection('getMintMedata');
 
     const mints: {pubcoin: string}[] = [];
     publicCoins.forEach(coin => {
@@ -558,7 +614,7 @@ export default class FiroElectrum implements AbstractElectrum {
     });
 
     const param = [];
-    param.push({ mints });
+    param.push({mints});
 
     const result = await this.mainClient.request(
       'sigma.getmintmetadata',
@@ -579,12 +635,12 @@ export default class FiroElectrum implements AbstractElectrum {
       };
     });
 
-    Logger.info('electrum_wallet:getMintMedata', ret)
-    return ret
+    Logger.info('electrum_wallet:getMintMedata', ret);
+    return ret;
   }
 
   async getAnonymitySet(setId: number): Promise<AnonymitySetModel> {
-    this.checkConnection('getAnonymitySet')
+    this.checkConnection('getAnonymitySet');
 
     const param = [];
     param.push(setId + '');
@@ -593,7 +649,7 @@ export default class FiroElectrum implements AbstractElectrum {
       param,
     );
 
-    Logger.info('electrum_wallet:getAnonymitySet', result)
+    Logger.info('electrum_wallet:getAnonymitySet', result);
     return result;
   }
 
@@ -603,7 +659,7 @@ export default class FiroElectrum implements AbstractElectrum {
 
   private checkConnection(tag: string) {
     if (typeof this.mainClient === 'undefined' || this.mainClient === null) {
-      Logger.error(`electrum_wallet:${tag}`, 'not connected')
+      Logger.error(`electrum_wallet:${tag}`, 'not connected');
       throw new Error('Electrum client is not connected');
     }
   }
