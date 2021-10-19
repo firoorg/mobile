@@ -32,7 +32,7 @@ const HEIGHT_NOT_SET = -1;
 
 const TRANSACTION_LELANTUS = 8;
 
-const MINT_CONFIRM_BLOCK_COUNT = 2;
+const MINT_CONFIRM_BLOCK_COUNT = 1;
 
 export const SATOSHI = new BigNumber(100000000);
 

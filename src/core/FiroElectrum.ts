@@ -252,15 +252,15 @@ export default class FiroElectrum implements AbstractElectrum {
   async multiGetTransactionsByAddress(
     addresses: Array<string>,
     batchsize: number = 200,
-  ): Promise<Map<string, Array<TransactionModel>>> {
+  ): Promise<{ [address: string]: TransactionModel[] }> {
     this.checkConnection('multiGetTransactionsByAddress');
 
-    const ret: Map<string, Array<TransactionModel>> = new Map();
+    const ret: { [address: string]: TransactionModel[] } = {}
 
     const chunks = splitIntoChunks(addresses, batchsize);
     for (const chunk of chunks) {
       const scripthashes = [];
-      const scripthash2addr: Map<string, string> = new Map();
+      const scripthash2addr: { [revHash: string]: string } = {};
       for (const addr of chunk) {
         const script = bitcoin.address.toOutputScript(addr, network);
         const hash = bitcoin.crypto.sha256(script);
@@ -268,7 +268,7 @@ export default class FiroElectrum implements AbstractElectrum {
         let reversedHash = Buffer.from(reverse(hash));
         let reversedHashHex = reversedHash.toString('hex');
         scripthashes.push(reversedHashHex);
-        scripthash2addr.set(reversedHashHex, addr);
+        scripthash2addr[reversedHashHex] = addr;
       }
 
       const results = await this.mainClient.blockchainScripthash_getHistoryBatch(
@@ -283,12 +283,12 @@ export default class FiroElectrum implements AbstractElectrum {
           );
         }
         if (history.result.length > 0) {
-          ret.set(scripthash2addr.get(history.param)!, history.result);
+          ret[scripthash2addr[history.param]] = history.result
         }
       }
     }
 
-    Logger.info('electrum_wallet:multiGetTransactionsByAddress', ret);
+    Logger.info('electrum_wallet:multiGetTransactionsByAddress:return', ret);
     return ret;
   }
 
@@ -358,15 +358,15 @@ export default class FiroElectrum implements AbstractElectrum {
       addresses,
       batchsize,
     );
-    const txId2Address: Map<string, string> = new Map();
-    const txIds: Array<string> = [];
-    for (const [key, value] of txsMap.entries()) {
+    const txId2Address: {[key: string]: string} = {};
+    const txIds: string[] = [];
+    for (const [key, value] of Object.entries(txsMap)) {
       const ids = value.map(element => {
         return element.tx_hash;
       });
       ids.forEach(id => {
         txIds.push(id);
-        txId2Address.set(id, key);
+        txId2Address[id] = key;
       });
     }
     const fullTxsMap = await this.multiGetTransactionByTxid(
@@ -374,9 +374,12 @@ export default class FiroElectrum implements AbstractElectrum {
       batchsize,
       verbose,
     );
-    for (const [txid, fullTx] of fullTxsMap.entries()) {
-      fullTx.address = txId2Address.get(txid)!;
+    for (const [txid, fullTx] of Object.entries(fullTxsMap)) {
+      fullTx.address = txId2Address[txid]!;
       for (const input of fullTx.vin) {
+        if (!input.txid) {
+          continue
+        }
         // now we need to fetch previous TX where this VIN became an output, so we can see its amount
         const prevTxForVin = await this.mainClient.blockchainTransaction_get(
           input.txid,
@@ -409,7 +412,7 @@ export default class FiroElectrum implements AbstractElectrum {
       ret.push(fullTx);
     }
 
-    Logger.info('electrum_wallet:multiGetTransactionsFullByAddress', ret);
+    Logger.info('electrum_wallet:multiGetTransactionsFullByAddress:return', ret);
     return ret;
   }
 
@@ -511,14 +514,14 @@ export default class FiroElectrum implements AbstractElectrum {
     txids: Array<string>,
     batchsize: number = 45,
     verbose: boolean,
-  ): Promise<Map<string, FullTransactionModel>> {
+  ): Promise<{ [txId: string]: FullTransactionModel }> {
     this.checkConnection('multiGetTransactionByTxid');
 
     // this value is fine-tuned so althrough wallets in test suite will occasionally
     // throw 'response too large (over 1,000,000 bytes', test suite will pass
     verbose = verbose !== false;
 
-    const ret: Map<string, FullTransactionModel> = new Map();
+    const ret: { [txId: string]: FullTransactionModel } = {};
     txids = [...new Set(txids)]; // deduplicate just for any case
 
     const chunks = splitIntoChunks(txids, batchsize);
@@ -539,7 +542,7 @@ export default class FiroElectrum implements AbstractElectrum {
             verbose,
           );
         }
-        ret.set(txdata.param, txdata.result);
+        ret[txdata.param] = txdata.result;
       }
     }
 
@@ -566,11 +569,11 @@ export default class FiroElectrum implements AbstractElectrum {
 
   async multiGetUnspentTransactionsByAddress(
     addresses: Array<string>,
-  ): Promise<Map<string, Array<TransactionModel>>> {
+  ): Promise<{ [address: string]: TransactionModel[]}> {
     this.checkConnection('multiGetUnspentTransactionsByAddress');
 
     const scripthashes = [];
-    const scripthash2addr: Map<string, string> = new Map();
+    const scripthash2addr: { [revHash: string]: string} = {};
     for (const address of addresses) {
       const script = bitcoin.address.toOutputScript(address, network);
       const hash = bitcoin.crypto.sha256(script);
@@ -578,15 +581,15 @@ export default class FiroElectrum implements AbstractElectrum {
       let reversedHash = Buffer.from(reverse(hash));
       let reversedHashHex = reversedHash.toString('hex');
       scripthashes.push(reversedHashHex);
-      scripthash2addr.set(reversedHashHex, address);
+      scripthash2addr[reversedHashHex] = address;
     }
-    const ret: Map<string, Array<TransactionModel>> = new Map();
+    const ret: { [address: string]: TransactionModel[]} = {};
     const listUnspent = await this.mainClient.blockchainScripthash_listunspentBatch(
       scripthashes,
     );
     for (const utxo of listUnspent) {
       if (utxo.result.length > 0) {
-        ret.set(scripthash2addr.get(utxo.param)!, utxo.result);
+        ret[scripthash2addr[utxo.param]!] = utxo.result;
       }
     }
     Logger.info('electrum_wallet:multiGetUnspentTransactionsByAddress', ret);

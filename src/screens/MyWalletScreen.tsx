@@ -42,9 +42,12 @@ const MyWalletScreen = () => {
       const utxoMap = await firoElectrum.multiGetUnspentTransactionsByAddress(
         address2Check,
       );
+      if (Object.keys(utxoMap).length === 0) {
+        return;
+      }
 
       const txIds: Array<string> = [];
-      for (const value of utxoMap.values()) {
+      for (const value of Object.values(utxoMap)) {
         const ids = value.map(element => {
           return element.tx_hash;
         });
@@ -57,9 +60,9 @@ const MyWalletScreen = () => {
         `utxos form mint: ${JSON.stringify(txs)}`,
       );
 
-      for (const [address, utxos] of utxoMap.entries()) {
+      for (const [address, utxos] of Object.entries(utxoMap)) {
         const lelantusUtxos = utxos.map(utxo => {
-          const fTx = txs.get(utxo.tx_hash);
+          const fTx = txs[utxo.tx_hash];
           return {
             txId: utxo.tx_hash,
             txHex: fTx!.hex,
