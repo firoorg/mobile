@@ -29,7 +29,7 @@ const SendScreen = () => {
   const [label, setLabel] = useState('');
   const [fee, setFee] = useState(0);
   const [total, setTotal] = useState(0);
-  const [subtractFeeFromAmount, setSubtractFeeFromAmount] = useState(true);
+  const [subtractFeeFromAmount, setSubtractFeeFromAmount] = useState(false);
   const [isValid, setIsValid] = useState(false);
   const currentCurrencyName: string = (localization.currencies as any)[
     getSettings().defaultCurrency
