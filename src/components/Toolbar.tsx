@@ -86,8 +86,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   backButton: {
-    paddingVertical: 20,
-    marginStart: -20,
-    paddingHorizontal: 20,
+    paddingVertical: 25,
+    marginStart: -25,
+    paddingHorizontal: 25,
   },
 });
