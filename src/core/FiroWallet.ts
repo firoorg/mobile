@@ -777,6 +777,7 @@ export class FiroWallet implements AbstractWallet {
           transactionItem.address = tx.address;
           transactionItem.txId = tx.txid;
           transactionItem.confirmed = true;
+          transactionItem.date = tx.time * 1000;
 
           const ia = tx.inputs.reduce((acc, elm) => acc.plus(elm.value), new BigNumber(0));
           const oa = tx.outputs.reduce((acc, elm) => acc.plus(elm.value), new BigNumber(0));
