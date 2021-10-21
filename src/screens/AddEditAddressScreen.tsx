@@ -21,7 +21,7 @@ const appStorage = new AppStorage();
 const {colors} = CurrentFiroTheme;
 
 type AddressBookStackRouteProps = {
-  Address: {item: AddressBookItem};
+  Address: { item: AddressBookItem, onSuccess?: () => void };
 };
 
 type AddEditAddressProps = {
@@ -29,7 +29,7 @@ type AddEditAddressProps = {
 };
 
 const AddEditAddress: FC<AddEditAddressProps> = props => {
-  let {item} = props.route.params;
+  let { item, onSuccess } = props.route.params;
   const hasInputAddress = item !== undefined;
 
   const [address, setAddress] = useState(hasInputAddress ? item.address : '');
@@ -50,6 +50,9 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
       await appStorage.addNewAddressBookItem(
         new AddressBookItem(name.trim(), address),
       );
+    }
+    if (onSuccess) {
+      onSuccess();
     }
     NavigationService.back();
   };

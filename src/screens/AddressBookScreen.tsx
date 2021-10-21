@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   ToastAndroid,
+  Dimensions,
 } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {BottomSheet, ListItem, Avatar} from 'react-native-elements';
@@ -19,6 +20,7 @@ import localization from '../localization';
 import {useFocusEffect} from '@react-navigation/native';
 import {Divider} from 'react-native-elements/dist/divider/Divider';
 import Logger from '../utils/logger';
+import { SearchBar } from 'react-native-elements/dist/searchbar/SearchBar';
 
 const appStorage = new AppStorage();
 
@@ -26,9 +28,10 @@ const {colors} = CurrentFiroTheme;
 
 const AddressBookScreen = () => {
   const [addressBookList, setAddressBookList] = useState<AddressBookItem[]>([]);
+  const [searchText, setSearchText] = useState("");
   const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
   const [currentAddress, setCurrentAddress] = useState<AddressBookItem>();
-
+  
   const loadAddressBook = async () => {
     let addressBook = await appStorage.loadAddressBook();
     setAddressBookList(addressBook);
@@ -37,18 +40,21 @@ const AddressBookScreen = () => {
   useEffect(() => {
     loadAddressBook();
     Logger.info('address_book_screen:useEffect', 'loadAddressBook')
-  }, []);
+  }, [searchText]);
   useFocusEffect(
     React.useCallback(() => {
       loadAddressBook();
       Logger.info('address_book_screen:useFocusEffect', 'loadAddressBook')
       return () => {};
-    }, []),
+    }, [searchText]),
   );
 
   const onAddNewClick = () => {
     Logger.info('address_book_screen', 'onAddNewClick')
-    NavigationService.navigate('AddEditAddressScreen', {undefined});
+    NavigationService.navigate('AddEditAddressScreen', {
+      item: undefined, onSuccess: () => {
+        setSearchText("");
+    }});
   };
   const onMenuIconClick = (item: AddressBookItem) => {
     setCurrentAddress(item);
@@ -92,20 +98,25 @@ const AddressBookScreen = () => {
     }
     onCancelPress();
   };
-
   return (
     <View style={styles.root}>
       <FiroToolbarWithoutBack title={localization.address_book_screen.title} />
       <View style={styles.menu}>
-        <Image style={styles.search} source={require('../img/ic_search.png')} />
+        <SearchBar autoCapitalize="none" containerStyle={styles.searchContainer} inputStyle={styles.searchInput} value={searchText} onChangeText={newText => setSearchText(newText)} />
         <TouchableOpacity style={styles.addNew} onPress={onAddNewClick}>
-          <Image style={styles.search} source={require('../img/ic_add.png')} />
+          <Image style={styles.addIcon} source={require('../img/ic_add.png')} />
           <Divider style={styles.divider} />
           <Text>{localization.address_book_screen.add_new}</Text>
         </TouchableOpacity>
       </View>
       <AddressBookList
-        addressBookList={addressBookList}
+        addressBookList={addressBookList.filter(item => {
+          const textToSearch = searchText.trim().toLowerCase();
+          if (textToSearch) {
+            return item.name && item.name.toLowerCase().indexOf(textToSearch.toLowerCase()) >= 0;
+          }
+          return true;
+        })}
         onMenuClick={onMenuIconClick}
       />
       <BottomSheet
@@ -180,10 +191,23 @@ const styles = StyleSheet.create({
   },
   addNew: {
     flexDirection: 'row',
+    width: 90
   },
-  search: {
+  searchContainer: {
+    flexGrow: 1,
+    borderBottomWidth: 0,
+    borderTopWidth: 0,
+    borderWidth: 0
+  },
+  searchInput: {
+    fontFamily: 'Rubik-Regular',
+    fontWeight: '500',
+    fontSize: 16,
+    color: colors.text,
+  },
+  addIcon: {
     width: 24,
-    height: 24,
+    height: 24
   },
   divider: {
     marginHorizontal: 5,
