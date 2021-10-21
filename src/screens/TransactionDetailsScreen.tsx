@@ -7,7 +7,7 @@ import {FiroContext} from '../FiroContext';
 import {TransactionItem} from '../data/TransactionItem';
 import localization from '../localization';
 import {TransactionRow} from '../components/TransactionRow';
-import { Currency } from '../utils/currency';
+import {Currency} from '../utils/currency';
 import BigNumber from 'bignumber.js';
 import Logger from '../utils/logger';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -46,13 +46,16 @@ const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
       if (supported) {
         Linking.openURL(url);
       } else {
-        Logger.warn('transaction_detail_screen', `Don't know how to open URI: ${url}`);
+        Logger.warn(
+          'transaction_detail_screen',
+          `Don't know how to open URI: ${url}`,
+        );
       }
     });
-  }
+  };
 
   const copyText = (text: string) => {
-    Clipboard.setString(text)
+    Clipboard.setString(text);
     ToastAndroid.showWithGravityAndOffset(
       localization.global.copy_to_clipboard,
       ToastAndroid.SHORT,
@@ -60,7 +63,7 @@ const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
       0,
       100,
     );
-  }
+  };
 
   return (
     <View style={styles.root}>
@@ -76,14 +79,18 @@ const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
           style={styles.infoText}
           title={localization.transaction_details.transaction_id}
           text={item.txId}
-          onClick={() => openUrl(`https://testexplorer.zcoin.io/tx/${item.txId}`)}
+          onClick={() =>
+            openUrl(`https://testexplorer.firo.org/tx/${item.txId}`)
+          }
           onLongPress={() => copyText(item.txId)}
         />
         <FiroInfoText
           style={styles.infoText}
           title={localization.transaction_details.address}
           text={item.address}
-          onClick={() => openUrl(`https://testexplorer.zcoin.io/address/${item.address}`)}
+          onClick={() =>
+            openUrl(`https://testexplorer.firo.org/address/${item.address}`)
+          }
           onLongPress={() => copyText(item.address)}
         />
         <FiroInfoText
