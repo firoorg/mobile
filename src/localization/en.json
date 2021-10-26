@@ -190,7 +190,7 @@
   "settings": {
     "title": "Settings",
     "title_currency": "Currency",
-    "description_currency": "Set your prefered fiat currency.",
+    "description_currency": "Set your preferred fiat currency.",
     "title_notification": "Notification",
     "description_notification": "Show notification for incoming transactions.",
     "title_passphrase": "Change passphrase",

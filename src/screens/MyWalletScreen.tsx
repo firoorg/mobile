@@ -1,5 +1,5 @@
 import React, {useContext, useState, useEffect} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, ScrollView} from 'react-native';
 import {FiroToolbarWithoutBack} from '../components/Toolbar';
 import {BalanceCard} from '../components/BalanceCard';
 import {TransactionList} from '../components/TransactionList';
@@ -228,7 +228,7 @@ const MyWalletScreen = () => {
         />
       </View>
       <Text style={styles.syncText}>{sync ? 'Syncing...' : 'Synced'}</Text>
-      <View style={styles.transactionContainer}>{transactionList}</View>
+      <ScrollView contentContainerStyle={styles.transactionContainer}>{transactionList}</ScrollView>
     </View>
   );
 };
@@ -251,8 +251,7 @@ const styles = StyleSheet.create({
   transactionContainer: {
     flexGrow: 1,
     display: 'flex',
-    justifyContent: 'center',
-    marginBottom: 235,
+    justifyContent: 'center'
   },
   syncText: {
     textAlign: 'right',

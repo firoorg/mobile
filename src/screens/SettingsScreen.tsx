@@ -60,6 +60,7 @@ const SettingsScreen = () => {
     const currentCurrency: string = getSettings().defaultCurrency;
     const [selectedCurrency, changeSelectedCurrency] = useState(currentCurrency);
     const [biometricsAvailable, changeBiometricsAvailable] = useState(false);
+    const [biometricsEnabled, changeBiometricEnabled] = useState<Boolean | null>(null);
     const [biometricSettingsViewMode, changeBiometricSettingsViewMode] = useState(BiometricSettingsViewMode.None);
 
     const clickOnVersionCode = () => {
@@ -75,9 +76,13 @@ const SettingsScreen = () => {
                 changeBiometricsAvailable(true);
             }
         });
+        Biometrics.biometricAuthorizationEnabled().then(isEnabled => {
+            changeBiometricEnabled(isEnabled);
+        });
         Dimensions.addEventListener('change', onChange);
         return () => Dimensions.removeEventListener('change', onChange);
     }, []);
+
     return (
         <ScrollView>
             <View style={styles.toolbar}>
@@ -135,13 +140,14 @@ const SettingsScreen = () => {
                 </View>
             </TouchableHighlight>
             {
-                biometricsAvailable
+                biometricsAvailable && biometricsEnabled != null
                     ? <TouchableHighlight disabled={saveInProgress} underlayColor={colors.highlight} onPress={async () => {
                         const isEnabled = await Biometrics.biometricAuthorizationEnabled();
                         if (isEnabled) {
                             disableBiometricResult = await Biometrics.clearPassphraseFromStorage(localization.settings.prompt_disable_biometric, () => changeBiometricSettingsViewMode(BiometricSettingsViewMode.DisablingBiometric));
                             if (disableBiometricResult.success) {
                                 changeBiometricSettingsViewMode(BiometricSettingsViewMode.DisableBiometricSuccess);
+                                changeBiometricEnabled(false);
                                 setTimeout(() => {
                                     changeBiometricSettingsViewMode(BiometricSettingsViewMode.None);
                                 }, 2000);
@@ -160,8 +166,13 @@ const SettingsScreen = () => {
                         }
                     }}>
                         <View style={styles.section}>
-                            <Text style={styles.title}>{localization.settings.title_fingerprint}</Text>
-                            <Text style={styles.description}>{localization.settings.description_fingerprint}</Text>
+                            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={styles.title}>{localization.settings.title_fingerprint}</Text>
+                                    <Text style={styles.description}>{localization.settings.description_fingerprint}</Text>
+                                </View>
+                                <Switch value={biometricsEnabled == true} disabled={true} thumbColor={colors.switchThumb} trackColor={{ false: colors.switchTrackFalse, true: colors.switchTrackTrue }} />
+                            </View>
                         </View>
                     </TouchableHighlight>
                     : null
@@ -231,7 +242,6 @@ const SettingsScreen = () => {
                 <TouchableOpacity activeOpacity={1} style={styles.enableBiometricButton}>
                     <FiroPrimaryGreenButton text={localization.settings.button_done}
                         onClick={ async () => {
-
                             const passwordOk = await verifyPassword(passphraseInput);
                             if (passwordOk) { 
                                 changeMyMnemonic(MyMnemonicViewMode.PassphraseOk)
@@ -274,6 +284,7 @@ const SettingsScreen = () => {
                                         enableBiometricResult = await Biometrics.encryptPassphraseAndSave(passphraseInput, localization.settings.prompt_enable_biometric, () => changeBiometricSettingsViewMode(BiometricSettingsViewMode.EnablingBiometric));
                                         if (enableBiometricResult.success) {
                                             changeBiometricSettingsViewMode(BiometricSettingsViewMode.EnableBiometricSuccess);
+                                            changeBiometricEnabled(true);
                                             setTimeout(() => {
                                                 changeBiometricSettingsViewMode(BiometricSettingsViewMode.None);
                                             }, 2000);
