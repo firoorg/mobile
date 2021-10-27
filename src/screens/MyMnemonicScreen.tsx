@@ -7,6 +7,7 @@ import {FiroToolbar} from '../components/Toolbar';
 import {MnemonicText} from '../components/Mnemonic';
 import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
+import localization from '../localization';
 
 const {colors} = CurrentFiroTheme;
 
@@ -21,7 +22,7 @@ const MyMnemonicScreen = () => {
 
   return (
     <View style={styles.root}>
-      <FiroToolbar title={'My Mnemonic'} />
+      <FiroToolbar title={localization.my_mnemonic_screen.title} />
       <MnemonicText
         style={styles.mnemonicCard}
         words={words}

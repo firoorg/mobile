@@ -132,14 +132,19 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
         const biometricEnabled: boolean = await Biometrics.biometricAuthorizationEnabled();
         if (biometricEnabled) {
             const result = await Biometrics.getPassphrase(localization.send_confirm_screen.prompt_fingerprint);
-            securityCheckFinished = true;
             if (result.success) {
+                securityCheckFinished = true;
                 securityCheckPassed = await verifyPassword(result.password as string);
                 if (!securityCheckPassed) {
                     passphraseIsInvalid();
                 }
                 return securityCheckPassed;
             } else {
+                if (!result.error) {
+                    setProcessing(false);
+                    return false;
+                }
+                changeBottomSheetViewMode(BottomSheetViewMode.EnterPassphrase);
                 return false;
             }
         } else {
@@ -158,7 +163,6 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
             setProcessing(true);
             doSpend(props.route.params.data.amount, props.route.params.data.reduceFeeFromAmount, props.route.params.data.address).then(sendResult => {
                 if (!securityCheckFinished) {
-                    Logger.warn('send_confirm_screen:onClickConfirm', `sicurity check not finished`)
                     return;
                 }
                 if (sendResult.success) {
@@ -256,7 +260,8 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
                     bottomSheetViewMode == BottomSheetViewMode.EnterPassphrase
                         ? <View style={styles.bottomSheetProvidePasswordView}>
                             <TouchableOpacity style={styles.closeBottomSheet} onPress={() => {
-                                passphraseIsInvalid();
+                                setProcessing(false);
+                                changeBottomSheetViewMode(BottomSheetViewMode.None);
                             }}>
                                 <Image source={require('../img/ic_close.png')} />
                             </TouchableOpacity>

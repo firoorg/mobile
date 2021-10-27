@@ -16,6 +16,7 @@ const {colors} = CurrentFiroTheme;
 type FiroInputProps = {
   style: StyleProp<ViewStyle>;
   onTextChanged: (text: string) => void;
+  placeholder?: string;
 };
 
 export const FiroInputPassword: FC<FiroInputProps> = props => {
@@ -27,7 +28,7 @@ export const FiroInputPassword: FC<FiroInputProps> = props => {
     <View style={[styles.container, props.style]}>
       <TextInput
         style={[styles.input]}
-        placeholder={localization.component_input.passphrase_input_hint}
+        placeholder={props.placeholder ? props.placeholder : localization.component_input.passphrase_input_hint}
         secureTextEntry={secureText}
         onChangeText={props.onTextChanged}
       />
@@ -44,7 +45,7 @@ export const FiroInputMnemonic: FC<FiroInputProps> = props => {
       <TextInput
         style={[styles.input, styles.mnemonic]}
         onChangeText={props.onTextChanged}
-        placeholder={localization.component_input.mnemonic_input_hint}
+        placeholder={props.placeholder ? props.placeholder : localization.component_input.mnemonic_input_hint}
         multiline
         numberOfLines={5}
       />

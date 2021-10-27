@@ -19,7 +19,7 @@ export class Biometrics {
         return !!encryptedPassword;
     }
 
-    public static async encryptPassphraseAndSave(password: string, biometricPromptMessage: string, startSaving?: () => void): Promise<{ success: boolean, error?: string }> {
+    public static async encryptPassphraseAndSave(password: string, biometricPromptMessage: string, startSaving?: () => Promise<boolean>): Promise<{ success: boolean, error?: string }> {
         try {
             const checkResult = await ReactNativeBiometrics.biometricKeysExist();
             if (!checkResult.keysExist) {
@@ -29,7 +29,10 @@ export class Biometrics {
             if (signResult.success) {
                 if (startSaving) {
                     try {
-                        startSaving();
+                        const result = await startSaving();
+                        if (!result) {
+                            return { success: false, error: "" };
+                        }
                     } catch { }
                 }
                 const storage: AppStorage = new AppStorage();
@@ -41,8 +44,8 @@ export class Biometrics {
             }
         }
         catch (error) {
-            if (typeof error == 'object' && error.Error) {
-                return { success: false, error: error.Error };
+            if (typeof error == 'object' && (error as any).Error) {
+                return { success: false, error: (error as any).Error };
             }
             return { success: false, error: "" + error };
         }
@@ -65,8 +68,8 @@ export class Biometrics {
             }
         }
         catch (error) {
-            if (typeof error == 'object' && error.Error) {
-                return { success: false, error: error.Error };
+            if (typeof error == 'object' && (error as any).Error) {
+                return { success: false, error: (error as any).Error };
             }
             return { success: false, error: "" + error };
         }
@@ -84,12 +87,12 @@ export class Biometrics {
                 const password: string = encryption.decrypt(encryptedPassword, signResult.signature);
                 return { success: true, password: password.substr(10) };
             } else {
-                return { success: false, error: signResult.error };
+                return { success: false, error: "" };
             }
         }
         catch (error) {
-            if (typeof error == 'object' && error.Error) {
-                return { success: false, error: error.Error };
+            if (typeof error == 'object' && (error as any).Error) {
+                return { success: false, error: (error as any).Error };
             }
             return { success: false, error: "" + error };
         }

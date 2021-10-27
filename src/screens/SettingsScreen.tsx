@@ -17,7 +17,7 @@ import localization from '../localization';
 import { useContext } from 'react';
 import { FiroContext } from '../FiroContext';
 import { useEffect } from 'react';
-import { FiroPrimaryGreenButton, FiroSecondaryButton } from '../components/Button';
+import { FiroPrimaryGreenButton } from '../components/Button';
 import { Currency } from '../utils/currency';
 import { Biometrics } from '../utils/biometrics';
 import { FiroInputPassword } from '../components/Input';
@@ -119,14 +119,33 @@ const SettingsScreen = () => {
                     </View>
                 </View>
             </TouchableHighlight>
-            <TouchableHighlight disabled={saveInProgress} underlayColor={colors.highlight} onPress={() => { }}>
+            <TouchableHighlight disabled={saveInProgress} underlayColor={colors.highlight} onPress={() => {
+                NavigationService.navigate('ChangePassphraseScreen', undefined);
+             }}>
                 <View style={styles.section}>
                     <Text style={styles.title}>{localization.settings.title_passphrase}</Text>
                     <Text style={styles.description}>{localization.settings.description_passphrase}</Text>
                 </View>
             </TouchableHighlight>
-            <TouchableHighlight disabled={saveInProgress} underlayColor={colors.highlight} onPress={() => {
-                changeMyMnemonic(MyMnemonicViewMode.EnterPassphrase)
+            <TouchableHighlight disabled={saveInProgress} underlayColor={colors.highlight} onPress={async () => {
+                if (await Biometrics.biometricAuthorizationEnabled()) {
+                    const result = await Biometrics.getPassphrase(localization.settings.prompt_view_mnemonic);
+                    if (result.success) {
+                        const passwordIsOk = await verifyPassword(result.password as string);
+                        if (passwordIsOk) {
+                            NavigationService.navigate('MyMnemonicScreen', undefined)
+                            return;
+                        }
+                    } else {
+                        if (!result.error) {
+                            return;
+                        }
+                        console.log(result.error);
+                    }
+                    changeMyMnemonic(MyMnemonicViewMode.EnterPassphrase);
+                } else {
+                    changeMyMnemonic(MyMnemonicViewMode.EnterPassphrase);
+                }
              }}>
                 <View style={styles.section}>
                     <Text style={styles.title}>{localization.settings.title_mnemonic}</Text>
@@ -281,7 +300,7 @@ const SettingsScreen = () => {
                                     const passwordOk = await verifyPassword(passphraseInput);
                                     if (passwordOk) {
                                         changeBiometricSettingsViewMode(BiometricSettingsViewMode.None);
-                                        enableBiometricResult = await Biometrics.encryptPassphraseAndSave(passphraseInput, localization.settings.prompt_enable_biometric, () => changeBiometricSettingsViewMode(BiometricSettingsViewMode.EnablingBiometric));
+                                        enableBiometricResult = await Biometrics.encryptPassphraseAndSave(passphraseInput, localization.settings.prompt_enable_biometric, async () => { changeBiometricSettingsViewMode(BiometricSettingsViewMode.EnablingBiometric); return true });
                                         if (enableBiometricResult.success) {
                                             changeBiometricSettingsViewMode(BiometricSettingsViewMode.EnableBiometricSuccess);
                                             changeBiometricEnabled(true);

@@ -22,10 +22,12 @@ import SettingsScreen from './screens/SettingsScreen';
 import SendConfirmScreen from './screens/SendConfirmScreen';
 import MyMnemonicScreen from './screens/MyMnemonicScreen';
 import DebugSettings from './screens/DebugSettingsScreen';
+import ChangePassphraseScreen from './screens/ChangePassphraseScreen';
 
 type SettingsStackParamList = {
   SettingsScreen: undefined;
   MyMnemonicScreen: undefined;
+  ChangePassphraseScreen: undefined;
   DebugSettings: undefined;
 };
 const SettingsStack = createStackNavigator<SettingsStackParamList>();
@@ -33,6 +35,7 @@ const Settings = () => (
   <SettingsStack.Navigator screenOptions={{headerShown: false}}>
     <SettingsStack.Screen name="SettingsScreen" component={SettingsScreen} />
     <SettingsStack.Screen name="MyMnemonicScreen" component={MyMnemonicScreen} />
+    <SettingsStack.Screen name="ChangePassphraseScreen" component={ChangePassphraseScreen} />
     <SettingsStack.Screen name="DebugSettings" component={DebugSettings} />
   </SettingsStack.Navigator>
 );

@@ -76,6 +76,10 @@
     "restoring": "Restoring"
   },
 
+  "my_mnemonic_screen": {
+    "title": "My Mnemonic"
+  },
+
   "passphrase_screen": {
     "title": "Create Passphrase",
     "body": "You will use this passphrase for unlocking your wallet every time you enter it.",
@@ -92,6 +96,21 @@
     "login": "Login",
     "loading": "Loading...",
     "prompt_fingerprint": "Login Via Fingerprint"
+  },
+
+  "change_passphrase_screen": {
+    "title": "Change Passphrase",
+    "label_current": "Current Passphrase",
+    "label_new": "New Passphrase",
+    "label_confirm": "Confirm New Passphrase",
+    "title_error": "Error",
+    "title_success": "Success!",
+    "description_success": "Passphrase successfully changed!",
+    "error_passphrase_mismatch": "New and confirm passphrases must be equal",
+    "error_passphrase_same": "New and old passhprases must be different",
+    "error_wrong_old_passphrase": "Invalid old passphrase",
+    "error_failed": "Failed changing the passphrase",
+    "prompt_fingerprint": "Provide Fingerprint to Confirm Changing Passphrase"
   },
 
   "transaction_details": {
@@ -208,6 +227,7 @@
     "description_passphrase_mnemonic": "Enter passphrase to see your mnemonic",
     "button_enable_biometric": "Enable Fingerprint",
     "title_processing": "Processing...",
+    "title_success": "Success!",
     "description_verifying_passphrase": "Verifying passphrase",
     "description_enabling_biometric": "Enabling fingerprint authentication",
     "description_disabling_biometric": "Disabling fingerprint authentication",
@@ -218,7 +238,7 @@
     "error_disabled_biometric": "Failed disabling fingerprint",
     "prompt_enable_biometric": "Enable Fingerprint",
     "prompt_disable_biometric": "Disable Fingerprint",
-    "title_success": "Success!",
+    "prompt_view_mnemonic": "Provide Fingerprint to View Mnemonic",
     "version": "Version: "
   },
 

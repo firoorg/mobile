@@ -79,6 +79,10 @@ export interface IString extends LocalizedStringsMethods {
     restoring: string;
   };
 
+  my_mnemonic_screen: {
+    title: string;
+  };
+
   passphrase_screen: {
     title: string;
     body: string;
@@ -94,6 +98,21 @@ export interface IString extends LocalizedStringsMethods {
     body: string;
     login: string;
     loading: string;
+    prompt_fingerprint: string;
+  };
+
+  change_passphrase_screen: {
+    title: string;
+    label_current: string;
+    label_new: string;
+    label_confirm: string;
+    title_error: string;
+    title_success: string;
+    description_success: string;
+    error_passphrase_mismatch: string;
+    error_passphrase_same: string;
+    error_wrong_old_passphrase: string;
+    error_failed: string;
     prompt_fingerprint: string;
   };
 
@@ -222,6 +241,7 @@ export interface IString extends LocalizedStringsMethods {
     error_disabled_biometric: string;
     prompt_disable_biometric: string;
     prompt_enable_biometric: string;
+    prompt_view_mnemonic: string;
     version: string;
   };
 
