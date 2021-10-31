@@ -1,7 +1,9 @@
 import React, {FC} from 'react';
 import {Text} from 'react-native-elements';
-import {StyleProp, StyleSheet, TextStyle, View} from 'react-native';
+import {Image, StyleProp, StyleSheet, TextStyle, ToastAndroid, TouchableOpacity, View} from 'react-native';
 import {CurrentFiroTheme} from '../Themes';
+import localization from '../localization';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const colors = CurrentFiroTheme.colors;
 
@@ -13,7 +15,6 @@ type FiroTextProp = {
 type FiroInfoTextProp = FiroTextProp & {
   title: string;
   onClick?: () => void;
-  onLongPress?: () => void;
 };
 
 export const FiroTitleBig: FC<FiroTextProp> = props => {
@@ -50,20 +51,50 @@ export const FiroInfoText: FC<FiroInfoTextProp> = props => {
   const onClickText = () => {
     props.onClick && props.onClick()
   }
-  const onLongPresstext = () => {
-    props.onLongPress && props.onLongPress()
-  }
   return (
     <View style={props.style}>
       <Text style={[styles.text, styles.infoText, styles.infoTextTitle]}>
         {props.title}
       </Text>
       <Text
-        onLongPress={onLongPresstext}
         onPress={onClickText}
         style={[styles.text, styles.infoText]}>
         {props.text}
       </Text>
+    </View>
+  );
+};
+
+
+export const FiroInfoTextWithCopy: FC<FiroInfoTextProp> = props => {
+  const onClickText = () => {
+    props.onClick && props.onClick()
+  }
+  const copyText = (text: string) => {
+    Clipboard.setString(text)
+    ToastAndroid.showWithGravityAndOffset(
+      localization.global.copy_to_clipboard,
+      ToastAndroid.SHORT,
+      ToastAndroid.BOTTOM,
+      0,
+      100,
+    );
+  }
+  return (
+    <View style={[styles.infoTextWithIcon, props.style]}>
+      <Text style={[styles.text, styles.infoText, styles.infoTextTitle]}>
+        {props.title}
+      </Text>
+      <View style={styles.infoTextRow}>
+        <Text
+          onPress={onClickText}
+          style={[styles.text, styles.infoText]}>
+          {props.text}
+        </Text>
+        <TouchableOpacity onPress={() => copyText(props.text)}>
+          <Image style={styles.icon} source={require('../img/ic_copy.png')} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -115,6 +146,7 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 14,
     fontWeight: '500',
+    width: '85%',
   },
   infoTextTitle: {
     opacity: 0.5,
@@ -131,5 +163,20 @@ const styles = StyleSheet.create({
   },
   verticalInfoTextTitle: {
     fontWeight: '400',
+  },
+  infoTextWithIcon: {
+    display: 'flex',
+  },
+  infoTextRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignContent: 'center',
+    alignItems: 'center'
+  },
+  icon: {
+    width: 24,
+    height: 24,
+    marginLeft: 8,
   },
 });

@@ -1,7 +1,7 @@
 import React, {FC, useContext} from 'react';
 import {StyleSheet, View, Text, Linking, ToastAndroid} from 'react-native';
 import {FiroToolbar} from '../components/Toolbar';
-import {FiroInfoText} from '../components/Texts';
+import {FiroInfoText, FiroInfoTextWithCopy} from '../components/Texts';
 import {RouteProp} from '@react-navigation/core';
 import {FiroContext} from '../FiroContext';
 import {TransactionItem} from '../data/TransactionItem';
@@ -54,17 +54,6 @@ const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
     });
   };
 
-  const copyText = (text: string) => {
-    Clipboard.setString(text);
-    ToastAndroid.showWithGravityAndOffset(
-      localization.global.copy_to_clipboard,
-      ToastAndroid.SHORT,
-      ToastAndroid.BOTTOM,
-      0,
-      100,
-    );
-  };
-
   return (
     <View style={styles.root}>
       <FiroToolbar title={localization.transaction_details.title} />
@@ -75,23 +64,17 @@ const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
           firoRate={getFiroRate()}
           currentCurrency={getSettings().defaultCurrency}
         />
-        <FiroInfoText
+        <FiroInfoTextWithCopy
           style={styles.infoText}
           title={localization.transaction_details.transaction_id}
           text={item.txId}
-          onClick={() =>
-            openUrl(`https://testexplorer.firo.org/tx/${item.txId}`)
-          }
-          onLongPress={() => copyText(item.txId)}
+          onClick={() => openUrl(`https://testexplorer.zcoin.io/tx/${item.txId}`)}
         />
-        <FiroInfoText
+        <FiroInfoTextWithCopy
           style={styles.infoText}
           title={localization.transaction_details.address}
           text={item.address}
-          onClick={() =>
-            openUrl(`https://testexplorer.firo.org/address/${item.address}`)
-          }
-          onLongPress={() => copyText(item.address)}
+          onClick={() => openUrl(`https://testexplorer.zcoin.io/address/${item.address}`)}
         />
         <FiroInfoText
           style={styles.infoText}
@@ -106,11 +89,12 @@ const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
 
 const styles = StyleSheet.create({
   root: {
-    height: '100%',
     display: 'flex',
-    padding: 30,
+    paddingStart: 30,
+    paddingEnd: 30,
   },
   txDetails: {
+    display: 'flex',
     paddingTop: 34,
   },
   transactionCard: {
@@ -118,6 +102,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   infoText: {
+    flexGrow: 1,
     paddingTop: 30,
   },
 });

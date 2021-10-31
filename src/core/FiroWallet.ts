@@ -18,6 +18,7 @@ import {LelantusWrapper} from './LelantusWrapper';
 import {LelantusCoin} from '../data/LelantusCoin';
 import {LelantusEntry} from '../data/LelantusEntry';
 import Logger from '../utils/logger';
+import { Transaction } from 'bitcoinjs-lib/types/transaction';
 
 const bitcoin = require('bitcoinjs-lib');
 const bip32 = require('bip32');
@@ -43,6 +44,19 @@ export const TX_DATE_FORMAT = {
   hour: '2-digit',
   minute: '2-digit',
 };
+
+type MintInput = {
+  txId: string;
+  txHex: string;
+  outputIndex: number;
+  keypair: BIP32Interface;
+}
+
+type MintTxData = {
+  inputs: MintInput[];
+  script: string;
+  value: number;
+}
 
 export class FiroWallet implements AbstractWallet {
   secret: string | undefined = undefined;
@@ -145,59 +159,96 @@ export class FiroWallet implements AbstractWallet {
       Logger.error('firo_wallet:createLelantusMintTx', 'utxos is empty');
       throw Error('there are no any unspent transaction is empty');
     }
-    const keyPairs: Array<BIP32Interface> = [];
-    const fee = 50000;
-    let value: number = -fee;
+    const feeRate = 0.0000003
+    const mintInputs: Array<MintInput> = [];
+    let total = new BigNumber(0)
 
-    const tx = new bitcoin.Psbt({network: this.network});
-    tx.setVersion(2);
+    const mintKeyPair = this._getNode(MINT_INDEX, this.next_free_mint_index);
 
     for (let index = 0; index < params.utxos.length; index++) {
       const input = params.utxos[index];
       const wif = await this._getWifForAddress(input.address);
       const keyPair = await this._getKeyPairFromWIF(wif);
-      keyPairs[index] = keyPair;
 
-      value += input.value;
+      mintInputs.push({
+        txId: input.txId,
+        txHex: input.txHex,
+        outputIndex: input.index,
+        keypair: keyPair
+      })
 
+      total = total.plus(input.value)
+    }
+    Logger.debug('firo_wallet:createLelantusMintTx:mintInputs', mintInputs)
+
+    const mintWithoutFee = await LelantusWrapper.lelantusMint(
+      mintKeyPair,
+      this.next_free_mint_index,
+      total.toNumber(),
+    );
+
+    // transaction for compute fee
+    const tmpTx = this.createMintTx({
+      inputs: mintInputs,
+      script: mintWithoutFee.script,
+      value: total.toNumber()
+    })
+    const bnFee = new BigNumber(feeRate)
+      .times(tmpTx.virtualSize())
+      .times(SATOSHI)
+    total = total.minus(bnFee)
+
+    Logger.debug('firo_wallet:createLelantusMintTx:fee', bnFee)
+    Logger.debug('firo_wallet:createLelantusMintTx:total', total)
+
+    // create real tx
+    const mintWithFee = await LelantusWrapper.lelantusMint(
+      mintKeyPair,
+      this.next_free_mint_index,
+      total.toNumber(),
+    );
+    const tx = this.createMintTx({
+      inputs: mintInputs,
+      script: mintWithFee.script,
+      value: total.toNumber()
+    })
+
+    return {
+      txId: tx.getId(),
+      txHex: tx.toHex(),
+      value: total.toNumber(),
+      publicCoin: mintWithFee.publicCoin,
+      fee: bnFee.toNumber(),
+    };
+  }
+
+  private createMintTx({ inputs, script, value }: MintTxData): Transaction {
+    const tx = new bitcoin.Psbt({network: this.network});
+    tx.setVersion(2);
+
+    inputs.forEach(input => {
       tx.addInput({
         hash: input.txId,
-        index: input.index,
+        index: input.outputIndex,
         sequence: 4294967294,
         // eslint-disable-next-line no-undef
         nonWitnessUtxo: Buffer.from(input.txHex, 'hex'),
       });
-    }
+    })
 
-    const mintKeyPair = this._getNode(MINT_INDEX, this.next_free_mint_index);
-    const mintData = await LelantusWrapper.lelantusMint(
-      mintKeyPair,
-      this.next_free_mint_index,
-      value,
-    );
-
-    Logger.info('firo_wallet:createLelantusMintTx', { mintData, value });
     tx.addOutput({
       // eslint-disable-next-line no-undef
-      script: Buffer.from(mintData.script, 'hex'),
+      script: Buffer.from(script, 'hex'),
       value,
     });
 
-    keyPairs.forEach((keypair, index) => {
-      tx.signInput(index, keypair);
+    inputs.forEach((input, index) => {
+      tx.signInput(index, input.keypair);
       tx.validateSignaturesOfInput(index);
-    });
+    })
     tx.finalizeAllInputs();
 
-    const extractedTx = tx.extractTransaction();
-    Logger.info('firo_wallet:createLelantusMintTx', { mintData, value });
-    return {
-      txId: extractedTx.getId(),
-      txHex: extractedTx.toHex(),
-      value: value,
-      publicCoin: mintData.publicCoin,
-      fee: fee,
-    };
+    return tx.extractTransaction()
   }
 
   async estimateJoinSplitFee(

@@ -215,7 +215,7 @@ const MyWalletScreen = () => {
 
   let transactionList;
   if (txHistory.length === 0) {
-    transactionList = <FiroTransactionEmpty />;
+    transactionList = <View style={styles.transactionContainer}><FiroTransactionEmpty /></View>;
   } else {
     transactionList = <TransactionList transactionList={txHistory} />;
   }
@@ -230,8 +230,12 @@ const MyWalletScreen = () => {
           unconfirmedBalance={unconfirmedBalance}
         />
       </View>
-      <Text style={styles.syncText}>{sync ? 'Syncing...' : 'Synced'}</Text>
-      <ScrollView contentContainerStyle={styles.transactionContainer}>{transactionList}</ScrollView>
+      {
+        sync && (
+          <Text style={styles.syncText}>Syncing...</Text> 
+        )
+      }
+      {transactionList}
     </View>
   );
 };
