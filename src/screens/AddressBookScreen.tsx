@@ -102,7 +102,7 @@ const AddressBookScreen = () => {
     <View style={styles.root}>
       <FiroToolbarWithoutBack title={localization.address_book_screen.title} />
       <View style={styles.menu}>
-        <SearchBar autoCapitalize="none" containerStyle={styles.searchContainer} inputStyle={styles.searchInput} value={searchText} onChangeText={newText => setSearchText(newText)} />
+        <SearchBar autoCapitalize="none" containerStyle={styles.searchContainer} inputStyle={styles.searchInput} inputContainerStyle={styles.searchInputContainer} searchIcon={{ size: 25, color: colors.text }} value={searchText} onChangeText={newText => setSearchText(newText)} />
         <TouchableOpacity style={styles.addNew} onPress={onAddNewClick}>
           <Image style={styles.addIcon} source={require('../img/ic_add.png')} />
           <Divider style={styles.divider} />
@@ -195,15 +195,25 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     flexGrow: 1,
-    borderBottomWidth: 0,
-    borderTopWidth: 0,
-    borderWidth: 0
+    borderBottomWidth: 1,
+    borderTopWidth: 1,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: colors.border,
+    borderTopColor: colors.border,
+    borderBottomColor: colors.border,
+    padding: 0,
+    marginRight: 10
   },
   searchInput: {
     fontFamily: 'Rubik-Regular',
     fontWeight: '500',
     fontSize: 16,
     color: colors.text,
+    padding: 0
+  },
+  searchInputContainer: {
+    height: 40
   },
   addIcon: {
     width: 24,
