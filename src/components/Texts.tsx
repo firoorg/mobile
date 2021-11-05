@@ -1,6 +1,14 @@
 import React, {FC} from 'react';
 import {Text} from 'react-native-elements';
-import {Image, StyleProp, StyleSheet, TextStyle, ToastAndroid, TouchableOpacity, View} from 'react-native';
+import {
+  Image,
+  StyleProp,
+  StyleSheet,
+  TextStyle,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {CurrentFiroTheme} from '../Themes';
 import localization from '../localization';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -49,29 +57,26 @@ export const FiroTextSmall: FC<FiroTextProp> = props => {
 
 export const FiroInfoText: FC<FiroInfoTextProp> = props => {
   const onClickText = () => {
-    props.onClick && props.onClick()
-  }
+    props.onClick && props.onClick();
+  };
   return (
     <View style={props.style}>
       <Text style={[styles.text, styles.infoText, styles.infoTextTitle]}>
         {props.title}
       </Text>
-      <Text
-        onPress={onClickText}
-        style={[styles.text, styles.infoText]}>
+      <Text onPress={onClickText} style={[styles.text, styles.infoText]}>
         {props.text}
       </Text>
     </View>
   );
 };
 
-
 export const FiroInfoTextWithCopy: FC<FiroInfoTextProp> = props => {
   const onClickText = () => {
-    props.onClick && props.onClick()
-  }
+    props.onClick && props.onClick();
+  };
   const copyText = (text: string) => {
-    Clipboard.setString(text)
+    Clipboard.setString(text);
     ToastAndroid.showWithGravityAndOffset(
       localization.global.copy_to_clipboard,
       ToastAndroid.SHORT,
@@ -79,16 +84,14 @@ export const FiroInfoTextWithCopy: FC<FiroInfoTextProp> = props => {
       0,
       100,
     );
-  }
+  };
   return (
     <View style={[styles.infoTextWithIcon, props.style]}>
       <Text style={[styles.text, styles.infoText, styles.infoTextTitle]}>
         {props.title}
       </Text>
       <View style={styles.infoTextRow}>
-        <Text
-          onPress={onClickText}
-          style={[styles.text, styles.infoText]}>
+        <Text onPress={onClickText} style={[styles.text, styles.infoText]}>
           {props.text}
         </Text>
         <TouchableOpacity onPress={() => copyText(props.text)}>
@@ -172,7 +175,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   icon: {
     width: 24,

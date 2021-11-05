@@ -49,7 +49,7 @@ export const FiroDefaultTheme: FiroTheme = {
     switchTrackFalse: '#878787',
     switchThumb: '#ffffff',
     secondaryBackground: '#f7f9fb',
-    unchecked: '#838485'
+    unchecked: '#838485',
   },
 };
 

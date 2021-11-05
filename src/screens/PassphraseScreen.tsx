@@ -29,8 +29,8 @@ const PassphraseScreen = () => {
       jobDone = true;
 
       NavigationService.clearStack('MainScreen');
-    } catch(e) {
-      Logger.error('passphrase_screen:onClickDone', e)
+    } catch (e) {
+      Logger.error('passphrase_screen:onClickDone', e);
     } finally {
       if (!jobDone) {
         setCreating(false);

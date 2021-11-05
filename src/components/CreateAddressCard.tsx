@@ -11,7 +11,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import {AppStorage} from '../app-storage';
 import {AddressItem} from '../data/AddressItem';
 import {FiroInfoText} from './Texts';
-import { CurrentFiroTheme } from '../Themes';
+import {CurrentFiroTheme} from '../Themes';
 const {colors} = CurrentFiroTheme;
 
 const appStorage = new AppStorage();
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     marginTop: 24,
-    color: colors.text
+    color: colors.text,
   },
   addressNameInfo: {
     paddingTop: 20,

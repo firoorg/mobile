@@ -21,7 +21,7 @@ const appStorage = new AppStorage();
 const {colors} = CurrentFiroTheme;
 
 type AddressBookStackRouteProps = {
-  Address: { item: AddressBookItem, onSuccess?: () => void };
+  Address: {item: AddressBookItem; onSuccess?: () => void};
 };
 
 type AddEditAddressProps = {
@@ -29,7 +29,7 @@ type AddEditAddressProps = {
 };
 
 const AddEditAddress: FC<AddEditAddressProps> = props => {
-  let { item, onSuccess } = props.route.params;
+  let {item, onSuccess} = props.route.params;
   const hasInputAddress = item !== undefined;
 
   const [address, setAddress] = useState(hasInputAddress ? item.address : '');
@@ -43,10 +43,10 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
       item.address = address;
       item.name = name.trim();
 
-      Logger.info('add_edit_address:onConfirm', 'updateAddressBookItem')
+      Logger.info('add_edit_address:onConfirm', 'updateAddressBookItem');
       await appStorage.updateAddressBookItem(item);
     } else {
-      Logger.info('add_edit_address:onConfirm', 'addNewAddressBookItem')
+      Logger.info('add_edit_address:onConfirm', 'addNewAddressBookItem');
       await appStorage.addNewAddressBookItem(
         new AddressBookItem(name.trim(), address),
       );
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     elevation: 2,
     width: '100%',
-    color: colors.text
+    color: colors.text,
   },
   confirmation: {
     marginTop: 'auto',

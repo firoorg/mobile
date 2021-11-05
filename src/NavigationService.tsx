@@ -5,7 +5,6 @@ import {
   ParamListBase,
 } from '@react-navigation/native';
 
-
 export const navigationRef = React.createRef<NavigationContainerRef>();
 
 export function navigate(name: string, params: ParamListBase | undefined) {
@@ -19,8 +18,8 @@ export function dispatch(params: NavigationAction) {
 export function clearStack(name: string) {
   navigationRef.current?.reset({
     index: 0,
-    routes: [{ name }],
-  })
+    routes: [{name}],
+  });
 }
 
 export function back() {

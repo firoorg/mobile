@@ -1,4 +1,4 @@
-import BigNumber from "bignumber.js";
+import BigNumber from 'bignumber.js';
 
 export class SendData {
   amount: number = 0;
@@ -8,4 +8,3 @@ export class SendData {
   totalAmount: number = 0;
   reduceFeeFromAmount: boolean = false;
 }
-  

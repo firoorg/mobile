@@ -70,7 +70,7 @@ const ScanQRCodeScreen: FC<ScanQRCodeProps> = props => {
         setAnimatedQRCodeData(animatedQRCodeData);
       }
     } catch (error) {
-      Logger.error('scan_qr_screen:readBarcodeFromUniformResource', error)
+      Logger.error('scan_qr_screen:readBarcodeFromUniformResource', error);
       Alert.alert(localization.scan_qrcode_screen.invalid_qrcode_fragment);
     }
   };
@@ -112,7 +112,7 @@ const ScanQRCodeScreen: FC<ScanQRCodeProps> = props => {
           onBarScanned({data: ret.data});
         }
       } catch (e) {
-        Logger.error('scan_qr_code_screen:onBarCodeRead', e)
+        Logger.error('scan_qr_code_screen:onBarCodeRead', e);
       }
     }
     setIsLoading(false);
@@ -167,8 +167,10 @@ const ScanQRCodeScreen: FC<ScanQRCodeProps> = props => {
           <RNCamera
             captureAudio={false}
             androidCameraPermissionOptions={{
-              title: localization.scan_qrcode_screen.camera_use_permission_title,
-              message: localization.scan_qrcode_screen.camera_use_permission_message,
+              title:
+                localization.scan_qrcode_screen.camera_use_permission_title,
+              message:
+                localization.scan_qrcode_screen.camera_use_permission_message,
               buttonPositive: localization.component_button.ok,
               buttonNegative: localization.component_button.cancel,
             }}
@@ -184,7 +186,9 @@ const ScanQRCodeScreen: FC<ScanQRCodeProps> = props => {
             styles.openSettingsContainer,
             stylesHook.openSettingsContainer,
           ]}>
-          <FiroTextSmall text={localization.scan_qrcode_screen.camera_use_permission_message} />
+          <FiroTextSmall
+            text={localization.scan_qrcode_screen.camera_use_permission_message}
+          />
           <View style={{height: 50}} />
           <FiroPrimaryButton
             text={localization.scan_qrcode_screen.open_settings}

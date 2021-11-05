@@ -19,12 +19,18 @@ export class Currency {
 
   public static firoToFiat(amount: BigNumber, format?: boolean): BigNumber {
     return format
-      ? Currency.formatFiroAmount(amount, Currency.currentRate, Currency.currentCurrency)
+      ? Currency.formatFiroAmount(
+          amount,
+          Currency.currentRate,
+          Currency.currentCurrency,
+        )
       : amount.times(Currency.currentRate);
   }
 
   public static fiatToFiro(amount: BigNumber, format?: boolean): BigNumber {
-    const result: BigNumber = Currency.currentRate ? amount.div(Currency.currentRate) : amount;
+    const result: BigNumber = Currency.currentRate
+      ? amount.div(Currency.currentRate)
+      : amount;
     return format ? Currency.formatFiroAmount(result) : result;
   }
 
@@ -32,7 +38,11 @@ export class Currency {
     Currency.updateContextRate = updateRate;
   }
 
-  public static formatFiroAmount(amount: BigNumber, rate: number = 1, currency: string = ''): BigNumber {
+  public static formatFiroAmount(
+    amount: BigNumber,
+    rate: number = 1,
+    currency: string = '',
+  ): BigNumber {
     switch (currency) {
       case 'btc':
         return new BigNumber(amount.times(rate).toFixed(8));
@@ -44,8 +54,18 @@ export class Currency {
     }
   }
 
-  public static formatFiroAmountWithCurrency(amount: BigNumber, rate: number = 1, currency: string = ''): string {
-    return Currency.formatFiroAmount(amount, rate, currency).toString() + ' ' + (currency ? (localization.currencies as any)[currency] : localization.global.firo);
+  public static formatFiroAmountWithCurrency(
+    amount: BigNumber,
+    rate: number = 1,
+    currency: string = '',
+  ): string {
+    return (
+      Currency.formatFiroAmount(amount, rate, currency).toString() +
+      ' ' +
+      (currency
+        ? (localization.currencies as any)[currency]
+        : localization.global.firo)
+    );
   }
 
   private static async startUpdater() {
@@ -55,7 +75,9 @@ export class Currency {
     }
 
     Currency.interval = setInterval(
-      () => Currency.updateExchangeRate(), 60 * 1000);
+      () => Currency.updateExchangeRate(),
+      60 * 1000,
+    );
     await Currency.updateExchangeRate();
   }
 
@@ -68,14 +90,16 @@ export class Currency {
       return;
     }
     const appStorage = new AppStorage();
-    let storedRates: { [key: string]: number } = {};
+    let storedRates: {[key: string]: number} = {};
     try {
-      storedRates = JSON.parse(await appStorage.getItem(AppStorage.EXCHANGE_RATES));
-    } catch (error) { }
+      storedRates = JSON.parse(
+        await appStorage.getItem(AppStorage.EXCHANGE_RATES),
+      );
+    } catch (error) {}
     try {
       const response: Response = await fetch(
         'https://api.coingecko.com/api/v3/simple/price?ids=zcoin&vs_currencies=' +
-        Currency.currentCurrency,
+          Currency.currentCurrency,
       );
       const jsonResult = await response.json();
       Currency.currentRate = jsonResult.zcoin[Currency.currentCurrency];
@@ -84,9 +108,15 @@ export class Currency {
       }
       storedRates[Currency.currentCurrency] = Currency.currentRate;
       Currency.lastUpdated = new Date();
-      await appStorage.setItem(AppStorage.EXCHANGE_RATES, JSON.stringify(storedRates));
+      await appStorage.setItem(
+        AppStorage.EXCHANGE_RATES,
+        JSON.stringify(storedRates),
+      );
     } catch (error) {
-      Logger.warn('currancy:updateExchangeRate', "Can't retrieve current rate: " + error);
+      Logger.warn(
+        'currancy:updateExchangeRate',
+        "Can't retrieve current rate: " + error,
+      );
       if (storedRates) {
         const lastSavedRate: number = Number(
           storedRates[Currency.currentCurrency],

@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 60
+    paddingBottom: 60,
   },
   icon: {
     width: 118,

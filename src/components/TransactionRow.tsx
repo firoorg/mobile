@@ -5,7 +5,7 @@ import {TransactionItem} from '../data/TransactionItem';
 import localization from '../localization';
 import {TX_DATE_FORMAT} from '../core/FiroWallet';
 import {Currency} from '../utils/currency';
-import { formatTimestamp } from '../utils/datetime';
+import {formatTimestamp} from '../utils/datetime';
 import BigNumber from 'bignumber.js';
 
 type TransactionRowProps = {
@@ -46,7 +46,7 @@ export const TransactionRow: FC<TransactionRowProps> = props => {
       <View style={styles.textContainer}>
         <View style={styles.row}>
           <Text style={styles.title}>
-            {Currency.formatFiroAmountWithCurrency(new BigNumber(item.value))} 
+            {Currency.formatFiroAmountWithCurrency(new BigNumber(item.value))}
           </Text>
           <Text style={styles.title}>
             {Currency.formatFiroAmountWithCurrency(
@@ -58,9 +58,7 @@ export const TransactionRow: FC<TransactionRowProps> = props => {
         </View>
         <View style={styles.row}>
           <Text style={styles.subtitle}>{title}</Text>
-          <Text style={styles.subtitle}>
-            {formatTimestamp(item.date)}
-          </Text>
+          <Text style={styles.subtitle}>{formatTimestamp(item.date)}</Text>
         </View>
       </View>
     </View>

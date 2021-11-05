@@ -24,17 +24,16 @@ type AddressDetailsProps = {
 const AddressDetailsScreen: FC<AddressDetailsProps> = props => {
   const {getWallet} = useContext(FiroContext);
   const {item} = props.route.params;
-  const [txs, setTxs] = useState<TransactionItem[]>([])
-
+  const [txs, setTxs] = useState<TransactionItem[]>([]);
 
   useEffect(() => {
     const wallet = getWallet();
     if (wallet) {
       const txs = wallet.getTransactionsByAddress(item.address);
-      Logger.info('address_detail_scree:useEffect', txs)
-      setTxs(txs)
+      Logger.info('address_detail_scree:useEffect', txs);
+      setTxs(txs);
     }
-  }, [])
+  }, []);
 
   return (
     <View style={styles.root}>
@@ -54,12 +53,10 @@ const AddressDetailsScreen: FC<AddressDetailsProps> = props => {
           text={item.name}
         />
       </View>
-      { txs.length > 0 && (
+      {txs.length > 0 && (
         <Text style={styles.transactionHistory}>Transaction History</Text>
       )}
-      { txs.length > 0 && (
-        <TransactionList transactionList={txs} />
-      )}
+      {txs.length > 0 && <TransactionList transactionList={txs} />}
     </View>
   );
 };

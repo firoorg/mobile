@@ -93,14 +93,14 @@ export interface AbstractElectrum {
     txids: Array<string>,
     batchsize?: number,
     verbose?: boolean,
-  ): Promise<{ [txId: string]: FullTransactionModel }>;
+  ): Promise<{[txId: string]: FullTransactionModel}>;
 
   getUnspentTransactionsByAddress(
     address: string,
   ): Promise<Array<TransactionModel>>;
   multiGetUnspentTransactionsByAddress(
     addresses: Array<string>,
-  ): Promise<{ [address: string]: TransactionModel[]}>;
+  ): Promise<{[address: string]: TransactionModel[]}>;
 
   broadcast(hex: string): Promise<string>;
 

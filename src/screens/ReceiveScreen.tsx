@@ -32,9 +32,9 @@ const ReceiveScreen = () => {
   const onClickCreateAddress = () => {
     const wallet = getWallet();
     if (wallet) {
-      wallet.getAddressAsync().then((addr) => {
-        setAddress(addr)
-        Logger.info('receive_screen:onClickCreateAddress', addr)
+      wallet.getAddressAsync().then(addr => {
+        setAddress(addr);
+        Logger.info('receive_screen:onClickCreateAddress', addr);
       });
     }
   };
@@ -55,15 +55,15 @@ const ReceiveScreen = () => {
   const loadSavedAddresses = async () => {
     const savedAddresses = await appStorage.loadSavedAddresses();
     setSavedAddressesList(savedAddresses);
-    Logger.info('receive_screen:loadSavedAddress', savedAddresses)
+    Logger.info('receive_screen:loadSavedAddress', savedAddresses);
   };
 
   const findAddressItem = async () => {
     const foundAddress = savedAddressesList.find(
       item => item.address === address,
     );
-    Logger.info('receive_screen:findAddressItem ', savedAddressesList)
-    Logger.info('receive_screen:findAddressItem ', foundAddress)
+    Logger.info('receive_screen:findAddressItem ', savedAddressesList);
+    Logger.info('receive_screen:findAddressItem ', foundAddress);
     if (foundAddress !== undefined) {
       setInitialName(foundAddress.name);
     }

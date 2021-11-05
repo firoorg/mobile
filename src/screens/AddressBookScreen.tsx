@@ -20,7 +20,7 @@ import localization from '../localization';
 import {useFocusEffect} from '@react-navigation/native';
 import {Divider} from 'react-native-elements/dist/divider/Divider';
 import Logger from '../utils/logger';
-import { SearchBar } from 'react-native-elements/dist/searchbar/SearchBar';
+import {SearchBar} from 'react-native-elements/dist/searchbar/SearchBar';
 
 const appStorage = new AppStorage();
 
@@ -28,10 +28,10 @@ const {colors} = CurrentFiroTheme;
 
 const AddressBookScreen = () => {
   const [addressBookList, setAddressBookList] = useState<AddressBookItem[]>([]);
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState('');
   const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
   const [currentAddress, setCurrentAddress] = useState<AddressBookItem>();
-  
+
   const loadAddressBook = async () => {
     let addressBook = await appStorage.loadAddressBook();
     setAddressBookList(addressBook);
@@ -39,22 +39,24 @@ const AddressBookScreen = () => {
 
   useEffect(() => {
     loadAddressBook();
-    Logger.info('address_book_screen:useEffect', 'loadAddressBook')
+    Logger.info('address_book_screen:useEffect', 'loadAddressBook');
   }, [searchText]);
   useFocusEffect(
     React.useCallback(() => {
       loadAddressBook();
-      Logger.info('address_book_screen:useFocusEffect', 'loadAddressBook')
+      Logger.info('address_book_screen:useFocusEffect', 'loadAddressBook');
       return () => {};
     }, [searchText]),
   );
 
   const onAddNewClick = () => {
-    Logger.info('address_book_screen', 'onAddNewClick')
+    Logger.info('address_book_screen', 'onAddNewClick');
     NavigationService.navigate('AddEditAddressScreen', {
-      item: undefined, onSuccess: () => {
-        setSearchText("");
-    }});
+      item: undefined,
+      onSuccess: () => {
+        setSearchText('');
+      },
+    });
   };
   const onMenuIconClick = (item: AddressBookItem) => {
     setCurrentAddress(item);
@@ -102,7 +104,15 @@ const AddressBookScreen = () => {
     <View style={styles.root}>
       <FiroToolbarWithoutBack title={localization.address_book_screen.title} />
       <View style={styles.menu}>
-        <SearchBar autoCapitalize="none" containerStyle={styles.searchContainer} inputStyle={styles.searchInput} inputContainerStyle={styles.searchInputContainer} searchIcon={{ size: 25, color: colors.text }} value={searchText} onChangeText={newText => setSearchText(newText)} />
+        <SearchBar
+          autoCapitalize="none"
+          containerStyle={styles.searchContainer}
+          inputStyle={styles.searchInput}
+          inputContainerStyle={styles.searchInputContainer}
+          searchIcon={{size: 25, color: colors.text}}
+          value={searchText}
+          onChangeText={newText => setSearchText(newText)}
+        />
         <TouchableOpacity style={styles.addNew} onPress={onAddNewClick}>
           <Image style={styles.addIcon} source={require('../img/ic_add.png')} />
           <Divider style={styles.divider} />
@@ -113,7 +123,10 @@ const AddressBookScreen = () => {
         addressBookList={addressBookList.filter(item => {
           const textToSearch = searchText.trim().toLowerCase();
           if (textToSearch) {
-            return item.name && item.name.toLowerCase().indexOf(textToSearch.toLowerCase()) >= 0;
+            return (
+              item.name &&
+              item.name.toLowerCase().indexOf(textToSearch.toLowerCase()) >= 0
+            );
           }
           return true;
         })}
@@ -191,7 +204,7 @@ const styles = StyleSheet.create({
   },
   addNew: {
     flexDirection: 'row',
-    width: 90
+    width: 90,
   },
   searchContainer: {
     flexGrow: 1,
@@ -203,21 +216,21 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border,
     borderBottomColor: colors.border,
     padding: 0,
-    marginRight: 10
+    marginRight: 10,
   },
   searchInput: {
     fontFamily: 'Rubik-Regular',
     fontWeight: '500',
     fontSize: 16,
     color: colors.text,
-    padding: 0
+    padding: 0,
   },
   searchInputContainer: {
-    height: 40
+    height: 40,
   },
   addIcon: {
     width: 24,
-    height: 24
+    height: 24,
   },
   divider: {
     marginHorizontal: 5,

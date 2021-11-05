@@ -68,13 +68,17 @@ const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
           style={styles.infoText}
           title={localization.transaction_details.transaction_id}
           text={item.txId}
-          onClick={() => openUrl(`https://testexplorer.zcoin.io/tx/${item.txId}`)}
+          onClick={() =>
+            openUrl(`https://testexplorer.zcoin.io/tx/${item.txId}`)
+          }
         />
         <FiroInfoTextWithCopy
           style={styles.infoText}
           title={localization.transaction_details.address}
           text={item.address}
-          onClick={() => openUrl(`https://testexplorer.zcoin.io/address/${item.address}`)}
+          onClick={() =>
+            openUrl(`https://testexplorer.zcoin.io/address/${item.address}`)
+          }
         />
         <FiroInfoText
           style={styles.infoText}

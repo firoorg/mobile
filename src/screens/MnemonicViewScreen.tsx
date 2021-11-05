@@ -23,7 +23,7 @@ const MnemonicViewScreen = () => {
   var words = mnemonic.split(' ');
 
   const onClickContinue = () => {
-    Logger.info('mnemonic_view_screen', 'onClickContinue')
+    Logger.info('mnemonic_view_screen', 'onClickContinue');
     NavigationService.navigate('PassphraseScreen', undefined);
   };
 

@@ -25,7 +25,10 @@ const MnemonicInputScreen = () => {
     setCreating(true);
     const words = mnemonic.split(' ');
     if (words.length !== 24) {
-      Logger.error('mnemonic_input_screen:onClickContinue', 'words lenght must be 24')
+      Logger.error(
+        'mnemonic_input_screen:onClickContinue',
+        'words lenght must be 24',
+      );
       setCreating(false);
       return;
     }
@@ -34,8 +37,8 @@ const MnemonicInputScreen = () => {
       await wallet.setSecret(mnemonic);
       setWallet(wallet);
       NavigationService.navigate('PassphraseScreen', undefined);
-    } catch(e) {
-      Logger.error('mnemonic_input_screen:onClickContinue', e)
+    } catch (e) {
+      Logger.error('mnemonic_input_screen:onClickContinue', e);
     } finally {
       setCreating(false);
     }

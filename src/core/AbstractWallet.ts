@@ -64,7 +64,7 @@ export interface AbstractWallet {
   getAddressAsync(): Promise<string>;
   getChangeAddressAsync(): Promise<string>;
   getTransactionsAddresses(): Promise<Array<string>>;
-  validate(address: string): boolean
+  validate(address: string): boolean;
 
   getBalance(): BigNumber;
   getUnconfirmedBalance(): BigNumber;
@@ -84,7 +84,17 @@ export interface AbstractWallet {
   ): Promise<FiroSpendTxReturn>;
   addLelantusMintToCache(txId: string, value: number, publicCoin: string): void;
   markCoinsSpend(spendCoinIndexes: number[]): void;
-  addMintTxToCache(txId: string, value: number, fee: number, address: string): void;
-  addSendTxToCache(txId: string, spendAmount: number, fee: number, address: string): void;
+  addMintTxToCache(
+    txId: string,
+    value: number,
+    fee: number,
+    address: string,
+  ): void;
+  addSendTxToCache(
+    txId: string,
+    spendAmount: number,
+    fee: number,
+    address: string,
+  ): void;
   updateMintMetadata(): Promise<boolean>;
 }

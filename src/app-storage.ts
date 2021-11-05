@@ -129,13 +129,13 @@ export class AppStorage {
         // this.tx_metadata = data.tx_metadata;
 
         realm.close();
-        Logger.info('storage:loadWalletFromDisk', unserializedWallet)
+        Logger.info('storage:loadWalletFromDisk', unserializedWallet);
         return unserializedWallet;
       } else {
         return null; // failed loading data or loading/decryptin data
       }
     } catch (error) {
-      Logger.warn('storage:loadWalletFromDisk', error)
+      Logger.warn('storage:loadWalletFromDisk', error);
       return null;
     }
   }
@@ -186,7 +186,7 @@ export class AppStorage {
       await this.setItem(AppStorage.FLAG_ENCRYPTED, '1');
       return await this.setItem('data', JSON.stringify(newData));
     } catch (error) {
-      Logger.warn('storage:saveWalletToDisk', error)
+      Logger.warn('storage:saveWalletToDisk', error);
     }
   }
 
@@ -206,7 +206,7 @@ export class AppStorage {
           wallet._txs_by_internal_index = txsByInternalIndex;
         }
       } catch (error) {
-        Logger.warn('storage:inflateTransactionsFromRealm', error)
+        Logger.warn('storage:inflateTransactionsFromRealm', error);
       }
     }
   }
@@ -233,7 +233,7 @@ export class AppStorage {
     try {
       return (await this.getItem(AppStorage.FLAG_ENCRYPTED)) === '1';
     } catch (error) {
-      Logger.warn('storage:hasSavedWallet', error)
+      Logger.warn('storage:hasSavedWallet', error);
       return false;
     }
   }
@@ -243,7 +243,7 @@ export class AppStorage {
       let addressBookJson = await this.getItem(AppStorage.ADDRESS_BOOK);
       return JSON.parse(addressBookJson) as Array<AddressBookItem>;
     } catch (error) {
-      Logger.warn('storage:loadAddressBook', error)
+      Logger.warn('storage:loadAddressBook', error);
       return [];
     }
   }
@@ -265,7 +265,7 @@ export class AppStorage {
         JSON.stringify(addressBook),
       );
     } catch (error) {
-      Logger.warn('storage:addNewAddressBookItem', error)
+      Logger.warn('storage:addNewAddressBookItem', error);
     }
   }
 
@@ -282,7 +282,7 @@ export class AppStorage {
         JSON.stringify(addressBook),
       );
     } catch (error) {
-      Logger.warn('storage:updateAddressBookItem', error)
+      Logger.warn('storage:updateAddressBookItem', error);
     }
   }
 
@@ -303,7 +303,7 @@ export class AppStorage {
         JSON.stringify(addressBook),
       );
     } catch (error) {
-      Logger.warn('storage:deleteAddressBookItem', error)
+      Logger.warn('storage:deleteAddressBookItem', error);
     }
   }
 
@@ -312,7 +312,7 @@ export class AppStorage {
       let savedAddressesJson = await this.getItem(AppStorage.SAVED_ADDRESSES);
       return JSON.parse(savedAddressesJson) as Array<AddressItem>;
     } catch (error) {
-      Logger.warn('storage:loadSavedAddresses', error)
+      Logger.warn('storage:loadSavedAddresses', error);
       return [];
     }
   }
@@ -329,7 +329,7 @@ export class AppStorage {
         JSON.stringify(savedAddresses),
       );
     } catch (error) {
-      Logger.warn('storage:addSavedAddress', error)
+      Logger.warn('storage:addSavedAddress', error);
     }
   }
 }

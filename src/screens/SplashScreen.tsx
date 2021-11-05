@@ -39,8 +39,8 @@ const SplashScreen = () => {
     try {
       firoElectrum.connectMain();
       replaceStackNavigation();
-    } catch(e) {
-      Logger.error('splash_screen', e)
+    } catch (e) {
+      Logger.error('splash_screen', e);
     }
   }, []);
 

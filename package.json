@@ -13,6 +13,7 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
+    "lint:fix": "npm run lint -- --fix",
     "postinstall": "rn-nodeify --install buffer,events,process,stream,util,inherits,fs,path,assert --hack"
   },
   "dependencies": {

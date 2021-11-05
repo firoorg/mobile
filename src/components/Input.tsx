@@ -28,7 +28,11 @@ export const FiroInputPassword: FC<FiroInputProps> = props => {
     <View style={[styles.container, props.style]}>
       <TextInput
         style={[styles.input]}
-        placeholder={props.placeholder ? props.placeholder : localization.component_input.passphrase_input_hint}
+        placeholder={
+          props.placeholder
+            ? props.placeholder
+            : localization.component_input.passphrase_input_hint
+        }
         secureTextEntry={secureText}
         onChangeText={props.onTextChanged}
       />
@@ -45,7 +49,11 @@ export const FiroInputMnemonic: FC<FiroInputProps> = props => {
       <TextInput
         style={[styles.input, styles.mnemonic]}
         onChangeText={props.onTextChanged}
-        placeholder={props.placeholder ? props.placeholder : localization.component_input.mnemonic_input_hint}
+        placeholder={
+          props.placeholder
+            ? props.placeholder
+            : localization.component_input.mnemonic_input_hint
+        }
         multiline
         numberOfLines={5}
       />
@@ -68,7 +76,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     fontFamily: 'Rubik-Regular',
     fontSize: 14,
-    color: colors.text
+    color: colors.text,
   },
   mnemonic: {
     height: '100%',

@@ -24,7 +24,7 @@ const MyWalletScreen = () => {
     new BigNumber(0),
   );
   const [txHistory, setTxHistory] = useState<TransactionItem[]>([]);
-  const [sync, setSync] = useState(false)
+  const [sync, setSync] = useState(false);
   const {saveToDisk} = useContext(FiroContext);
 
   const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
@@ -107,7 +107,7 @@ const MyWalletScreen = () => {
       }
       if (updateWallet) {
         await saveToDisk();
-        Logger.info('my_wallet_screen:doMint', `saved on disk`);
+        Logger.info('my_wallet_screen:doMint', 'saved on disk');
       }
     } catch (e) {
       Logger.error('my_wallet_screen:doMint', e);
@@ -215,7 +215,11 @@ const MyWalletScreen = () => {
 
   let transactionList;
   if (txHistory.length === 0) {
-    transactionList = <View style={styles.transactionContainer}><FiroTransactionEmpty /></View>;
+    transactionList = (
+      <View style={styles.transactionContainer}>
+        <FiroTransactionEmpty />
+      </View>
+    );
   } else {
     transactionList = <TransactionList transactionList={txHistory} />;
   }
@@ -230,11 +234,7 @@ const MyWalletScreen = () => {
           unconfirmedBalance={unconfirmedBalance}
         />
       </View>
-      {
-        sync && (
-          <Text style={styles.syncText}>Syncing...</Text> 
-        )
-      }
+      {sync && <Text style={styles.syncText}>Syncing...</Text>}
       {transactionList}
     </View>
   );
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   transactionContainer: {
     flexGrow: 1,
     display: 'flex',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   syncText: {
     textAlign: 'right',

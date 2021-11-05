@@ -17,7 +17,7 @@ import AddressBookScreen from './screens/AddressBookScreen';
 import {BottomTabBar} from './components/BottomNavigation';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import ScanQRCodeScreen from './screens/ScanQRCodeScreen';
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 import SettingsScreen from './screens/SettingsScreen';
 import SendConfirmScreen from './screens/SendConfirmScreen';
 import MyMnemonicScreen from './screens/MyMnemonicScreen';
@@ -34,8 +34,14 @@ const SettingsStack = createStackNavigator<SettingsStackParamList>();
 const Settings = () => (
   <SettingsStack.Navigator screenOptions={{headerShown: false}}>
     <SettingsStack.Screen name="SettingsScreen" component={SettingsScreen} />
-    <SettingsStack.Screen name="MyMnemonicScreen" component={MyMnemonicScreen} />
-    <SettingsStack.Screen name="ChangePassphraseScreen" component={ChangePassphraseScreen} />
+    <SettingsStack.Screen
+      name="MyMnemonicScreen"
+      component={MyMnemonicScreen}
+    />
+    <SettingsStack.Screen
+      name="ChangePassphraseScreen"
+      component={ChangePassphraseScreen}
+    />
     <SettingsStack.Screen name="DebugSettings" component={DebugSettings} />
   </SettingsStack.Navigator>
 );
@@ -45,8 +51,12 @@ type ScanQRCodeStackParamList = {
 };
 const ScanQRCodeStack = createStackNavigator<ScanQRCodeStackParamList>();
 const ScanQRCode = () => (
-  <ScanQRCodeStack.Navigator screenOptions={{headerShown: false, presentation: 'modal'}}>
-    <ScanQRCodeStack.Screen name="ScanQRCodeScreen" component={ScanQRCodeScreen} />
+  <ScanQRCodeStack.Navigator
+    screenOptions={{headerShown: false, presentation: 'modal'}}>
+    <ScanQRCodeStack.Screen
+      name="ScanQRCodeScreen"
+      component={ScanQRCodeScreen}
+    />
   </ScanQRCodeStack.Navigator>
 );
 
@@ -58,7 +68,9 @@ type TabStackParamList = {
 };
 const TabStack = createBottomTabNavigator<TabStackParamList>();
 const TabScreen = () => (
-  <TabStack.Navigator screenOptions={{headerShown: false}} tabBar={props => <BottomTabBar {...props} />}>
+  <TabStack.Navigator
+    screenOptions={{headerShown: false}}
+    tabBar={props => <BottomTabBar {...props} />}>
     <TabStack.Screen name="Wallet" component={MyWalletScreen} />
     <TabStack.Screen name="Receive" component={ReceiveScreen} />
     <TabStack.Screen name="Send" component={SendScreen} />
@@ -110,7 +122,10 @@ const CreateWallet = () => (
     />
     <CreateWalletStack.Screen name="Settings" component={Settings} />
     <CreateWalletStack.Screen name="ScanQRCode" component={ScanQRCode} />
-    <CreateWalletStack.Screen name="SendConfirmScreen" component={SendConfirmScreen} />
+    <CreateWalletStack.Screen
+      name="SendConfirmScreen"
+      component={SendConfirmScreen}
+    />
   </CreateWalletStack.Navigator>
 );
 
@@ -155,7 +170,10 @@ const EnterWallet = () => (
         headerShown: false,
       }}
     />
-    <EnterWalletStack.Screen name="SendConfirmScreen" component={SendConfirmScreen} />
+    <EnterWalletStack.Screen
+      name="SendConfirmScreen"
+      component={SendConfirmScreen}
+    />
   </EnterWalletStack.Navigator>
 );
 
