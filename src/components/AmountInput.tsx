@@ -46,22 +46,22 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
       rate: getFiroRate(),
       currency: getSettings().defaultCurrency,
     };
-    if (JSON.stringify(newInfo) != JSON.stringify(currencyInfo)) {
+    if (JSON.stringify(newInfo) !== JSON.stringify(currencyInfo)) {
       setCurrencyInfo(newInfo);
       updateConverted(input, isCrypto);
     }
   });
 
-  const updateConverted = (input: string, isCrypto: boolean) => {
-    const i = new BigNumber(input);
+  const updateConverted = (value: string, is_crypto: boolean) => {
+    const i = new BigNumber(value);
     let txt = '';
     let crypto = new BigNumber(0);
     if (i.isNaN()) {
       crypto = new BigNumber(0);
       txt = `${localization.amount_input.amount} (${getPlaceholder(
-        !isCrypto,
+        !is_crypto,
       )})`;
-    } else if (isCrypto) {
+    } else if (is_crypto) {
       crypto = i;
       txt = Currency.firoToFiat(i, true).toString();
     } else {
@@ -73,11 +73,11 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
   };
 
   const notifyAmountChanged = (
-    input: string,
-    isCrypto: boolean,
+    value: string,
+    is_crypto: boolean,
     isMax: boolean,
   ) => {
-    const crypto = updateConverted(input, isCrypto);
+    const crypto = updateConverted(value, is_crypto);
     props.onAmountSelect(crypto, isMax);
   };
 
@@ -87,7 +87,6 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
   };
 
   const onClickToSwap = () => {
-    ``;
     const i = new BigNumber(input);
     let txt = '';
     if (i.isNaN()) {

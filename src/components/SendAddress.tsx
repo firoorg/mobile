@@ -109,7 +109,7 @@ export const SendAddress: FC<SendAddressProps> = props => {
             }}>
             <Image source={require('../img/ic_close.png')} />
           </TouchableOpacity>
-          <View style={{display: 'flex'}}>
+          <View style={styles.selectAddressContainer}>
             <Text style={styles.selectAddress}>
               {localization.send_screen.select_address}
             </Text>
@@ -167,6 +167,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 5,
     top: 10,
+  },
+  selectAddressContainer: {
+    display: 'flex',
   },
   selectAddress: {
     color: colors.text,

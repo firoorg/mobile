@@ -147,7 +147,7 @@ export class AppStorage {
         return false;
       }
     }
-    return this.cachedPassword == password;
+    return this.cachedPassword === password;
   }
 
   /**

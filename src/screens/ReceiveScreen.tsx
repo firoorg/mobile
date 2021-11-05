@@ -125,7 +125,7 @@ const ReceiveScreen = () => {
               }}>
               <Image source={require('../img/ic_close.png')} />
             </TouchableOpacity>
-            <View style={{display: 'flex'}}>
+            <View style={styles.selectAddressContainer}>
               <Text style={styles.selectAddress}>
                 {localization.send_screen.select_address}
               </Text>
@@ -191,6 +191,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingTop: 15,
     alignSelf: 'center',
+  },
+  selectAddressContainer: {
+    display: 'flex',
   },
 });
 

@@ -63,7 +63,7 @@ const ChangePassphraseScreen = () => {
         style={styles.confirmation}
         confirmButtonText="Save"
         onConfirmAction={async () => {
-          if (newPassphrase != confirmPassphrase) {
+          if (newPassphrase !== confirmPassphrase) {
             error =
               localizations.change_passphrase_screen.error_passphrase_mismatch;
             changeFailed();
@@ -78,7 +78,7 @@ const ChangePassphraseScreen = () => {
             return;
           }
 
-          if (oldPassphrase == newPassphrase) {
+          if (oldPassphrase === newPassphrase) {
             error =
               localizations.change_passphrase_screen.error_passphrase_same;
             changeFailed();
@@ -96,11 +96,11 @@ const ChangePassphraseScreen = () => {
                   await encryptStorage(newPassphrase);
                   passwordChanged = true;
                   return true;
-                } catch (error) {
+                } catch (err) {
                   Logger.error(
                     'change_passphrase_screen',
                     'Failed changing passphrase after confirm: ' +
-                      JSON.stringify(error),
+                      JSON.stringify(err),
                   );
                   return false;
                 }
@@ -110,11 +110,11 @@ const ChangePassphraseScreen = () => {
               // try to recover old password
               try {
                 await encryptStorage(oldPassphrase);
-              } catch (error) {
+              } catch (err) {
                 Logger.error(
                   'change_passphrase_screen',
                   'Failed recover changed passphrase after fingerprint change error: ' +
-                    JSON.stringify(error),
+                    JSON.stringify(err),
                 );
                 confirmResult.success = true;
                 // try to turn off fingerprint
@@ -154,10 +154,10 @@ const ChangePassphraseScreen = () => {
               setTimeout(() => {
                 NavigationService.back();
               }, 2000);
-            } catch (error) {
+            } catch (err) {
               Logger.error(
                 'change_passphrase_screen',
-                'Failed changing passphrase: ' + JSON.stringify(error),
+                'Failed changing passphrase: ' + JSON.stringify(err),
               );
               error = localizations.change_passphrase_screen.error_failed;
               changeFailed();
@@ -170,22 +170,22 @@ const ChangePassphraseScreen = () => {
         }}
       />
       <BottomSheet
-        isVisible={bottomSheetViewMode != BottomSheetViewMode.None}
+        isVisible={bottomSheetViewMode !== BottomSheetViewMode.None}
         modalProps={{
           onRequestClose: () => {
             changeBottomSheetViewMode(BottomSheetViewMode.None);
           },
         }}>
-        {bottomSheetViewMode == BottomSheetViewMode.Error ? (
+        {bottomSheetViewMode === BottomSheetViewMode.Error ? (
           <View style={styles.bottomSheetMessageView}>
             <Text style={styles.titleForMessage}>
               {localization.change_passphrase_screen.title_error}
             </Text>
             <Text style={styles.descriptionForMessage}>{error}</Text>
-            <Icon name="error" color="red" size={60} style={{padding: 40}} />
+            <Icon name="error" color="red" size={60} style={styles.errorIcon} />
           </View>
         ) : null}
-        {bottomSheetViewMode == BottomSheetViewMode.Success ? (
+        {bottomSheetViewMode === BottomSheetViewMode.Success ? (
           <View style={styles.bottomSheetMessageView}>
             <Text style={styles.titleForMessage}>
               {localization.change_passphrase_screen.title_success}
@@ -193,7 +193,7 @@ const ChangePassphraseScreen = () => {
             <Text style={styles.descriptionForMessage}>
               {localization.change_passphrase_screen.description_success}
             </Text>
-            <View style={{display: 'flex', alignItems: 'center', padding: 35}}>
+            <View style={styles.success}>
               <Image source={require('../img/ic_success.png')} />
             </View>
           </View>
@@ -247,6 +247,14 @@ const styles = StyleSheet.create({
     opacity: 0.6,
     marginTop: 9,
     marginLeft: 20,
+  },
+  errorIcon: {
+    padding: 40,
+  },
+  success: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: 35,
   },
 });
 
