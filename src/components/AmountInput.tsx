@@ -1,4 +1,4 @@
-import React, {FC, useState, useContext, useEffect} from 'react';
+import React, {FC, useState, useContext, useEffect, RefObject} from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -19,9 +19,7 @@ const {colors} = CurrentFiroTheme;
 type SendAmountInputCardProp = {
   maxBalance: BigNumber;
   onAmountSelect: (amount: BigNumber, isMax: boolean) => void;
-};
-type ReceiveAmountInputCardProp = {
-  onAmountSelect: (amount: BigNumber) => void;
+  inputRef: RefObject<TextInput>;
 };
 
 export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
@@ -50,7 +48,7 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
       setCurrencyInfo(newInfo);
       updateConverted(input, isCrypto);
     }
-  });
+  }, []);
 
   const updateConverted = (value: string, is_crypto: boolean) => {
     const i = new BigNumber(value);
@@ -126,6 +124,7 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
               localization.amount_input.enter_amount
             } (${getPlaceholder(isCrypto)})`}
             onChangeText={onTextChnaged}
+            ref={props.inputRef}
           />
           <FiroPrimaryButton
             onClick={onClickMax}

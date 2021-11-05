@@ -29,7 +29,7 @@ import Logger from '../utils/logger';
 
 const {colors} = CurrentFiroTheme;
 type SendConfirmRouteProps = {
-  data: {data: SendData};
+  data: {data: SendData; onConfirmCallback: (success: boolean) => void};
 };
 
 type SendConfirmProps = {
@@ -210,6 +210,7 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
         if (sendResult.success) {
           changeBottomSheetViewMode(BottomSheetViewMode.SpendSuccess);
           setTimeout(() => {
+            props.route.params.onConfirmCallback(true);
             props.navigation.removeListener('beforeRemove', navBeforeRemove);
             props.navigation.goBack();
           }, 2000);

@@ -35,6 +35,9 @@ const SendScreen = () => {
     getSettings().defaultCurrency
   ];
 
+  const sendAmountRef = React.createRef<TextInput>();
+  const addressRef = React.createRef<TextInput>();
+
   const rate = getFiroRate();
   const estimateFee = (amount: number, subtractFeeFromAmount: boolean) => {
     if (timerHandler !== -1) {
@@ -125,9 +128,29 @@ const SendScreen = () => {
         totalAmount: total,
         reduceFeeFromAmount: subtractFeeFromAmount,
       },
+      onConfirmCallback: (success: boolean) => {
+        if (success) {
+          doReset();
+        }
+      },
     };
     Logger.info('senc_screen:onClickSend', params);
     NavigationService.navigate('SendConfirmScreen', params);
+  };
+
+  const doReset = () => {
+    const amountTextChange =
+      sendAmountRef.current?._internalFiberInstanceHandleDEV.memoizedProps
+        .onChangeText;
+    const addressTextChange =
+      addressRef.current?._internalFiberInstanceHandleDEV.memoizedProps
+        .onChangeText;
+    amountTextChange('');
+    addressTextChange('');
+    setLabel('');
+    setFee(0);
+    setTotal(0);
+    setSubtractFeeFromAmount(false);
   };
 
   useEffect(() => {
@@ -178,14 +201,16 @@ const SendScreen = () => {
           <SendAmountInputCard
             maxBalance={balance}
             onAmountSelect={onAmountSelect}
+            inputRef={sendAmountRef}
           />
           <SendAddress
             style={styles.address}
             onAddressSelect={onAddressSelect}
-            address={sendAddress}
+            inputRef={addressRef}
           />
           <TextInput
             style={styles.label}
+            value={label}
             placeholder={localization.send_screen.label_optional}
             onChangeText={newLabel => setLabel(newLabel)}
           />

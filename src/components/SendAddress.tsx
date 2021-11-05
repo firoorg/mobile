@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useState, RefObject} from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -26,7 +26,7 @@ const appStorage = new AppStorage();
 type SendAddressProps = {
   style: StyleProp<ViewStyle>;
   onAddressSelect: (address: string) => void;
-  address?: string;
+  inputRef: RefObject<TextInput>;
 };
 
 export const SendAddress: FC<SendAddressProps> = props => {
@@ -38,9 +38,14 @@ export const SendAddress: FC<SendAddressProps> = props => {
     setAddressbookVisible(true);
   };
 
-  useEffect(() => {
-    props.onAddressSelect(sendAddress);
-  }, [sendAddress]);
+  const notifyAddressChanged = (input: string) => {
+    props.onAddressSelect(input);
+  };
+
+  const onTextChnaged = (text: string) => {
+    setSendAddress(text);
+    notifyAddressChanged(text);
+  };
 
   const loadAddressBook = async () => {
     let addressBook = await appStorage.loadAddressBook();
@@ -67,9 +72,10 @@ export const SendAddress: FC<SendAddressProps> = props => {
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
+          value={sendAddress}
           placeholder={localization.send_address.address}
-          value={props.address}
-          onChangeText={text => setSendAddress(text)}
+          onChangeText={onTextChnaged}
+          ref={props.inputRef}
         />
       </View>
       <TouchableOpacity onPress={openAddressBook}>
