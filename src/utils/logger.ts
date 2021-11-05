@@ -67,7 +67,7 @@ export default class Logger {
 
   static clear() {
     const fileUrl = RNFS.DocumentDirectoryPath + '/log.txt';
-    RNFS.writeFile(fileUrl, '', 'utf8');
+    RNFS.unlink(fileUrl);
   }
 
   static shareAndroid() {

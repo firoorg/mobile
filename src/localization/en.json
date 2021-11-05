@@ -1,8 +1,7 @@
 {
   "global": {
     "firo": "Firo",
-    "balance": "Balance",
-    "copy_to_clipboard": "Copy to clipboard"
+    "balance": "Balance"
   },
 
   "component_button": {
@@ -122,7 +121,9 @@
     "received_from": "Received from",
     "address": "Address",
     "label": "Label",
-    "fee": "Fee"
+    "fee": "Fee",
+    "address_copied": "Address copied",
+    "id_copied": "ID copied"
   },
 
   "send_screen": {

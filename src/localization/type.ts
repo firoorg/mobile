@@ -4,7 +4,6 @@ export interface IString extends LocalizedStringsMethods {
   global: {
     firo: string;
     balance: string;
-    copy_to_clipboard: string;
   };
 
   component_button: {
@@ -126,6 +125,8 @@ export interface IString extends LocalizedStringsMethods {
     address: string;
     label: string;
     fee: string;
+    address_copied: string;
+    id_copied: string;
   };
 
   send_screen: {

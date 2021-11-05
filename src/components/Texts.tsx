@@ -10,7 +10,6 @@ import {
   View,
 } from 'react-native';
 import {CurrentFiroTheme} from '../Themes';
-import localization from '../localization';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 const colors = CurrentFiroTheme.colors;
@@ -23,6 +22,10 @@ type FiroTextProp = {
 type FiroInfoTextProp = FiroTextProp & {
   title: string;
   onClick?: () => void;
+};
+
+type FiroInfoTextWithTextProp = FiroInfoTextProp & {
+  toastMessage: string;
 };
 
 export const FiroTitleBig: FC<FiroTextProp> = props => {
@@ -71,14 +74,14 @@ export const FiroInfoText: FC<FiroInfoTextProp> = props => {
   );
 };
 
-export const FiroInfoTextWithCopy: FC<FiroInfoTextProp> = props => {
+export const FiroInfoTextWithCopy: FC<FiroInfoTextWithTextProp> = props => {
   const onClickText = () => {
     props.onClick && props.onClick();
   };
   const copyText = (text: string) => {
     Clipboard.setString(text);
     ToastAndroid.showWithGravityAndOffset(
-      localization.global.copy_to_clipboard,
+      props.toastMessage,
       ToastAndroid.SHORT,
       ToastAndroid.BOTTOM,
       0,

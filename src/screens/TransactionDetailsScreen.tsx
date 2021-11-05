@@ -1,5 +1,5 @@
 import React, {FC, useContext} from 'react';
-import {StyleSheet, View, Text, Linking, ToastAndroid} from 'react-native';
+import {StyleSheet, View, Text, Linking} from 'react-native';
 import {FiroToolbar} from '../components/Toolbar';
 import {FiroInfoText, FiroInfoTextWithCopy} from '../components/Texts';
 import {RouteProp} from '@react-navigation/core';
@@ -10,7 +10,6 @@ import {TransactionRow} from '../components/TransactionRow';
 import {Currency} from '../utils/currency';
 import BigNumber from 'bignumber.js';
 import Logger from '../utils/logger';
-import Clipboard from '@react-native-clipboard/clipboard';
 
 type WalletStackRouteProps = {
   TransactionDetails: {item: TransactionItem};
@@ -19,6 +18,8 @@ type WalletStackRouteProps = {
 type TransactionDetailsProps = {
   route: RouteProp<WalletStackRouteProps, 'TransactionDetails'>;
 };
+
+const FIRO_EXPLORER_URL = 'https://testexplorer.firo.org/';
 
 const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
   const {getFiroRate, getSettings} = useContext(FiroContext);
@@ -68,16 +69,16 @@ const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
           style={styles.infoText}
           title={localization.transaction_details.transaction_id}
           text={item.txId}
-          onClick={() =>
-            openUrl(`https://testexplorer.zcoin.io/tx/${item.txId}`)
-          }
+          toastMessage={localization.transaction_details.id_copied}
+          onClick={() => openUrl(`${FIRO_EXPLORER_URL}/tx/${item.txId}`)}
         />
         <FiroInfoTextWithCopy
           style={styles.infoText}
           title={localization.transaction_details.address}
           text={item.address}
+          toastMessage={localization.transaction_details.address_copied}
           onClick={() =>
-            openUrl(`https://testexplorer.zcoin.io/address/${item.address}`)
+            openUrl(`${FIRO_EXPLORER_URL}/address/${item.address}`)
           }
         />
         <FiroInfoText

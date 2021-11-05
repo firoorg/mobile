@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import {CurrentFiroTheme} from '../Themes';
 import {FiroToolbar} from '../components/Toolbar';
-import localization from '../localization';
 import Logger from '../utils/logger';
 
 const {colors} = CurrentFiroTheme;
