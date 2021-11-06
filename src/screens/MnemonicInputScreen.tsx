@@ -44,33 +44,35 @@ const MnemonicInputScreen = () => {
     }
   };
   return (
-    <View style={styles.root}>
+    <View>
       <FiroToolbar title="Enter mnemonic" />
-      <Image
-        style={styles.logo}
-        source={require('../img/firo-logo-black.png')}
-      />
-      <FiroTitleBig
-        style={styles.title}
-        text={localization.mnemonic_input_screen.title}
-      />
-      <FiroTextBig
-        style={styles.textCopy}
-        text={localization.mnemonic_input_screen.body_part_1}
-      />
-      <FiroTextSmall
-        style={styles.textCenter}
-        text={localization.mnemonic_input_screen.body_part_2}
-      />
-      <FiroInputMnemonic
-        style={styles.mnemonicInput}
-        onTextChanged={txt => setMnemonic(txt)}
-      />
-      <FiroSecondaryButton
-        buttonStyle={styles.restoreWallet}
-        text={btnRestoreText}
-        onClick={onClickContinue}
-      />
+      <View style={styles.root}>
+        <Image
+          style={styles.logo}
+          source={require('../img/firo-logo-black.png')}
+        />
+        <FiroTitleBig
+          style={styles.title}
+          text={localization.mnemonic_input_screen.title}
+        />
+        <FiroTextBig
+          style={styles.textCopy}
+          text={localization.mnemonic_input_screen.body_part_1}
+        />
+        <FiroTextSmall
+          style={styles.textCenter}
+          text={localization.mnemonic_input_screen.body_part_2}
+        />
+        <FiroInputMnemonic
+          style={styles.mnemonicInput}
+          onTextChanged={txt => setMnemonic(txt)}
+        />
+        <FiroSecondaryButton
+          buttonStyle={styles.restoreWallet}
+          text={btnRestoreText}
+          onClick={onClickContinue}
+        />
+      </View>
     </View>
   );
 };
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
     height: '100%',
     display: 'flex',
     alignItems: 'center',
-    padding: 30,
+    paddingHorizontal: 20,
   },
   logo: {
     width: 120,

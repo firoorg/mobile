@@ -56,9 +56,9 @@ const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
   };
 
   return (
-    <View style={styles.root}>
+    <View>
       <FiroToolbar title={localization.transaction_details.title} />
-      <View style={styles.txDetails}>
+      <View style={styles.root}>
         <TransactionRow
           style={[styles.transactionCard, {backgroundColor: backgroundColor}]}
           item={item}
@@ -95,12 +95,7 @@ const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
 const styles = StyleSheet.create({
   root: {
     display: 'flex',
-    paddingStart: 30,
-    paddingEnd: 30,
-  },
-  txDetails: {
-    display: 'flex',
-    paddingTop: 34,
+    paddingHorizontal: 20,
   },
   transactionCard: {
     width: '100%',

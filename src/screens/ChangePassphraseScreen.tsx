@@ -41,8 +41,8 @@ const ChangePassphraseScreen = () => {
 
   return (
     <View>
+      <FiroToolbar title={localization.change_passphrase_screen.title} />
       <View style={styles.root}>
-        <FiroToolbar title={localization.change_passphrase_screen.title} />
         <FiroInputPassword
           style={styles.password}
           placeholder={localizations.change_passphrase_screen.label_current}
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     height: '100%',
     display: 'flex',
     alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: 20,
   },
   title: {
     marginTop: 'auto',

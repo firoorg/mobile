@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   listItem: {
     paddingTop: 10,
     paddingBottom: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 5,
     backgroundColor: colors.background,
   },
   listItemCard: {

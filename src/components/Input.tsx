@@ -35,6 +35,7 @@ export const FiroInputPassword: FC<FiroInputProps> = props => {
         }
         secureTextEntry={secureText}
         onChangeText={props.onTextChanged}
+        blurOnSubmit={false}
       />
       <TouchableWithoutFeedback onPress={() => setSecureText(!secureText)}>
         <Image style={styles.eye} source={eyeImage} />

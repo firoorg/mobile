@@ -170,10 +170,10 @@ const SendScreen = () => {
   );
 
   return (
-    <ScrollView>
-      <View style={styles.root}>
+    <ScrollView keyboardShouldPersistTaps="always">
+      <View>
         <FiroToolbarWithoutBack title={localization.send_screen.title} />
-        <View style={styles.content}>
+        <View style={styles.root}>
           <View style={styles.balanceContainer}>
             <View style={styles.titleContainer}>
               <Image
@@ -255,17 +255,10 @@ const SendScreen = () => {
 const styles = StyleSheet.create({
   root: {
     backgroundColor: colors.background,
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    paddingTop: 30,
-    paddingBottom: 20,
-  },
-  content: {
     width: '100%',
     display: 'flex',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    padding: 20,
   },
   balanceContainer: {
     width: '100%',
@@ -273,7 +266,6 @@ const styles = StyleSheet.create({
   titleContainer: {
     display: 'flex',
     flexDirection: 'row',
-    marginTop: 20,
     alignItems: 'center',
   },
   icon: {

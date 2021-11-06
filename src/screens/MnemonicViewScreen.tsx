@@ -28,45 +28,51 @@ const MnemonicViewScreen = () => {
   };
 
   return (
-    <View style={styles.root}>
+    <View style={styles.page}>
       <FiroToolbar title={''} />
-      <Image
-        style={styles.logo}
-        source={require('../img/firo-logo-black.png')}
-      />
-      <FiroTitleBig
-        style={styles.title}
-        text={localization.mnemonic_view_screen.title}
-      />
-      <FiroTextBig
-        style={styles.textCopy}
-        text={localization.mnemonic_view_screen.body_part_1}
-      />
-      <FiroTextSmall
-        style={styles.textCenter}
-        text={localization.mnemonic_view_screen.body_part_2}
-      />
-      <MnemonicText
-        style={styles.mnemonicCard}
-        words={words}
-        copyMnemonic={() => Clipboard.setString(mnemonic)}
-      />
-      <FiroSecondaryButton
-        buttonStyle={styles.restoreWallet}
-        text={localization.mnemonic_view_screen.continue}
-        onClick={onClickContinue}
-      />
+      <View style={styles.root}>
+        <Image
+          style={styles.logo}
+          source={require('../img/firo-logo-black.png')}
+        />
+        <FiroTitleBig
+          style={styles.title}
+          text={localization.mnemonic_view_screen.title}
+        />
+        <FiroTextBig
+          style={styles.textCopy}
+          text={localization.mnemonic_view_screen.body_part_1}
+        />
+        <FiroTextSmall
+          style={styles.textCenter}
+          text={localization.mnemonic_view_screen.body_part_2}
+        />
+        <MnemonicText
+          style={styles.mnemonicCard}
+          words={words}
+          copyMnemonic={() => Clipboard.setString(mnemonic)}
+        />
+        <FiroSecondaryButton
+          buttonStyle={styles.restoreWallet}
+          text={localization.mnemonic_view_screen.continue}
+          onClick={onClickContinue}
+        />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  page: {
+    flex: 1,
+  },
   root: {
     backgroundColor: colors.background,
-    height: '100%',
+    flexGrow: 1,
     display: 'flex',
     alignItems: 'center',
-    padding: 30,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
   },
   logo: {
     width: 120,

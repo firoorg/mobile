@@ -55,7 +55,7 @@ const EnterPassphraseScreen = () => {
   }, []);
 
   return (
-    <View style={styles.root}>
+    <View style={styles.page}>
       <FiroToolbar
         title={
           biometricEnabled
@@ -63,33 +63,35 @@ const EnterPassphraseScreen = () => {
             : localization.enter_passphrase_screen.title_toolbar
         }
       />
-      <Image
-        style={styles.logo}
-        source={require('../img/firo-logo-black.png')}
-      />
-      <FiroTitleBig
-        style={styles.title}
-        text={
-          biometricEnabled
-            ? localization.enter_passphrase_screen.title_fingerprint
-            : localization.enter_passphrase_screen.title
-        }
-      />
-      <FiroTextBig
-        style={styles.textCopy}
-        text={localization.enter_passphrase_screen.body}
-      />
-      {!biometricEnabled ? (
-        <FiroInputPassword
-          style={styles.password}
-          onTextChanged={txt => setPassword(txt)}
+      <View style={styles.root}>
+        <Image
+          style={styles.logo}
+          source={require('../img/firo-logo-black.png')}
         />
-      ) : null}
-      <FiroSecondaryButton
-        buttonStyle={styles.restoreWallet}
-        text={btnText}
-        onClick={() => onClickDone(password)}
-      />
+        <FiroTitleBig
+          style={styles.title}
+          text={
+            biometricEnabled
+              ? localization.enter_passphrase_screen.title_fingerprint
+              : localization.enter_passphrase_screen.title
+          }
+        />
+        <FiroTextBig
+          style={styles.textCopy}
+          text={localization.enter_passphrase_screen.body}
+        />
+        {!biometricEnabled ? (
+          <FiroInputPassword
+            style={styles.password}
+            onTextChanged={txt => setPassword(txt)}
+          />
+        ) : null}
+        <FiroSecondaryButton
+          buttonStyle={styles.restoreWallet}
+          text={btnText}
+          onClick={() => onClickDone(password)}
+        />
+      </View>
     </View>
   );
 };
@@ -97,12 +99,17 @@ const EnterPassphraseScreen = () => {
 export default EnterPassphraseScreen;
 
 const styles = StyleSheet.create({
+  page: {
+    flex: 1,
+    justifyContent: 'center',
+  },
   root: {
     backgroundColor: colors.background,
-    height: '100%',
     display: 'flex',
+    flexGrow: 1,
     alignItems: 'center',
     padding: 30,
+    paddingTop: 50,
   },
   logo: {
     width: 120,

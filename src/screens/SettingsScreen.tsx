@@ -9,6 +9,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Touchable,
 } from 'react-native';
 import {BottomSheet, Icon, ListItem} from 'react-native-elements';
 import {CurrentFiroTheme} from '../Themes';
@@ -24,6 +25,7 @@ import {FiroInputPassword} from '../components/Input';
 import * as Progress from 'react-native-progress';
 import * as NavigationService from '../NavigationService';
 import deviceInfoModule from 'react-native-device-info';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 const {colors} = CurrentFiroTheme;
 const supportedCurrencies: string[] = ['usd', 'eur', 'gbp', 'aud', 'btc'];
@@ -90,9 +92,7 @@ const SettingsScreen = () => {
 
   return (
     <ScrollView>
-      <View style={styles.toolbar}>
-        <FiroToolbar title={localization.settings.title} />
-      </View>
+      <FiroToolbar title={localization.settings.title} />
       <TouchableHighlight
         disabled={saveInProgress}
         underlayColor={colors.highlight}
@@ -630,11 +630,6 @@ const SettingsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  toolbar: {
-    paddingTop: 30,
-    paddingLeft: 20,
-    paddingBottom: 15,
-  },
   section: {
     marginTop: 15,
     marginBottom: 15,

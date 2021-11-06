@@ -21,13 +21,15 @@ const MyMnemonicScreen = () => {
   var words = mnemonic.split(' ');
 
   return (
-    <View style={styles.root}>
+    <View>
       <FiroToolbar title={localization.my_mnemonic_screen.title} />
-      <MnemonicText
-        style={styles.mnemonicCard}
-        words={words}
-        copyMnemonic={() => Clipboard.setString(mnemonic)}
-      />
+      <View style={styles.root}>
+        <MnemonicText
+          style={styles.mnemonicCard}
+          words={words}
+          copyMnemonic={() => Clipboard.setString(mnemonic)}
+        />
+      </View>
     </View>
   );
 };
@@ -38,7 +40,7 @@ const styles = StyleSheet.create({
     height: '100%',
     display: 'flex',
     alignItems: 'center',
-    padding: 30,
+    paddingHorizontal: 20,
   },
   logo: {
     width: 120,

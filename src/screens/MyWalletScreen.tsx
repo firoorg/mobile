@@ -225,40 +225,43 @@ const MyWalletScreen = () => {
   }
 
   return (
-    <View style={styles.root}>
+    <View style={styles.page}>
       <FiroToolbarWithoutBack title={localization.my_wallet_screen.title} />
-      <View style={styles.balanceCardContainer}>
-        <BalanceCard
-          style={styles.balanceCard}
-          balance={balance}
-          unconfirmedBalance={unconfirmedBalance}
-        />
+      <View style={styles.root}>
+        <View style={styles.balanceCardContainer}>
+          <BalanceCard
+            style={styles.balanceCard}
+            balance={balance}
+            unconfirmedBalance={unconfirmedBalance}
+          />
+        </View>
+        {sync && <Text style={styles.syncText}>Syncing...</Text>}
+        {transactionList}
       </View>
-      {sync && <Text style={styles.syncText}>Syncing...</Text>}
-      {transactionList}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  page: {
+    flex: 1,
+    justifyContent: 'center',
+  },
   root: {
     backgroundColor: colors.background,
-    height: '100%',
     display: 'flex',
-    alignItems: 'center',
-    paddingTop: 30,
+    flex: 1,
+    flexGrow: 1,
+    paddingHorizontal: 20,
   },
   balanceCardContainer: {
     width: '100%',
-    paddingHorizontal: 20,
   },
   balanceCard: {
     width: '100%',
   },
   transactionContainer: {
     flexGrow: 1,
-    display: 'flex',
-    justifyContent: 'center',
   },
   syncText: {
     textAlign: 'right',

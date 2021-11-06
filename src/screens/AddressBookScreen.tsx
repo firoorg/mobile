@@ -101,37 +101,42 @@ const AddressBookScreen = () => {
     onCancelPress();
   };
   return (
-    <View style={styles.root}>
+    <View style={styles.page}>
       <FiroToolbarWithoutBack title={localization.address_book_screen.title} />
-      <View style={styles.menu}>
-        <SearchBar
-          autoCapitalize="none"
-          containerStyle={styles.searchContainer}
-          inputStyle={styles.searchInput}
-          inputContainerStyle={styles.searchInputContainer}
-          searchIcon={{size: 25, color: colors.text}}
-          value={searchText}
-          onChangeText={newText => setSearchText(newText)}
+      <View style={styles.root}>
+        <View style={styles.menu}>
+          <SearchBar
+            autoCapitalize="none"
+            containerStyle={styles.searchContainer}
+            inputStyle={styles.searchInput}
+            inputContainerStyle={styles.searchInputContainer}
+            searchIcon={{size: 25, color: colors.text}}
+            value={searchText}
+            onChangeText={newText => setSearchText(newText)}
+          />
+          <TouchableOpacity style={styles.addNew} onPress={onAddNewClick}>
+            <Image
+              style={styles.addIcon}
+              source={require('../img/ic_add.png')}
+            />
+            <Divider style={styles.divider} />
+            <Text>{localization.address_book_screen.add_new}</Text>
+          </TouchableOpacity>
+        </View>
+        <AddressBookList
+          addressBookList={addressBookList.filter(item => {
+            const textToSearch = searchText.trim().toLowerCase();
+            if (textToSearch) {
+              return (
+                item.name &&
+                item.name.toLowerCase().indexOf(textToSearch.toLowerCase()) >= 0
+              );
+            }
+            return true;
+          })}
+          onMenuClick={onMenuIconClick}
         />
-        <TouchableOpacity style={styles.addNew} onPress={onAddNewClick}>
-          <Image style={styles.addIcon} source={require('../img/ic_add.png')} />
-          <Divider style={styles.divider} />
-          <Text>{localization.address_book_screen.add_new}</Text>
-        </TouchableOpacity>
       </View>
-      <AddressBookList
-        addressBookList={addressBookList.filter(item => {
-          const textToSearch = searchText.trim().toLowerCase();
-          if (textToSearch) {
-            return (
-              item.name &&
-              item.name.toLowerCase().indexOf(textToSearch.toLowerCase()) >= 0
-            );
-          }
-          return true;
-        })}
-        onMenuClick={onMenuIconClick}
-      />
       <BottomSheet
         modalProps={{
           onRequestClose: () => {
@@ -187,24 +192,27 @@ const AddressBookScreen = () => {
 export default AddressBookScreen;
 
 const styles = StyleSheet.create({
+  page: {
+    flex: 1,
+  },
   root: {
     backgroundColor: colors.background,
     height: '100%',
     display: 'flex',
     alignItems: 'center',
-    paddingTop: 30,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    flex: 1,
   },
   menu: {
     display: 'flex',
     alignItems: 'center',
-    padding: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
   },
   addNew: {
     flexDirection: 'row',
-    width: 90,
   },
   searchContainer: {
     flexGrow: 1,

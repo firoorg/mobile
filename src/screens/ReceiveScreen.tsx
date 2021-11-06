@@ -80,10 +80,10 @@ const ReceiveScreen = () => {
   );
 
   return (
-    <ScrollView>
-      <View style={styles.root}>
+    <ScrollView keyboardShouldPersistTaps="always">
+      <View>
         <FiroToolbarWithoutBack title={localization.receive_screen.title} />
-        <View style={styles.content}>
+        <View style={styles.root}>
           <FiroTextBig
             style={styles.qrLabel}
             text={localization.receive_screen.scan_qr}
@@ -144,20 +144,12 @@ const ReceiveScreen = () => {
 const styles = StyleSheet.create({
   root: {
     backgroundColor: colors.background,
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    paddingTop: 30,
-    paddingBottom: 20,
-  },
-  content: {
     width: '100%',
     display: 'flex',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    padding: 20,
   },
   qrLabel: {
-    marginTop: 20,
     marginBottom: 10,
     color: 'rgba(15, 14, 14, 0.7)',
   },

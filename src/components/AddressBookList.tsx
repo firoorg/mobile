@@ -88,6 +88,7 @@ const {colors} = CurrentFiroTheme;
 const styles = StyleSheet.create({
   listItem: {
     marginVertical: -5,
+    paddingHorizontal: 0,
     backgroundColor: colors.background,
   },
   listItemCard: {

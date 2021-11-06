@@ -36,9 +36,9 @@ const AddressDetailsScreen: FC<AddressDetailsProps> = props => {
   }, []);
 
   return (
-    <View style={styles.root}>
+    <View>
       <FiroToolbar title={localization.address_details_screen.title} />
-      <View style={styles.addressDetails}>
+      <View style={styles.root}>
         <View style={[styles.icon, {backgroundColor: item.iconColor}]}>
           <Text style={styles.iconLetter}>{item.name.substring(0, 1)}</Text>
         </View>
@@ -52,11 +52,11 @@ const AddressDetailsScreen: FC<AddressDetailsProps> = props => {
           title={localization.address_details_screen.name}
           text={item.name}
         />
+        {txs.length > 0 && (
+          <Text style={styles.transactionHistory}>Transaction History</Text>
+        )}
+        {txs.length > 0 && <TransactionList transactionList={txs} />}
       </View>
-      {txs.length > 0 && (
-        <Text style={styles.transactionHistory}>Transaction History</Text>
-      )}
-      {txs.length > 0 && <TransactionList transactionList={txs} />}
     </View>
   );
 };
@@ -67,13 +67,7 @@ const styles = StyleSheet.create({
   root: {
     height: '100%',
     display: 'flex',
-    padding: 30,
-  },
-  toolbar: {
     paddingHorizontal: 20,
-  },
-  addressDetails: {
-    paddingTop: 34,
   },
   icon: {
     width: 50,

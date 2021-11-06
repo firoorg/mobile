@@ -59,14 +59,14 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
 
   return (
     <View>
+      <FiroToolbar
+        title={
+          hasInputAddress
+            ? localization.add_edit_address_screen.edit_address
+            : localization.add_edit_address_screen.add_new_address
+        }
+      />
       <View style={styles.root}>
-        <FiroToolbar
-          title={
-            hasInputAddress
-              ? localization.add_edit_address_screen.edit_address
-              : localization.add_edit_address_screen.add_new_address
-          }
-        />
         <View style={[styles.card]}>
           <View style={styles.inputContainer}>
             <TextInput
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   root: {
     height: '100%',
     display: 'flex',
-    padding: 30,
+    paddingHorizontal: 20,
   },
   card: {
     display: 'flex',
