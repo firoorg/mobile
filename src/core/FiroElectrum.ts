@@ -516,7 +516,7 @@ export default class FiroElectrum implements AbstractElectrum {
   async multiGetTransactionByTxid(
     txids: Array<string>,
     batchsize: number = 45,
-    verbose: boolean,
+    verbose?: boolean,
   ): Promise<{[txId: string]: FullTransactionModel}> {
     this.checkConnection('multiGetTransactionByTxid');
 
@@ -645,17 +645,35 @@ export default class FiroElectrum implements AbstractElectrum {
     return ret;
   }
 
-  async getAnonymitySet(setId: number): Promise<AnonymitySetModel> {
+  async getAnonymitySet(
+    setId: number,
+    startBlockHash: string,
+  ): Promise<AnonymitySetModel> {
     this.checkConnection('getAnonymitySet');
 
     const param = [];
     param.push(setId + '');
+    param.push(startBlockHash);
     const result = await this.mainClient.request(
       'sigma.getanonymityset',
       param,
     );
 
     Logger.info('electrum_wallet:getAnonymitySet', result);
+    return result;
+  }
+
+  async getFeeRate(): Promise<number> {
+    this.checkConnection('getFeeRate');
+
+    const params = [];
+    params.push(10);
+    const result = await this.mainClient.request(
+      'blockchain.estimatefee',
+      params,
+    );
+
+    Logger.info('electrum_wallet:feerate', result);
     return result;
   }
 

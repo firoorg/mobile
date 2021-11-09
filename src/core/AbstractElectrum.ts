@@ -109,5 +109,10 @@ export interface AbstractElectrum {
 
   getMintMedata(serilizedCoins: string[]): Promise<MintMetadataModel[]>;
 
-  getAnonymitySet(setId: number): Promise<AnonymitySetModel>;
+  getAnonymitySet(
+    setId: number,
+    startBlockHash: string,
+  ): Promise<AnonymitySetModel>;
+
+  getFeeRate(): Promise<number>;
 }

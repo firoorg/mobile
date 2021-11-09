@@ -68,10 +68,10 @@ const SendScreen = () => {
           const sub = subtractFeeFromAmount ? 0 : 1;
           setTotal(amount + sub * changedFee);
         }
-        Logger.error('send_sreen:estimateFee', {changedFee, sendAddress});
+        Logger.info('send_screen:estimateFee', {changedFee, sendAddress});
         checkIsValid(changedFee, sendAddress);
       } catch (e) {
-        Logger.error('send_sreen:estimateFee', e);
+        Logger.error('send_screen:estimateFee', e);
       }
     }, 300);
   };
@@ -90,12 +90,12 @@ const SendScreen = () => {
       let walletBalance = getWallet()?.getBalance();
       setBalance(walletBalance ?? new BigNumber(0));
     } catch (e) {
-      Logger.error('senc_screen:updateBalance', e);
+      Logger.error('send_screen:updateBalance', e);
     }
   };
 
   const onAmountSelect = (amount: BigNumber, isMax: boolean) => {
-    Logger.info('senc_screen:onAmountSelect', {amount, isMax});
+    Logger.info('send_screen:onAmountSelect', {amount, isMax});
 
     setIsValid(false);
     const substract = subtractFeeFromAmount || isMax;
@@ -134,7 +134,7 @@ const SendScreen = () => {
         }
       },
     };
-    Logger.info('senc_screen:onClickSend', params);
+    Logger.info('send_screen:onClickSend', params);
     NavigationService.navigate('SendConfirmScreen', params);
   };
 

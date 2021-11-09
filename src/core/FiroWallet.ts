@@ -159,7 +159,7 @@ export class FiroWallet implements AbstractWallet {
       Logger.error('firo_wallet:createLelantusMintTx', 'utxos is empty');
       throw Error('there are no any unspent transaction is empty');
     }
-    const feeRate = 0.0000003;
+    const feeRate = await firoElectrum.getFeeRate();
     const mintInputs: Array<MintInput> = [];
     let total = new BigNumber(0);
 
@@ -379,7 +379,7 @@ export class FiroWallet implements AbstractWallet {
 
       if (!setIds.includes(anonymitySetId)) {
         setIds.push(anonymitySetId);
-        const result = await firoElectrum.getAnonymitySet(anonymitySetId);
+        const result = await firoElectrum.getAnonymitySet(anonymitySetId, '');
         anonimitySets.push(result.serializedCoins);
         anonymitySetHashes.push(result.setHash);
         groupBlockHashes.push(result.blockHash);
@@ -459,7 +459,6 @@ export class FiroWallet implements AbstractWallet {
       index: this.next_free_mint_index,
       value: value,
       publicCoin: publicCoin,
-      isConfirmed: false,
       txId: txId,
       height: HEIGHT_NOT_SET,
       anonymitySetId: 0,
@@ -522,7 +521,6 @@ export class FiroWallet implements AbstractWallet {
           metadata.anonimitySetId,
           latestBlockHeight,
         );
-        this._updateMintTxStatus(unconfirmedCoins[index]);
       });
       Logger.info('firo_wallet:updateMintMetadata', 'updated');
       return true;
@@ -541,34 +539,22 @@ export class FiroWallet implements AbstractWallet {
       height !== HEIGHT_NOT_SET &&
       latestBlockHeight - height >= MINT_CONFIRM_BLOCK_COUNT - 1
     ) {
-      coin.isConfirmed = true;
       coin.height = height;
       coin.anonymitySetId = anonimitySetId;
-    } else {
-      coin.isConfirmed = false;
-    }
-  }
-
-  _updateMintTxStatus(coin: LelantusCoin) {
-    const tx = this._txs_by_external_index.find(
-      item => item.txId === coin.txId,
-    );
-    if (tx) {
-      tx.confirmed = coin.isConfirmed;
     }
   }
 
   _getUnconfirmedCoins(): LelantusCoin[] {
     const coins = Object.values(this._lelantus_coins);
     return coins.filter(coin => {
-      return !coin.isUsed && !coin.isConfirmed;
+      return !coin.isUsed && coin.height === HEIGHT_NOT_SET;
     });
   }
 
   _getUnspentCoins(): LelantusCoin[] {
     const coins = Object.values(this._lelantus_coins);
     return coins.filter(coin => {
-      return !coin.isUsed && coin.isConfirmed;
+      return !coin.isUsed && coin.height !== HEIGHT_NOT_SET;
     });
   }
 
@@ -821,23 +807,25 @@ export class FiroWallet implements AbstractWallet {
   }
 
   async fetchTransactions() {
-    const sizeBefore = this._txs_by_external_index.length;
+    let needToSort = false;
     const address2Check = await this.getTransactionsAddresses();
     try {
       const fullTxs = await firoElectrum.multiGetTransactionsFullByAddress(
         address2Check,
       );
       fullTxs.forEach(tx => {
-        const external_index = this._txs_by_external_index.findIndex(
+        const foundTx = this._txs_by_external_index.find(
           item => item.txId === tx.txid,
         );
 
-        if (external_index === -1) {
+        if (foundTx === undefined) {
           let transactionItem = new TransactionItem();
           transactionItem.address = tx.address;
           transactionItem.txId = tx.txid;
-          transactionItem.confirmed = true;
-          transactionItem.date = tx.time * 1000;
+          if (tx.confirmations > 0) {
+            transactionItem.confirmed = tx.confirmations > 0;
+            transactionItem.date = tx.time * 1000;
+          }
 
           const ia = tx.inputs.reduce(
             (acc, elm) => acc.plus(elm.value),
@@ -872,14 +860,27 @@ export class FiroWallet implements AbstractWallet {
           }
 
           if (transactionItem.received || transactionItem.isMint) {
+            needToSort = true;
             this._txs_by_external_index.push(transactionItem);
+          }
+        } else {
+          if (foundTx.confirmed === false && tx.confirmations > 0) {
+            if (foundTx.isMint) {
+              foundTx.confirmed = tx.confirmations >= MINT_CONFIRM_BLOCK_COUNT;
+            } else {
+              foundTx.confirmed = true;
+            }
+            if (foundTx.confirmed) {
+              needToSort = true;
+              foundTx.date = tx.time * 1000;
+            }
           }
         }
       });
     } catch (e) {
       Logger.error('firo_wallet:fetchTransaction', e);
     }
-    if (sizeBefore !== this._txs_by_external_index.length) {
+    if (needToSort) {
       this._txs_by_external_index.sort(
         (tx1: TransactionItem, tx2: TransactionItem) => {
           return tx2.date - tx1.date;
