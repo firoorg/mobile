@@ -42,7 +42,7 @@ export const SendAddress: FC<SendAddressProps> = props => {
     props.onAddressSelect(input);
   };
 
-  const onTextChnaged = (text: string) => {
+  const onTextChanged = (text: string) => {
     setSendAddress(text);
     notifyAddressChanged(text);
   };
@@ -54,6 +54,7 @@ export const SendAddress: FC<SendAddressProps> = props => {
 
   const onAddressSelect = async (address: string) => {
     setSendAddress(address);
+    notifyAddressChanged(address);
     setAddressbookVisible(false);
   };
 
@@ -74,7 +75,7 @@ export const SendAddress: FC<SendAddressProps> = props => {
           style={styles.input}
           value={sendAddress}
           placeholder={localization.send_address.address}
-          onChangeText={onTextChnaged}
+          onChangeText={onTextChanged}
           ref={props.inputRef}
         />
       </View>
@@ -93,6 +94,7 @@ export const SendAddress: FC<SendAddressProps> = props => {
               onBarScanned: (info: {data: string}) => {
                 if (info.data) {
                   setSendAddress(info.data);
+                  notifyAddressChanged(info.data);
                 }
               },
             },
