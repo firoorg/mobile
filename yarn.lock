@@ -1987,6 +1987,13 @@ bip174@^2.0.1:
   resolved "https://registry.yarnpkg.com/bip174/-/bip174-2.0.1.tgz#39cf8ca99e50ce538fb762589832f4481d07c254"
   integrity sha512-i3X26uKJOkDTAalYAp0Er+qGMDhrbbh2o93/xiPyAN2s25KrClSpe3VXo/7mNJoqA5qfko8rLS2l3RWZgYmjKQ==
 
+bip21@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/bip21/-/bip21-2.0.3.tgz#6e95b542718af497b442d92ae8af433d6ea80368"
+  integrity sha512-L4ODmASLjsHYAU+TG7xffkYNMvHzAe4mkVX7mcvOUyKAr/MDBPrsRgqUhE8EmKdeEKHk5SYpX1Aexzvm/6WdbQ==
+  dependencies:
+    qs "^6.3.0"
+
 bip32@^2.0.4, bip32@^2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/bip32/-/bip32-2.0.6.tgz#6a81d9f98c4cd57d05150c60d8f9e75121635134"
@@ -6526,7 +6533,7 @@ qrcode@^1.4.4:
     pngjs "^3.3.0"
     yargs "^13.2.4"
 
-qs@^6.1.0:
+qs@^6.1.0, qs@^6.3.0:
   version "6.10.1"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.10.1.tgz#4931482fa8d647a5aab799c5271d2133b981fb6a"
   integrity sha512-M528Hph6wsSVOBiYUnGf+K/7w0hNshs/duGsNXPUCLH5XAqjEtiPGwNONLV0tBH8NoGb0mvD5JubnUTrujKDTg==

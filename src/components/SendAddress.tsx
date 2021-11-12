@@ -18,15 +18,16 @@ import {AddressBookList} from './AddressBookList';
 import {AddressBookItem} from '../data/AddressBookItem';
 import {CurrentFiroTheme} from '../Themes';
 import {useFocusEffect} from '@react-navigation/native';
-
+const bip21 = require('bip21');
+  
 const {colors} = CurrentFiroTheme;
 
 const appStorage = new AppStorage();
 
 type SendAddressProps = {
   style: StyleProp<ViewStyle>;
-  onAddressSelect: (address: string) => void;
-  inputRef: RefObject<TextInput>;
+  onAddressSelect: (address: string, options?: any) => void;
+  subscribeToAddressChange?: (addressChanged: (address: string) => void) => void;
 };
 
 export const SendAddress: FC<SendAddressProps> = props => {
@@ -38,8 +39,8 @@ export const SendAddress: FC<SendAddressProps> = props => {
     setAddressbookVisible(true);
   };
 
-  const notifyAddressChanged = (input: string) => {
-    props.onAddressSelect(input);
+  const notifyAddressChanged = (input: string, options?: any) => {
+    props.onAddressSelect(input, options);
   };
 
   const onTextChanged = (text: string) => {
@@ -68,6 +69,13 @@ export const SendAddress: FC<SendAddressProps> = props => {
     }, []),
   );
 
+  if (props.subscribeToAddressChange) {
+    props.subscribeToAddressChange(newAddress => {
+      setSendAddress(newAddress);
+      notifyAddressChanged(newAddress);
+    });
+  }
+
   return (
     <View style={[styles.card, props.style]}>
       <View style={styles.inputContainer}>
@@ -76,7 +84,6 @@ export const SendAddress: FC<SendAddressProps> = props => {
           value={sendAddress}
           placeholder={localization.send_address.address}
           onChangeText={onTextChanged}
-          ref={props.inputRef}
         />
       </View>
       <TouchableOpacity onPress={openAddressBook}>
@@ -91,10 +98,17 @@ export const SendAddress: FC<SendAddressProps> = props => {
           NavigationService.navigate('ScanQRCode', {
             screen: 'ScanQRCodeScreen' as any,
             params: {
-              onBarScanned: (info: {data: string}) => {
+              onBarScanned: (info: { data: string }) => {
                 if (info.data) {
-                  setSendAddress(info.data);
-                  notifyAddressChanged(info.data);
+                  let scannedAddress = info.data;
+                  let options: any;
+                  try {
+                    const decoded = bip21.decode(info.data, "firo");
+                    scannedAddress = decoded.address;
+                    options = decoded.options;
+                  } catch { }
+                  setSendAddress(scannedAddress);
+                  notifyAddressChanged(scannedAddress, options);
                 }
               },
             },

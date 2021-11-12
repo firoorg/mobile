@@ -19,7 +19,7 @@ const {colors} = CurrentFiroTheme;
 type SendAmountInputCardProp = {
   maxBalance: BigNumber;
   onAmountSelect: (amount: BigNumber, isMax: boolean) => void;
-  inputRef: RefObject<TextInput>;
+  subscribeToFiroAmountChange?: (amountChanged: (amount: string) => void) => void;
 };
 
 export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
@@ -50,6 +50,13 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
     }
   }, []);
 
+  if (props.subscribeToFiroAmountChange) {
+    props.subscribeToFiroAmountChange(newAmount => {
+      setInput(newAmount);
+      notifyAmountChanged(newAmount, true, false);
+    });
+  }
+
   const updateConverted = (value: string, is_crypto: boolean) => {
     const i = new BigNumber(value);
     let txt = '';
@@ -79,7 +86,7 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
     props.onAmountSelect(crypto, isMax);
   };
 
-  const onTextChnaged = (text: string) => {
+  const onTextChanged = (text: string) => {
     setInput(text);
     notifyAmountChanged(text, isCrypto, false);
   };
@@ -123,8 +130,7 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
             placeholder={`${
               localization.amount_input.enter_amount
             } (${getPlaceholder(isCrypto)})`}
-            onChangeText={onTextChnaged}
-            ref={props.inputRef}
+            onChangeText={onTextChanged}
           />
           <FiroPrimaryButton
             onClick={onClickMax}

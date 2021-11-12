@@ -20,6 +20,8 @@ import Logger from '../utils/logger';
 
 const {colors} = CurrentFiroTheme;
 var timerHandler: number = -1;
+let changeAmountCallback: (amount: string) => void;
+let changeAddressCallback: (address: string) => void;
 
 const SendScreen = () => {
   const {getFiroRate, getSettings, getWallet} = useContext(FiroContext);
@@ -35,9 +37,7 @@ const SendScreen = () => {
     getSettings().defaultCurrency
   ];
 
-  const sendAmountRef = React.createRef<TextInput>();
-  const addressRef = React.createRef<TextInput>();
-
+  
   const rate = getFiroRate();
   const estimateFee = (amount: number, subtractFeeFromAmount: boolean) => {
     if (timerHandler !== -1) {
@@ -95,7 +95,7 @@ const SendScreen = () => {
   };
 
   const onAmountSelect = (amount: BigNumber, isMax: boolean) => {
-    Logger.info('send_screen:onAmountSelect', {amount, isMax});
+    Logger.info('send_screen:onAmountSelect', {amount, isMax, sendAddress});
 
     setIsValid(false);
     const substract = subtractFeeFromAmount || isMax;
@@ -113,9 +113,23 @@ const SendScreen = () => {
     estimateFee(spendAmount, changed);
   };
 
-  const onAddressSelect = (address: string) => {
+  const onAddressSelect = (address: string, options?: any) => {
     setSendAddress(address);
-    checkIsValid(fee, address);
+    if (options) {
+      if (options.label) {
+        setLabel(options.label);
+      }
+      const amount = Number(options.amount);
+      if (!isNaN(amount)) {
+        setTimeout(() => {
+          changeAmountCallback('' + amount);
+        }, 0);
+      } else {
+        checkIsValid(fee, address);
+      }
+    } else {
+      checkIsValid(fee, address);
+    }
   };
 
   const onClickSend = () => {
@@ -139,14 +153,8 @@ const SendScreen = () => {
   };
 
   const doReset = () => {
-    const amountTextChange =
-      sendAmountRef.current?._internalFiberInstanceHandleDEV.memoizedProps
-        .onChangeText;
-    const addressTextChange =
-      addressRef.current?._internalFiberInstanceHandleDEV.memoizedProps
-        .onChangeText;
-    amountTextChange('');
-    addressTextChange('');
+    changeAmountCallback('');
+    changeAddressCallback('');
     setLabel('');
     setFee(0);
     setTotal(0);
@@ -201,12 +209,16 @@ const SendScreen = () => {
           <SendAmountInputCard
             maxBalance={balance}
             onAmountSelect={onAmountSelect}
-            inputRef={sendAmountRef}
+            subscribeToFiroAmountChange={callback => {
+              changeAmountCallback = callback;
+            }}
           />
           <SendAddress
             style={styles.address}
             onAddressSelect={onAddressSelect}
-            inputRef={addressRef}
+            subscribeToAddressChange={callback => {
+              changeAddressCallback = callback;
+            }}
           />
           <TextInput
             style={styles.label}
