@@ -194,7 +194,7 @@ export class FiroWallet implements AbstractWallet {
       value: total.toNumber(),
     });
     const bnFee = new BigNumber(feeRate)
-      .times(tmpTx.virtualSize())
+      .times(Math.ceil(tmpTx.virtualSize() / 1000))
       .times(SATOSHI);
     total = total.minus(bnFee);
 
@@ -863,17 +863,15 @@ export class FiroWallet implements AbstractWallet {
             needToSort = true;
             this._txs_by_external_index.push(transactionItem);
           }
-        } else {
-          if (foundTx.confirmed === false && tx.confirmations > 0) {
-            if (foundTx.isMint) {
-              foundTx.confirmed = tx.confirmations >= MINT_CONFIRM_BLOCK_COUNT;
-            } else {
-              foundTx.confirmed = true;
-            }
-            if (foundTx.confirmed) {
-              needToSort = true;
-              foundTx.date = tx.time * 1000;
-            }
+        } else if (foundTx.confirmed === false && tx.confirmations > 0) {
+          if (foundTx.isMint) {
+            foundTx.confirmed = tx.confirmations >= MINT_CONFIRM_BLOCK_COUNT;
+          } else {
+            foundTx.confirmed = true;
+          }
+          if (foundTx.confirmed) {
+            needToSort = true;
+            foundTx.date = tx.time * 1000;
           }
         }
       });
