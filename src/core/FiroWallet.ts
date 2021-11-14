@@ -515,12 +515,15 @@ export class FiroWallet implements AbstractWallet {
       const latestBlockHeight = firoElectrum.getLatestBlockHeight();
 
       mintMetadata.forEach((metadata, index) => {
-        this._updateIsMintConfirmed(
-          unconfirmedCoins[index],
-          metadata.height,
-          metadata.anonimitySetId,
-          latestBlockHeight,
-        );
+        if (metadata.height !== HEIGHT_NOT_SET) {
+          this._updateMintCoinData(
+            unconfirmedCoins[index],
+            metadata.height,
+            metadata.anonimitySetId,
+            latestBlockHeight,
+          );
+          this._updateMintTxStatus(unconfirmedCoins[index]);
+        }
       });
       Logger.info('firo_wallet:updateMintMetadata', 'updated');
       return true;
@@ -529,18 +532,24 @@ export class FiroWallet implements AbstractWallet {
     return false;
   }
 
-  _updateIsMintConfirmed(
+  _updateMintCoinData(
     coin: LelantusCoin,
     height: number,
     anonimitySetId: number,
     latestBlockHeight: number,
   ) {
-    if (
-      height !== HEIGHT_NOT_SET &&
-      latestBlockHeight - height >= MINT_CONFIRM_BLOCK_COUNT - 1
-    ) {
+    if (latestBlockHeight - height >= MINT_CONFIRM_BLOCK_COUNT - 1) {
       coin.height = height;
       coin.anonymitySetId = anonimitySetId;
+    }
+  }
+
+  _updateMintTxStatus(coin: LelantusCoin) {
+    const tx = this._txs_by_external_index.find(
+      item => item.txId === coin.txId,
+    );
+    if (tx) {
+      tx.confirmed = coin.height !== HEIGHT_NOT_SET;
     }
   }
 
@@ -863,16 +872,13 @@ export class FiroWallet implements AbstractWallet {
             needToSort = true;
             this._txs_by_external_index.push(transactionItem);
           }
-        } else if (foundTx.confirmed === false && tx.confirmations > 0) {
-          if (foundTx.isMint) {
-            foundTx.confirmed = tx.confirmations >= MINT_CONFIRM_BLOCK_COUNT;
-          } else {
-            foundTx.confirmed = true;
-          }
-          if (foundTx.confirmed) {
-            needToSort = true;
-            foundTx.date = tx.time * 1000;
-          }
+        } else if (
+          foundTx.confirmed === false &&
+          tx.confirmations > 0 &&
+          foundTx.isMint === false
+        ) {
+          needToSort = true;
+          foundTx.date = tx.time * 1000;
         }
       });
     } catch (e) {
