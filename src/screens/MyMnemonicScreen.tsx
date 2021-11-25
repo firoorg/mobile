@@ -1,15 +1,14 @@
 import React, {useContext} from 'react';
-import * as NavigationService from '../NavigationService';
-import {Image, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
-import {FiroSecondaryButton} from '../components/Button';
 import {FiroToolbar} from '../components/Toolbar';
 import {MnemonicText} from '../components/Mnemonic';
 import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
 import localization from '../localization';
+import { FiroStatusBar } from '../components/FiroStatusBar';
 
-const {colors} = CurrentFiroTheme;
+const { colors } = CurrentFiroTheme;
 
 const MyMnemonicScreen = () => {
   const {getWallet} = useContext(FiroContext);
@@ -23,6 +22,7 @@ const MyMnemonicScreen = () => {
   return (
     <View>
       <FiroToolbar title={localization.my_mnemonic_screen.title} />
+      <FiroStatusBar />
       <View style={styles.root}>
         <MnemonicText
           style={styles.mnemonicCard}

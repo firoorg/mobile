@@ -15,10 +15,10 @@ import {useFocusEffect} from '@react-navigation/native';
 import {BottomSheet} from 'react-native-elements';
 import {SavedAddressesList} from '../components/SavedAddressesList';
 import Logger from '../utils/logger';
-
-const {colors} = CurrentFiroTheme;
+import { FiroStatusBar } from '../components/FiroStatusBar';
 
 const appStorage = new AppStorage();
+const { colors } = CurrentFiroTheme;
 
 const ReceiveScreen = () => {
   const {getWallet} = useContext(FiroContext);
@@ -83,6 +83,7 @@ const ReceiveScreen = () => {
     <ScrollView keyboardShouldPersistTaps="always">
       <View>
         <FiroToolbarWithoutBack title={localization.receive_screen.title} />
+        <FiroStatusBar />
         <View style={styles.root}>
           <FiroTextBig
             style={styles.qrLabel}

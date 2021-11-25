@@ -129,7 +129,7 @@ export class AppStorage {
         // this.tx_metadata = data.tx_metadata;
 
         realm.close();
-        Logger.info('storage:loadWalletFromDisk', unserializedWallet);
+        Logger.info('storage:loadWalletFromDisk', "Loaded wallet from disk");
         return unserializedWallet;
       } else {
         return null; // failed loading data or loading/decryptin data

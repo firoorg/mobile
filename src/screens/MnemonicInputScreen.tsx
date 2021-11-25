@@ -10,8 +10,9 @@ import {FiroWallet} from '../core/FiroWallet';
 import {CurrentFiroTheme} from '../Themes';
 import localization from '../localization';
 import Logger from '../utils/logger';
+import { FiroStatusBar } from '../components/FiroStatusBar';
 
-const {colors} = CurrentFiroTheme;
+const { colors } = CurrentFiroTheme;
 
 const MnemonicInputScreen = () => {
   const [creating, setCreating] = useState(false);
@@ -46,6 +47,7 @@ const MnemonicInputScreen = () => {
   return (
     <View>
       <FiroToolbar title="Enter mnemonic" />
+      <FiroStatusBar />
       <View style={styles.root}>
         <Image
           style={styles.logo}

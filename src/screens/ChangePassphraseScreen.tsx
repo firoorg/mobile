@@ -13,8 +13,9 @@ import {Icon} from 'react-native-elements/dist/icons/Icon';
 import {Biometrics} from '../utils/biometrics';
 import {AppStorage} from '../app-storage';
 import Logger from '../utils/logger';
+import { FiroStatusBar } from '../components/FiroStatusBar';
 
-const {colors} = CurrentFiroTheme;
+const { colors } = CurrentFiroTheme;
 
 enum BottomSheetViewMode {
   None,
@@ -42,6 +43,7 @@ const ChangePassphraseScreen = () => {
   return (
     <View>
       <FiroToolbar title={localization.change_passphrase_screen.title} />
+      <FiroStatusBar />
       <View style={styles.root}>
         <FiroInputPassword
           style={styles.password}

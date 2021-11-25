@@ -4,7 +4,7 @@ import {
   View,
   TextInput,
   Image,
-  TouchableOpacity,
+  TouchableOpacity
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {FiroToolbar} from '../components/Toolbar';
@@ -15,10 +15,10 @@ import * as NavigationService from '../NavigationService';
 import {AppStorage} from '../app-storage';
 import localization from '../localization';
 import Logger from '../utils/logger';
+import { FiroStatusBar } from '../components/FiroStatusBar';
 
 const appStorage = new AppStorage();
-
-const {colors} = CurrentFiroTheme;
+const { colors } = CurrentFiroTheme;
 
 type AddressBookStackRouteProps = {
   Address: {item: AddressBookItem; onSuccess?: () => void};
@@ -66,6 +66,7 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
             : localization.add_edit_address_screen.add_new_address
         }
       />
+      <FiroStatusBar />
       <View style={styles.root}>
         <View style={[styles.card]}>
           <View style={styles.inputContainer}>

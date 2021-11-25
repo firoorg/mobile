@@ -17,8 +17,9 @@ import {useFocusEffect} from '@react-navigation/native';
 import * as NavigationService from '../NavigationService';
 import BigNumber from 'bignumber.js';
 import Logger from '../utils/logger';
+import { FiroStatusBar } from '../components/FiroStatusBar';
 
-const {colors} = CurrentFiroTheme;
+const { colors } = CurrentFiroTheme;
 var timerHandler: number = -1;
 let changeAmountCallback: (amount: string) => void;
 let changeAddressCallback: (address: string) => void;
@@ -181,6 +182,7 @@ const SendScreen = () => {
     <ScrollView keyboardShouldPersistTaps="always">
       <View>
         <FiroToolbarWithoutBack title={localization.send_screen.title} />
+        <FiroStatusBar />
         <View style={styles.root}>
           <View style={styles.balanceContainer}>
             <View style={styles.titleContainer}>

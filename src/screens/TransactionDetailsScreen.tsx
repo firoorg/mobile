@@ -10,6 +10,7 @@ import {TransactionRow} from '../components/TransactionRow';
 import {Currency} from '../utils/currency';
 import BigNumber from 'bignumber.js';
 import Logger from '../utils/logger';
+import { FiroStatusBar } from '../components/FiroStatusBar';
 
 type WalletStackRouteProps = {
   TransactionDetails: {item: TransactionItem};
@@ -58,6 +59,7 @@ const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
   return (
     <View>
       <FiroToolbar title={localization.transaction_details.title} />
+      <FiroStatusBar />
       <View style={styles.root}>
         <TransactionRow
           style={[styles.transactionCard, {backgroundColor: backgroundColor}]}

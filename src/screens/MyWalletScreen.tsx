@@ -1,5 +1,5 @@
 import React, {useContext, useState, useEffect} from 'react';
-import {StyleSheet, View, ScrollView} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {FiroToolbarWithoutBack} from '../components/Toolbar';
 import {BalanceCard} from '../components/BalanceCard';
 import {TransactionList} from '../components/TransactionList';
@@ -14,8 +14,9 @@ import {useFocusEffect} from '@react-navigation/native';
 import BigNumber from 'bignumber.js';
 import Logger from '../utils/logger';
 import {Text} from 'react-native-elements';
+import { FiroStatusBar } from '../components/FiroStatusBar';
 
-const {colors} = CurrentFiroTheme;
+const { colors } = CurrentFiroTheme;
 
 const MyWalletScreen = () => {
   const {getWallet} = useContext(FiroContext);
@@ -227,6 +228,7 @@ const MyWalletScreen = () => {
   return (
     <View style={styles.page}>
       <FiroToolbarWithoutBack title={localization.my_wallet_screen.title} />
+      <FiroStatusBar />
       <View style={styles.root}>
         <View style={styles.balanceCardContainer}>
           <BalanceCard

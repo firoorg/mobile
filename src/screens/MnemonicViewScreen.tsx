@@ -10,8 +10,9 @@ import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
 import localization from '../localization';
 import Logger from '../utils/logger';
+import { FiroStatusBar } from '../components/FiroStatusBar';
 
-const {colors} = CurrentFiroTheme;
+const { colors } = CurrentFiroTheme;
 
 const MnemonicViewScreen = () => {
   const {getWallet} = useContext(FiroContext);
@@ -30,6 +31,7 @@ const MnemonicViewScreen = () => {
   return (
     <View style={styles.page}>
       <FiroToolbar title={''} />
+      <FiroStatusBar />
       <View style={styles.root}>
         <Image
           style={styles.logo}

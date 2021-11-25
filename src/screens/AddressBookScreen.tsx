@@ -5,8 +5,7 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  ToastAndroid,
-  Dimensions,
+  ToastAndroid
 } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {BottomSheet, ListItem, Avatar} from 'react-native-elements';
@@ -21,10 +20,10 @@ import {useFocusEffect} from '@react-navigation/native';
 import {Divider} from 'react-native-elements/dist/divider/Divider';
 import Logger from '../utils/logger';
 import {SearchBar} from 'react-native-elements/dist/searchbar/SearchBar';
+import { FiroStatusBar } from '../components/FiroStatusBar';
 
 const appStorage = new AppStorage();
-
-const {colors} = CurrentFiroTheme;
+const { colors } = CurrentFiroTheme;
 
 const AddressBookScreen = () => {
   const [addressBookList, setAddressBookList] = useState<AddressBookItem[]>([]);
@@ -103,6 +102,7 @@ const AddressBookScreen = () => {
   return (
     <View style={styles.page}>
       <FiroToolbarWithoutBack title={localization.address_book_screen.title} />
+      <FiroStatusBar />
       <View style={styles.root}>
         <View style={styles.menu}>
           <SearchBar

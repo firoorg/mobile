@@ -64,11 +64,12 @@ export const FiroDarkTheme: FiroTheme = {
 
 export class CurrentFiroTheme {
   static colors: FiroColors;
-
+  static isDark: boolean;
   static updateColorScheme() {
     let isDark = Appearance.getColorScheme() === 'dark';
     let theme: FiroTheme = isDark ? FiroDarkTheme : FiroDefaultTheme;
     CurrentFiroTheme.colors = theme.colors;
+    CurrentFiroTheme.isDark = isDark;
   }
 }
 

@@ -8,6 +8,7 @@ import {FiroWallet} from '../core/FiroWallet';
 import {FiroContext} from '../FiroContext';
 import localization from '../localization';
 import Logger from '../utils/logger';
+import { FiroStatusBar } from '../components/FiroStatusBar';
 
 const WelcomeScreen = () => {
   const [creating, setCreating] = useState(false);
@@ -37,6 +38,7 @@ const WelcomeScreen = () => {
   return (
     <View style={styles.root}>
       <FiroEmptyToolbar />
+      <FiroStatusBar />
       <Image
         style={styles.logo}
         source={require('../img/firo-logo-black.png')}

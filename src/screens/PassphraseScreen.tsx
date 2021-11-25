@@ -1,6 +1,5 @@
 import React, {useContext, useState} from 'react';
 import * as NavigationService from '../NavigationService';
-import {StackActions} from '@react-navigation/native';
 import {Image, StyleSheet, View} from 'react-native';
 import {FiroSecondaryButton} from '../components/Button';
 import {FiroToolbar} from '../components/Toolbar';
@@ -10,8 +9,9 @@ import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
 import localization from '../localization';
 import Logger from '../utils/logger';
+import { FiroStatusBar } from '../components/FiroStatusBar';
 
-const {colors} = CurrentFiroTheme;
+const { colors } = CurrentFiroTheme;
 
 const PassphraseScreen = () => {
   const [creating, setCreating] = useState(false);
@@ -40,6 +40,7 @@ const PassphraseScreen = () => {
   return (
     <View style={styles.page}>
       <FiroToolbar title={''} />
+      <FiroStatusBar />
       <View style={styles.root}>
         <Image
           style={styles.logo}

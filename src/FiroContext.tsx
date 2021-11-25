@@ -49,7 +49,7 @@ export const FiroContextProvider: FC = props => {
   });
   Currency.setUpdateContextRate(changeFiroRate);
   const setWallet = (wallet: AbstractWallet) => {
-    Logger.info('firo_context:setWallet', wallet);
+    Logger.info('firo_context:setWallet', "Setting the wallet");
     setWalletState(wallet);
   };
 
@@ -71,7 +71,7 @@ export const FiroContextProvider: FC = props => {
   const saveToDisk = async () => {
     let wallet = getWallet();
     if (wallet !== undefined) {
-      Logger.info('firo_context:saveToDisk', wallet);
+      Logger.info('firo_context:saveToDisk', "Saving wallet to disk");
       appStorage.saveWalletToDisk(null, wallet);
     } else {
       Logger.error('firo_context:saveToDisk', 'wallet is undefined');

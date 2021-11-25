@@ -8,8 +8,7 @@ import {
   Dimensions,
   ScrollView,
   TouchableOpacity,
-  Image,
-  Touchable,
+  Image
 } from 'react-native';
 import {BottomSheet, Icon, ListItem} from 'react-native-elements';
 import {CurrentFiroTheme} from '../Themes';
@@ -25,9 +24,9 @@ import {FiroInputPassword} from '../components/Input';
 import * as Progress from 'react-native-progress';
 import * as NavigationService from '../NavigationService';
 import deviceInfoModule from 'react-native-device-info';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { FiroStatusBar } from '../components/FiroStatusBar';
 
-const {colors} = CurrentFiroTheme;
+const { colors } = CurrentFiroTheme;
 const supportedCurrencies: string[] = ['usd', 'eur', 'gbp', 'aud', 'btc'];
 enum BiometricSettingsViewMode {
   None,
@@ -93,6 +92,7 @@ const SettingsScreen = () => {
   return (
     <ScrollView>
       <FiroToolbar title={localization.settings.title} />
+      <FiroStatusBar />
       <TouchableHighlight
         disabled={saveInProgress}
         underlayColor={colors.highlight}

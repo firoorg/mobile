@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import * as NavigationService from '../NavigationService';
-import {Alert, Image, StyleSheet, View} from 'react-native';
+import {Image, StyleSheet, View} from 'react-native';
 import {FiroSecondaryButton} from '../components/Button';
 import {FiroToolbar} from '../components/Toolbar';
 import {FiroTitleBig, FiroTextBig} from '../components/Texts';
@@ -10,8 +10,9 @@ import {FiroContext} from '../FiroContext';
 import localization from '../localization';
 import {Biometrics} from '../utils/biometrics';
 import Logger from '../utils/logger';
+import { FiroStatusBar } from '../components/FiroStatusBar';
 
-const {colors} = CurrentFiroTheme;
+const { colors } = CurrentFiroTheme;
 
 const EnterPassphraseScreen = () => {
   const [password, setPassword] = useState('');
@@ -63,6 +64,7 @@ const EnterPassphraseScreen = () => {
             : localization.enter_passphrase_screen.title_toolbar
         }
       />
+      <FiroStatusBar />
       <View style={styles.root}>
         <Image
           style={styles.logo}

@@ -10,8 +10,9 @@ import {AddressBookItem} from '../data/AddressBookItem';
 import {TransactionItem} from '../data/TransactionItem';
 import localization from '../localization';
 import Logger from '../utils/logger';
+import { FiroStatusBar } from '../components/FiroStatusBar';
 
-const {colors} = CurrentFiroTheme;
+const { colors } = CurrentFiroTheme;
 
 type AddressBookStackRouteProps = {
   Address: {item: AddressBookItem};
@@ -38,6 +39,7 @@ const AddressDetailsScreen: FC<AddressDetailsProps> = props => {
   return (
     <View>
       <FiroToolbar title={localization.address_details_screen.title} />
+      <FiroStatusBar />
       <View style={styles.root}>
         <View style={[styles.icon, {backgroundColor: item.iconColor}]}>
           <Text style={styles.iconLetter}>{item.name.substring(0, 1)}</Text>

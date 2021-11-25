@@ -4,13 +4,14 @@ import {
   StyleSheet,
   Text,
   TouchableHighlight,
-  ScrollView,
+  ScrollView
 } from 'react-native';
 import {CurrentFiroTheme} from '../Themes';
 import {FiroToolbar} from '../components/Toolbar';
 import Logger from '../utils/logger';
+import { FiroStatusBar } from '../components/FiroStatusBar';
 
-const {colors} = CurrentFiroTheme;
+const { colors, } = CurrentFiroTheme;
 
 const DebugSettingsScreen = () => {
   const cleareLogFile = () => {
@@ -26,6 +27,7 @@ const DebugSettingsScreen = () => {
       <View style={styles.toolbar}>
         <FiroToolbar title={'Debug Settings'} />
       </View>
+      <FiroStatusBar />
       <TouchableHighlight
         underlayColor={colors.highlight}
         onPress={shareLogFile}>

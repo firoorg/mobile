@@ -1,7 +1,7 @@
 import React, {useContext, useEffect} from 'react';
 import * as NavigationService from '../NavigationService';
 import {StackActions} from '@react-navigation/native';
-import {Image, StyleSheet, View} from 'react-native';
+import {Image, StatusBar, StyleSheet, View} from 'react-native';
 import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
 import {firoElectrum} from '../core/FiroElectrum';
@@ -46,6 +46,7 @@ const SplashScreen = () => {
 
   return (
     <View style={styles.root}>
+      <StatusBar backgroundColor={colors.primary} barStyle={"light-content"} />
       <Image style={styles.logo} source={require('../img/firo-logo.png')} />
     </View>
   );
