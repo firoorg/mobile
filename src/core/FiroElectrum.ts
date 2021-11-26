@@ -611,8 +611,8 @@ export default class FiroElectrum implements AbstractElectrum {
     return broadcast;
   }
 
-  async getMintMedata(publicCoins: string[]): Promise<MintMetadataModel[]> {
-    this.checkConnection('getMintMedata');
+  async getMintMetadata(publicCoins: string[]): Promise<MintMetadataModel[]> {
+    this.checkConnection('getMintMetadata');
 
     const mints: {pubcoin: string}[] = [];
     publicCoins.forEach(coin => {
@@ -641,7 +641,7 @@ export default class FiroElectrum implements AbstractElectrum {
       };
     });
 
-    Logger.info('electrum_wallet:getMintMedata', ret);
+    Logger.info('electrum_wallet:getMintMetadata', ret);
     return ret;
   }
 
@@ -660,6 +660,15 @@ export default class FiroElectrum implements AbstractElectrum {
     );
 
     Logger.info('electrum_wallet:getAnonymitySet', result);
+    return result;
+  }
+
+  async getLatestSetId(): Promise<number> {
+    this.checkConnection('getLatestSetId');
+
+    const result = await this.mainClient.request('sigma.getlatestcoinid');
+
+    Logger.info('electrum_wallet:getLatestSetId', result);
     return result;
   }
 

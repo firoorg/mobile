@@ -19,6 +19,7 @@ import {LelantusCoin} from '../data/LelantusCoin';
 import {LelantusEntry} from '../data/LelantusEntry';
 import Logger from '../utils/logger';
 import {Transaction} from 'bitcoinjs-lib/types/transaction';
+import {AnonymitySet} from '../data/AnonymitySet';
 
 const bitcoin = require('bitcoinjs-lib');
 const bip32 = require('bip32');
@@ -29,11 +30,13 @@ const INTERNAL_INDEX = 1;
 const MINT_INDEX = 2;
 const JMINT_INDEX = 5;
 
-const HEIGHT_NOT_SET = -1;
+const ANONYMITY_SET_EMPTY_ID = 0;
 
 const TRANSACTION_LELANTUS = 8;
 
 const MINT_CONFIRM_BLOCK_COUNT = 1;
+
+const MINT_LIMIT = 100100000000;
 
 export const SATOSHI = new BigNumber(100000000);
 
@@ -54,8 +57,10 @@ type MintInput = {
 
 type MintTxData = {
   inputs: MintInput[];
-  script: string;
-  value: number;
+  mints: {
+    value: number;
+    script: string;
+  }[];
 };
 
 export class FiroWallet implements AbstractWallet {
@@ -77,6 +82,8 @@ export class FiroWallet implements AbstractWallet {
   _address_to_wif_cache: {
     [key: string]: string;
   } = {};
+
+  _anonymity_sets: AnonymitySet[] = [];
 
   next_free_address_index = 0;
   next_free_change_address_index = 0;
@@ -163,8 +170,6 @@ export class FiroWallet implements AbstractWallet {
     const mintInputs: Array<MintInput> = [];
     let total = new BigNumber(0);
 
-    const mintKeyPair = this._getNode(MINT_INDEX, this.next_free_mint_index);
-
     for (let index = 0; index < params.utxos.length; index++) {
       const input = params.utxos[index];
       const wif = await this._getWifForAddress(input.address);
@@ -181,17 +186,14 @@ export class FiroWallet implements AbstractWallet {
     }
     Logger.debug('firo_wallet:createLelantusMintTx:mintInputs', mintInputs);
 
-    const mintWithoutFee = await LelantusWrapper.lelantusMint(
-      mintKeyPair,
-      this.next_free_mint_index,
-      total.toNumber(),
-    );
+    const mintsWithoutFee = await this.createMintsFromAmount(total.toNumber());
 
     // transaction for compute fee
     const tmpTx = this.createMintTx({
       inputs: mintInputs,
-      script: mintWithoutFee.script,
-      value: total.toNumber(),
+      mints: mintsWithoutFee.map(mint => {
+        return {value: mint.value, script: mint.script};
+      }),
     });
     const bnFee = new BigNumber(feeRate)
       .times(Math.ceil(tmpTx.virtualSize() / 1000))
@@ -202,27 +204,53 @@ export class FiroWallet implements AbstractWallet {
     Logger.debug('firo_wallet:createLelantusMintTx:total', total);
 
     // create real tx
-    const mintWithFee = await LelantusWrapper.lelantusMint(
-      mintKeyPair,
-      this.next_free_mint_index,
-      total.toNumber(),
-    );
+    const mints = await this.createMintsFromAmount(total.toNumber());
     const tx = this.createMintTx({
       inputs: mintInputs,
-      script: mintWithFee.script,
-      value: total.toNumber(),
+      mints: mints.map(mint => {
+        return {value: mint.value, script: mint.script};
+      }),
     });
 
     return {
       txId: tx.getId(),
       txHex: tx.toHex(),
+      mints: mints,
       value: total.toNumber(),
-      publicCoin: mintWithFee.publicCoin,
       fee: bnFee.toNumber(),
     };
   }
 
-  private createMintTx({inputs, script, value}: MintTxData): Transaction {
+  private async createMintsFromAmount(total: number) {
+    let tmpTotal = new BigNumber(total);
+    let index = 0;
+    const mints = [];
+    Logger.debug('firo_wallet:createMintsFromAmount:total', total);
+    while (tmpTotal.toNumber() > 0) {
+      const mintKeyPair = this._getNode(
+        MINT_INDEX,
+        this.next_free_mint_index + index,
+      );
+      const mintValue = Math.min(tmpTotal.toNumber(), MINT_LIMIT);
+      Logger.debug('firo_wallet:createMintsFromAmount:mintValue', mintValue);
+      const mint = await LelantusWrapper.lelantusMint(
+        mintKeyPair,
+        this.next_free_mint_index + index,
+        mintValue,
+      );
+      mints.push({
+        value: mintValue,
+        script: mint.script,
+        publicCoin: mint.publicCoin,
+      });
+      tmpTotal = tmpTotal.minus(MINT_LIMIT);
+      index++;
+    }
+    Logger.debug('firo_wallet:createMintsFromAmount:mints', mints);
+    return mints;
+  }
+
+  private createMintTx({inputs, mints}: MintTxData): Transaction {
     const tx = new bitcoin.Psbt({network: this.network});
     tx.setVersion(2);
 
@@ -236,10 +264,12 @@ export class FiroWallet implements AbstractWallet {
       });
     });
 
-    tx.addOutput({
-      // eslint-disable-next-line no-undef
-      script: Buffer.from(script, 'hex'),
-      value,
+    mints.forEach(mint => {
+      tx.addOutput({
+        // eslint-disable-next-line no-undef
+        script: Buffer.from(mint.script, 'hex'),
+        value: mint.value,
+      });
     });
 
     inputs.forEach((input, index) => {
@@ -284,7 +314,7 @@ export class FiroWallet implements AbstractWallet {
         keyPair.privateKey.toString('hex'),
         coin.index,
         coin.isUsed,
-        coin.height,
+        0,
         coin.anonymitySetId,
       );
     });
@@ -379,10 +409,14 @@ export class FiroWallet implements AbstractWallet {
 
       if (!setIds.includes(anonymitySetId)) {
         setIds.push(anonymitySetId);
-        const result = await firoElectrum.getAnonymitySet(anonymitySetId, '');
-        anonimitySets.push(result.serializedCoins);
-        anonymitySetHashes.push(result.setHash);
-        groupBlockHashes.push(result.blockHash);
+        const anonymitySet = this._anonymity_sets.find(
+          set => set.setId === anonymitySetId,
+        );
+        if (anonymitySet) {
+          anonimitySets.push(anonymitySet.publicCoins);
+          anonymitySetHashes.push(anonymitySet.setHash);
+          groupBlockHashes.push(anonymitySet.blockHash);
+        }
       }
     }
 
@@ -460,7 +494,6 @@ export class FiroWallet implements AbstractWallet {
       value: value,
       publicCoin: publicCoin,
       txId: txId,
-      height: HEIGHT_NOT_SET,
       anonymitySetId: 0,
       isUsed: false,
     };
@@ -508,22 +541,14 @@ export class FiroWallet implements AbstractWallet {
     Logger.info('firo_wallet:updateMintMetadata', this.next_free_mint_index);
     const unconfirmedCoins = this._getUnconfirmedCoins();
     if (unconfirmedCoins.length > 0) {
-      const publicCoinList = unconfirmedCoins.map(coin => {
-        return coin.publicCoin;
-      });
-      const mintMetadata = await firoElectrum.getMintMedata(publicCoinList);
-      const latestBlockHeight = firoElectrum.getLatestBlockHeight();
-
-      mintMetadata.forEach((metadata, index) => {
-        if (metadata.height !== HEIGHT_NOT_SET) {
-          this._updateMintCoinData(
-            unconfirmedCoins[index],
-            metadata.height,
-            metadata.anonimitySetId,
-            latestBlockHeight,
-          );
-          this._updateMintTxStatus(unconfirmedCoins[index]);
-        }
+      const publicCoinList = unconfirmedCoins.map(coin => coin.publicCoin);
+      this._anonymity_sets.forEach(set => {
+        publicCoinList.forEach((publicCoin, index) => {
+          if (set.publicCoins.includes(publicCoin)) {
+            unconfirmedCoins[index].anonymitySetId = set.setId;
+            this._updateMintTxStatus(unconfirmedCoins[index]);
+          }
+        });
       });
       Logger.info('firo_wallet:updateMintMetadata', 'updated');
       return true;
@@ -539,7 +564,6 @@ export class FiroWallet implements AbstractWallet {
     latestBlockHeight: number,
   ) {
     if (latestBlockHeight - height >= MINT_CONFIRM_BLOCK_COUNT - 1) {
-      coin.height = height;
       coin.anonymitySetId = anonimitySetId;
     }
   }
@@ -549,21 +573,21 @@ export class FiroWallet implements AbstractWallet {
       item => item.txId === coin.txId,
     );
     if (tx) {
-      tx.confirmed = coin.height !== HEIGHT_NOT_SET;
+      tx.confirmed = coin.anonymitySetId !== ANONYMITY_SET_EMPTY_ID;
     }
   }
 
   _getUnconfirmedCoins(): LelantusCoin[] {
     const coins = Object.values(this._lelantus_coins);
     return coins.filter(coin => {
-      return !coin.isUsed && coin.height === HEIGHT_NOT_SET;
+      return !coin.isUsed && coin.anonymitySetId === ANONYMITY_SET_EMPTY_ID;
     });
   }
 
   _getUnspentCoins(): LelantusCoin[] {
     const coins = Object.values(this._lelantus_coins);
     return coins.filter(coin => {
-      return !coin.isUsed && coin.height !== HEIGHT_NOT_SET;
+      return !coin.isUsed && coin.anonymitySetId !== ANONYMITY_SET_EMPTY_ID;
     });
   }
 
@@ -816,7 +840,7 @@ export class FiroWallet implements AbstractWallet {
   }
 
   async fetchTransactions() {
-    let needToSort = false;
+    let hasChanges = false;
     const address2Check = await this.getTransactionsAddresses();
     try {
       const fullTxs = await firoElectrum.multiGetTransactionsFullByAddress(
@@ -869,7 +893,7 @@ export class FiroWallet implements AbstractWallet {
           }
 
           if (transactionItem.received || transactionItem.isMint) {
-            needToSort = true;
+            hasChanges = true;
             this._txs_by_external_index.push(transactionItem);
           }
         } else if (
@@ -877,20 +901,21 @@ export class FiroWallet implements AbstractWallet {
           tx.confirmations > 0 &&
           foundTx.isMint === false
         ) {
-          needToSort = true;
+          hasChanges = true;
           foundTx.date = tx.time * 1000;
         }
       });
     } catch (e) {
       Logger.error('firo_wallet:fetchTransaction', e);
     }
-    if (needToSort) {
+    if (hasChanges) {
       this._txs_by_external_index.sort(
         (tx1: TransactionItem, tx2: TransactionItem) => {
           return tx2.date - tx1.date;
         },
       );
     }
+    return hasChanges;
   }
 
   getTransactions(): TransactionItem[] {
@@ -903,9 +928,42 @@ export class FiroWallet implements AbstractWallet {
     });
   }
 
+  async fetchAnonymitySets(): Promise<boolean> {
+    let hasChanges = false;
+    const latestSetId = await firoElectrum.getLatestSetId();
+    for (let setId = 1; setId <= latestSetId; setId++) {
+      let anonymitySet = this._anonymity_sets.find(set => set.setId === setId);
+      if (!anonymitySet) {
+        anonymitySet = new AnonymitySet();
+        anonymitySet.setId = setId;
+        this._anonymity_sets.push(anonymitySet);
+      }
+      const fetchedAnonymitySet = await firoElectrum.getAnonymitySet(
+        anonymitySet.setId,
+        anonymitySet.blockHash,
+      );
+      Logger.info('firo_wallet:fetchAnonymitySets', fetchedAnonymitySet);
+      if (
+        fetchedAnonymitySet.setHash !== '' &&
+        anonymitySet.setHash !== fetchedAnonymitySet.setHash
+      ) {
+        Logger.info('firo_wallet:fetchAnonymitySets', 'update');
+        anonymitySet.setHash = fetchedAnonymitySet.setHash;
+        anonymitySet.blockHash = fetchedAnonymitySet.blockHash;
+        fetchedAnonymitySet.serializedCoins.forEach(serializedCoin => {
+          anonymitySet?.publicCoins.push(serializedCoin);
+        });
+        hasChanges = true;
+      }
+    }
+    return hasChanges;
+  }
+
   prepareForSerialization(): void {
     this._txs_by_external_index = [];
     this._txs_by_internal_index = [];
+
+    this._anonymity_sets = [];
 
     // this.internal_addresses_cache = {};
     // this.external_addresses_cache = {};

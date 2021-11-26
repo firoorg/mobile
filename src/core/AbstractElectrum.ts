@@ -107,12 +107,14 @@ export interface AbstractElectrum {
   addChangeListener(onChange: () => void): void;
   removeChangeListener(onChange: () => void): void;
 
-  getMintMedata(serilizedCoins: string[]): Promise<MintMetadataModel[]>;
+  getMintMetadata(serilizedCoins: string[]): Promise<MintMetadataModel[]>;
 
   getAnonymitySet(
     setId: number,
     startBlockHash: string,
   ): Promise<AnonymitySetModel>;
+
+  getLatestSetId(): Promise<number>;
 
   getFeeRate(): Promise<number>;
 }

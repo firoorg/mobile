@@ -7,7 +7,7 @@ import {
   Switch,
   ScrollView,
   TouchableOpacity,
-  Image
+  Image,
 } from 'react-native';
 import {BottomSheet, Divider, Icon} from 'react-native-elements';
 import {CurrentFiroTheme} from '../Themes';
@@ -26,9 +26,9 @@ import {firoElectrum} from '../core/FiroElectrum';
 import {SATOSHI} from '../core/FiroWallet';
 import BigNumber from 'bignumber.js';
 import Logger from '../utils/logger';
-import { FiroStatusBar } from '../components/FiroStatusBar';
+import {FiroStatusBar} from '../components/FiroStatusBar';
 
-const { colors } = CurrentFiroTheme;
+const {colors} = CurrentFiroTheme;
 type SendConfirmRouteProps = {
   data: {data: SendData; onConfirmCallback: (success: boolean) => void};
 };
@@ -240,9 +240,7 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
   });
   return (
     <ScrollView>
-      <View style={styles.toolbar}>
-        <FiroToolbar title={localization.send_confirm_screen.title} />
-      </View>
+      <FiroToolbar title={localization.send_confirm_screen.title} />
       <FiroStatusBar />
       <View style={styles.warningCardContainer}>
         <Text style={styles.warningCard}>
@@ -428,11 +426,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '400',
     color: colors.text,
-  },
-  toolbar: {
-    paddingTop: 30,
-    paddingLeft: 20,
-    paddingBottom: 15,
   },
   body: {
     paddingLeft: 20,

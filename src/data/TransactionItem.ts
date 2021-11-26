@@ -1,5 +1,3 @@
-import BigNumber from 'bignumber.js';
-
 export class TransactionItem {
   value: number = 0;
   received: boolean = false;

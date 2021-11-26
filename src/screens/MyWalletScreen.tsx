@@ -14,9 +14,9 @@ import {useFocusEffect} from '@react-navigation/native';
 import BigNumber from 'bignumber.js';
 import Logger from '../utils/logger';
 import {Text} from 'react-native-elements';
-import { FiroStatusBar } from '../components/FiroStatusBar';
+import {FiroStatusBar} from '../components/FiroStatusBar';
 
-const { colors } = CurrentFiroTheme;
+const {colors} = CurrentFiroTheme;
 
 const MyWalletScreen = () => {
   const {getWallet} = useContext(FiroContext);
@@ -77,26 +77,28 @@ const MyWalletScreen = () => {
           `lelantus utxos: ${JSON.stringify(lelantusUtxos)}`,
         );
 
-        const mint = await wallet.createLelantusMintTx({
+        const mintTxResult = await wallet.createLelantusMintTx({
           utxos: lelantusUtxos,
         });
         Logger.info(
           'my_wallet_screen:doMint',
-          `broadcast tx: ${JSON.stringify(mint)}`,
+          `broadcast tx: ${JSON.stringify(mintTxResult)}`,
         );
 
-        const txId = await firoElectrum.broadcast(mint.txHex);
+        const txId = await firoElectrum.broadcast(mintTxResult.txHex);
         Logger.info(
           'my_wallet_screen:doMint',
           `broadcast txId: ${JSON.stringify(txId)}`,
         );
 
-        if (txId === mint.txId) {
-          wallet.addLelantusMintToCache(txId, mint.value, mint.publicCoin);
+        if (txId === mintTxResult.txId) {
+          mintTxResult.mints.forEach(mint => {
+            wallet.addLelantusMintToCache(txId, mint.value, mint.publicCoin);
+          });
           wallet.addMintTxToCache(
             txId,
-            new BigNumber(mint.value).div(SATOSHI).toNumber(),
-            new BigNumber(mint.fee).div(SATOSHI).toNumber(),
+            new BigNumber(mintTxResult.value).div(SATOSHI).toNumber(),
+            new BigNumber(mintTxResult.fee).div(SATOSHI).toNumber(),
             address,
           );
           updateWallet = true;
@@ -169,14 +171,30 @@ const MyWalletScreen = () => {
       return;
     }
     try {
-      await wallet.fetchTransactions();
-      await saveToDisk();
+      if (await wallet.fetchTransactions()) {
+        await saveToDisk();
+      }
       Logger.info(
         'my_wallet_screen:fetchTransactionList ',
         'fetchTransactions',
       );
     } catch (e) {
       Logger.error('my_wallet_screen:fetchTransactionList ', e);
+    }
+  };
+
+  const fetchAnonymitySets = async () => {
+    const wallet = getWallet();
+    if (!wallet) {
+      return;
+    }
+    try {
+      if (await wallet.fetchAnonymitySets()) {
+        await saveToDisk();
+      }
+      Logger.info('my_wallet_screen:fetchAnonymitySet ', 'fetchAnonymitySet');
+    } catch (e) {
+      Logger.error('my_wallet_screen:fetchAnonymitySet ', e);
     }
   };
 
@@ -194,6 +212,7 @@ const MyWalletScreen = () => {
     const t = Date.now();
     await updateMintMetadata();
     await fetchTransactionList();
+    await fetchAnonymitySets();
     await mintUnspentTransactions();
     const dt = 1000 - (Date.now() - t);
     dt > 0 && (await delay(dt));

@@ -5,6 +5,7 @@ import RNSecureKeyStore, {ACCESSIBLE} from 'react-native-secure-key-store';
 import {AddressBookItem} from './data/AddressBookItem';
 import {AddressItem} from './data/AddressItem';
 import Logger from './utils/logger';
+import {AnonymitySet} from './data/AnonymitySet';
 
 const Realm = require('realm');
 const createHash = require('create-hash');
@@ -94,6 +95,16 @@ export class AppStorage {
           _txs_by_internal_index: 'string', // stringified json
         },
       },
+      {
+        name: 'AnonymitySet',
+        primaryKey: 'set_id',
+        properties: {
+          set_id: {type: 'int', indexed: true},
+          block_hash: 'string',
+          set_hash: 'string',
+          public_coins: 'string', // stringified json
+        },
+      },
     ];
     return Realm.open({
       schema,
@@ -129,7 +140,7 @@ export class AppStorage {
         // this.tx_metadata = data.tx_metadata;
 
         realm.close();
-        Logger.info('storage:loadWalletFromDisk', "Loaded wallet from disk");
+        Logger.info('storage:loadWalletFromDisk', 'Loaded wallet from disk');
         return unserializedWallet;
       } else {
         return null; // failed loading data or loading/decryptin data
@@ -209,24 +220,50 @@ export class AppStorage {
         Logger.warn('storage:inflateTransactionsFromRealm', error);
       }
     }
+
+    const realmAnonymitySetData = realm.objects('AnonymitySet');
+    for (const realmAnonymitySet of realmAnonymitySetData) {
+      try {
+        const anonytmiySet = new AnonymitySet();
+        anonytmiySet.setId = realmAnonymitySet.set_id;
+        anonytmiySet.blockHash = realmAnonymitySet.block_hash;
+        anonytmiySet.setHash = realmAnonymitySet.set_hash;
+        anonytmiySet.publicCoins = JSON.parse(realmAnonymitySet.public_coins);
+        wallet._anonymity_sets.push(anonytmiySet);
+      } catch (error) {
+        Logger.warn('storage:inflateAnonymitySetsFromRealm', error);
+      }
+    }
   }
 
   offloadWalletToRealm(realm: typeof Realm, wallet: AbstractWallet) {
-    if (wallet._txs_by_external_index) {
-      realm.write(() => {
-        const j1 = JSON.stringify(wallet._txs_by_external_index);
-        const j2 = JSON.stringify(wallet._txs_by_internal_index);
+    realm.write(() => {
+      const txsByInternalIndex = JSON.stringify(wallet._txs_by_external_index);
+      const txsByExternalIndex = JSON.stringify(wallet._txs_by_internal_index);
+      realm.create(
+        'Transaction',
+        {
+          id: 1,
+          _txs_by_external_index: txsByInternalIndex,
+          _txs_by_internal_index: txsByExternalIndex,
+        },
+        Realm.UpdateMode.Modified,
+      );
+
+      wallet._anonymity_sets.forEach(anonymitySet => {
+        const publicCoins = JSON.stringify(anonymitySet.publicCoins);
         realm.create(
-          'Transaction',
+          'AnonymitySet',
           {
-            id: 1,
-            _txs_by_external_index: j1,
-            _txs_by_internal_index: j2,
+            set_id: anonymitySet.setId,
+            block_hash: anonymitySet.blockHash,
+            set_hash: anonymitySet.setHash,
+            public_coins: publicCoins,
           },
           Realm.UpdateMode.Modified,
         );
       });
-    }
+    });
   }
 
   async hasSavedWallet(): Promise<boolean> {

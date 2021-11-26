@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import {BalanceData} from '../data/BalanceData';
 import {TransactionItem} from '../data/TransactionItem';
+import {AnonymitySet} from '../data/AnonymitySet';
 
 export type LelantusMintTxParams = {
   utxos: {
@@ -32,8 +33,11 @@ export type LelantusSpendTxParams = {
 export type FiroMintTxReturn = {
   txId: string;
   txHex: string;
+  mints: {
+    value: number;
+    publicCoin: string;
+  }[];
   value: number;
-  publicCoin: string;
   fee: number;
 };
 
@@ -56,6 +60,7 @@ export interface AbstractWallet {
   _balances_by_internal_index: Array<BalanceData>;
   _txs_by_external_index: TransactionItem[];
   _txs_by_internal_index: TransactionItem[];
+  _anonymity_sets: AnonymitySet[];
 
   generate(): Promise<void>;
   setSecret(secret: string): Promise<void>;
@@ -70,7 +75,7 @@ export interface AbstractWallet {
   getUnconfirmedBalance(): BigNumber;
 
   getTransactions(): TransactionItem[];
-  fetchTransactions(): Promise<void>;
+  fetchTransactions(): Promise<boolean>;
   getTransactionsByAddress(address: string): TransactionItem[];
 
   prepareForSerialization(): void;
@@ -96,5 +101,7 @@ export interface AbstractWallet {
     fee: number,
     address: string,
   ): void;
+
+  fetchAnonymitySets(): Promise<boolean>;
   updateMintMetadata(): Promise<boolean>;
 }
