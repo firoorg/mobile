@@ -72,6 +72,7 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
+              placeholderTextColor={colors.textPlaceholder}
               placeholder={localization.send_address.address}
               value={address}
               onChangeText={txt => setAddress(txt)}
@@ -96,6 +97,7 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
         <TextInput
           style={styles.label}
           value={name}
+          placeholderTextColor={colors.textPlaceholder}
           placeholder={localization.add_edit_address_screen.name}
           onChangeText={txt => setName(txt)}
         />

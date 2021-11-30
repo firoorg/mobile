@@ -61,6 +61,7 @@ export const CreateAddressCard: FC<CreateAddressProp> = props => {
     nameField = (
       <TextInput
         style={styles.addressName}
+        placeholderTextColor={colors.textPlaceholder}
         placeholder={localization.create_address_card.address_name}
         onChangeText={txt => setName(txt)}
       />

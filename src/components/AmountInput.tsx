@@ -127,6 +127,7 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
             style={styles.input}
             keyboardType="number-pad"
             value={input}
+            placeholderTextColor={colors.textPlaceholder}
             placeholder={`${
               localization.amount_input.enter_amount
             } (${getPlaceholder(isCrypto)})`}

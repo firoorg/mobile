@@ -28,6 +28,7 @@ export const FiroInputPassword: FC<FiroInputProps> = props => {
     <View style={[styles.container, props.style]}>
       <TextInput
         style={[styles.input]}
+        placeholderTextColor={colors.textPlaceholder}
         placeholder={
           props.placeholder
             ? props.placeholder
@@ -50,6 +51,7 @@ export const FiroInputMnemonic: FC<FiroInputProps> = props => {
       <TextInput
         style={[styles.input, styles.mnemonic]}
         onChangeText={props.onTextChanged}
+        placeholderTextColor={colors.textPlaceholder}
         placeholder={
           props.placeholder
             ? props.placeholder

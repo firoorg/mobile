@@ -82,6 +82,7 @@ export const SendAddress: FC<SendAddressProps> = props => {
         <TextInput
           style={styles.input}
           value={sendAddress}
+          placeholderTextColor={colors.textPlaceholder}
           placeholder={localization.send_address.address}
           onChangeText={onTextChanged}
         />

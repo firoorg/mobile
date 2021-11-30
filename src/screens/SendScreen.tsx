@@ -225,6 +225,7 @@ const SendScreen = () => {
           <TextInput
             style={styles.label}
             value={label}
+            placeholderTextColor={colors.textPlaceholder}
             placeholder={localization.send_screen.label_optional}
             onChangeText={newLabel => setLabel(newLabel)}
           />

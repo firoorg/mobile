@@ -6,6 +6,7 @@ type FiroColors = {
   background: string;
   card: string;
   text: string;
+  textPlaceholder: string;
   border: string;
   notification: string;
   textOnBackground: string;
@@ -34,6 +35,7 @@ export const FiroDefaultTheme: FiroTheme = {
     background: '#FBFBFB',
     textOnBackground: '#3C3939',
     text: '#3C3939',
+    textPlaceholder: '#a7a7a7',
     primary: '#9B1C2E',
     primaryDisabled: 'rgba(155, 28, 46, 0.5)',
     colorOnPrimary: '#FFFFFF',
