@@ -34,8 +34,6 @@ const ANONYMITY_SET_EMPTY_ID = 0;
 
 const TRANSACTION_LELANTUS = 8;
 
-const MINT_CONFIRM_BLOCK_COUNT = 1;
-
 const MINT_LIMIT = 100100000000;
 
 export const SATOSHI = new BigNumber(100000000);
@@ -557,17 +555,6 @@ export class FiroWallet implements AbstractWallet {
     return false;
   }
 
-  _updateMintCoinData(
-    coin: LelantusCoin,
-    height: number,
-    anonimitySetId: number,
-    latestBlockHeight: number,
-  ) {
-    if (latestBlockHeight - height >= MINT_CONFIRM_BLOCK_COUNT - 1) {
-      coin.anonymitySetId = anonimitySetId;
-    }
-  }
-
   _updateMintTxStatus(coin: LelantusCoin) {
     const tx = this._txs_by_external_index.find(
       item => item.txId === coin.txId,
@@ -936,7 +923,7 @@ export class FiroWallet implements AbstractWallet {
       if (!anonymitySet) {
         anonymitySet = new AnonymitySet();
         anonymitySet.setId = setId;
-        this._anonymity_sets.push(anonymitySet);
+        this._anonymity_sets.unshift(anonymitySet);
       }
       const fetchedAnonymitySet = await firoElectrum.getAnonymitySet(
         anonymitySet.setId,

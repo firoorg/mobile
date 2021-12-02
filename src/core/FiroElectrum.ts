@@ -4,7 +4,6 @@ import {
   BalanceModel,
   TransactionModel,
   FullTransactionModel,
-  MintMetadataModel,
   AnonymitySetModel,
 } from './AbstractElectrum';
 import {network} from './FiroNetwork';
@@ -611,40 +610,6 @@ export default class FiroElectrum implements AbstractElectrum {
     return broadcast;
   }
 
-  async getMintMetadata(publicCoins: string[]): Promise<MintMetadataModel[]> {
-    this.checkConnection('getMintMetadata');
-
-    const mints: {pubcoin: string}[] = [];
-    publicCoins.forEach(coin => {
-      mints.push({pubcoin: coin});
-    });
-
-    const param = [];
-    param.push({mints});
-
-    const result = await this.mainClient.request(
-      'sigma.getmintmetadata',
-      param,
-    );
-    const ret = result.map((info: {}, index: number) => {
-      const response = result[index];
-      let groupId = -1;
-      let height = -1;
-      try {
-        height = parseInt(Object.keys(response)[0], 10);
-        groupId = response[height];
-      } catch (e) {}
-
-      return {
-        height: height,
-        anonimitySetId: groupId,
-      };
-    });
-
-    Logger.info('electrum_wallet:getMintMetadata', ret);
-    return ret;
-  }
-
   async getAnonymitySet(
     setId: number,
     startBlockHash: string,
@@ -669,6 +634,18 @@ export default class FiroElectrum implements AbstractElectrum {
     const result = await this.mainClient.request('sigma.getlatestcoinid');
 
     Logger.info('electrum_wallet:getLatestSetId', result);
+    return result;
+  }
+
+  async getAllCoins(): Promise<AnonymitySetModel> {
+    this.checkConnection('getAllCoins');
+
+    const result = await this.mainClient.request(
+      'sigma.getcoinsforrecovery',
+      [],
+    );
+
+    Logger.info('electrum_wallet:getAllCoins', result);
     return result;
   }
 

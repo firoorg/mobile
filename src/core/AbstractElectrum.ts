@@ -50,11 +50,6 @@ export class FullTransactionModel {
   confirmations: number = 0;
 }
 
-export type MintMetadataModel = {
-  height: number;
-  anonimitySetId: number;
-};
-
 export type AnonymitySetModel = {
   serializedCoins: string[];
   blockHash: string;
@@ -107,14 +102,14 @@ export interface AbstractElectrum {
   addChangeListener(onChange: () => void): void;
   removeChangeListener(onChange: () => void): void;
 
-  getMintMetadata(serilizedCoins: string[]): Promise<MintMetadataModel[]>;
-
   getAnonymitySet(
     setId: number,
     startBlockHash: string,
   ): Promise<AnonymitySetModel>;
 
   getLatestSetId(): Promise<number>;
+
+  getAllCoins(): Promise<AnonymitySetModel>;
 
   getFeeRate(): Promise<number>;
 }
