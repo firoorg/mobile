@@ -18,6 +18,14 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateMintScript
 
 /*
 * Class:     org_firo_lelantus_Lelantus
+* Method:    jCreateTag
+* Signature: (JJJ)J
+*/
+JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateTag
+		(JNIEnv *, jobject, jstring, jint, jstring);
+
+/*
+* Class:     org_firo_lelantus_Lelantus
 * Method:    jCreateMintScript
 * Signature: (JJJ)J
 */
@@ -37,7 +45,7 @@ JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 * Method:    jGetMintKeyPath
 * Signature: (JJJ)J
 */
-JNIEXPORT jlong JNICALL Java_org_firo_lelantus_Lelantus_jGetMintKeyPath
+JNIEXPORT jint JNICALL Java_org_firo_lelantus_Lelantus_jGetMintKeyPath
 		(JNIEnv *, jobject, jlong, jstring, jint);
 
 /*
@@ -56,6 +64,14 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateJMintScript
 JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
 		(JNIEnv *, jobject, jlong, jboolean, jstring, jint, jobjectArray, jstring, jintArray,
 		 jobjectArray, jobjectArray, jobjectArray);
+
+/*
+* Class:     org_firo_lelantus_Lelantus
+* Method:    jDecryptMintAmount
+* Signature: (JJ)J
+*/
+JNIEXPORT jlong JNICALL Java_org_firo_lelantus_Lelantus_jDecryptMintAmount
+		(JNIEnv *, jobject, jstring, jstring);
 
 #ifdef __cplusplus
 }

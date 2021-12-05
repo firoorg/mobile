@@ -21,6 +21,22 @@ export class LelantusWrapper {
     });
   }
 
+  static async getMintTag(
+    keypair: BIP32Interface,
+    index: number,
+  ): Promise<string> {
+    return new Promise(resolve => {
+      RNLelantus.getMintTag(
+        keypair.privateKey?.toString('hex'),
+        index,
+        keypair.identifier.toString('hex'),
+        (tag: string) => {
+          resolve(tag);
+        },
+      );
+    });
+  }
+
   static async estimateJoinSplitFee(
     spendAmount: number,
     subtractFeeFromAmount: boolean,
@@ -108,6 +124,21 @@ export class LelantusWrapper {
         groupBlockHashes,
         (script: string) => {
           resolve(script);
+        },
+      );
+    });
+  }
+
+  static async decryptMintAmount(
+    keypair: BIP32Interface,
+    encryptedValue: string,
+  ): Promise<number> {
+    return new Promise(resolve => {
+      RNLelantus.getMintTag(
+        keypair.privateKey?.toString('hex'),
+        encryptedValue,
+        (amount: number) => {
+          resolve(amount);
         },
       );
     });

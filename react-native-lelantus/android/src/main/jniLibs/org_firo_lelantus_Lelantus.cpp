@@ -12,6 +12,15 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateMintScript
 	return env->NewStringUTF(script);
 }
 
+JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateTag
+		(JNIEnv *env, jobject thisClass, jstring jPrivateKey,
+		 jint index, jstring jSeed) {
+	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
+	auto *seed = env->GetStringUTFChars(jSeed, nullptr);
+	const char *tag = CreateTag(privateKey, index, seed);
+	return env->NewStringUTF(tag);
+}
+
 JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetPublicCoin
 		(JNIEnv *env, jobject thisClass, jlong value,
 		 jstring jPrivateKey, jint index) {
@@ -71,12 +80,13 @@ JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 
 	jintArray indexes = env->NewIntArray(spendCoinIndexes.size());
 	env->SetIntArrayRegion(indexes, 0, spendCoinIndexes.size(), (jint *) &spendCoinIndexes[0]);
-	jobject result = env->NewObject(jsdCls, jsdConstructor, (jlong) fee, (jlong) changeToMint, indexes);
+	jobject result = env->NewObject(jsdCls, jsdConstructor, (jlong) fee, (jlong) changeToMint,
+									indexes);
 
 	return result;
 }
 
-JNIEXPORT jlong JNICALL Java_org_firo_lelantus_Lelantus_jGetMintKeyPath
+JNIEXPORT jint JNICALL Java_org_firo_lelantus_Lelantus_jGetMintKeyPath
 		(JNIEnv *env, jobject thisClass, jlong value, jstring jPrivateKey, jint index) {
 	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
 	uint32_t keyPath = GetMintKeyPath(value, privateKey, index);
@@ -179,6 +189,14 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
 			groupBlockHashes
 	);
 	return env->NewStringUTF(script);
+}
+
+JNIEXPORT jlong JNICALL Java_org_firo_lelantus_Lelantus_jDecryptMintAmount
+		(JNIEnv *env, jobject thisClass, jstring jPrivateKey, jstring jEncryptedValue) {
+	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
+	const char *encryptedValue = env->GetStringUTFChars(jEncryptedValue, nullptr);
+	uint64_t tag = DecryptMintAmount(privateKey, encryptedValue);
+	return tag;
 }
 
 }
