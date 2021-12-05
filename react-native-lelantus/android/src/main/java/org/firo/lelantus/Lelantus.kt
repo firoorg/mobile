@@ -6,6 +6,10 @@ object Lelantus {
         return jCreateMintScript(value, privateKey, index, seed)
     }
 
+    fun createMintTag(privateKey: String, index: Int, seed: String): String {
+        return jCreateTag(privateKey, index, seed)
+    }
+
     fun getPublicCoin(value: Long, privateKey: String, index: Int): String {
         return jGetPublicCoin(value, privateKey, index)
     }
@@ -18,7 +22,7 @@ object Lelantus {
         return jEstimateJoinSplitFee(spendAmount, subtractFeeFromAmount, coins)
     }
 
-    fun getMintKeyPath(value: Long, privateKey: String, index: Int): Long {
+    fun getMintKeyPath(value: Long, privateKey: String, index: Int): Int {
         return jGetMintKeyPath(value, privateKey, index)
     }
 
@@ -58,8 +62,18 @@ object Lelantus {
         )
     }
 
+    fun decryptMintAmount(privateKey: String, encryptedValue: String): Long {
+        return jDecryptMintAmount(privateKey, encryptedValue)
+    }
+
     external fun jCreateMintScript(
         value: Long,
+        privateKey: String,
+        index: Int,
+        seed: String
+    ): String
+
+    external fun jCreateTag(
         privateKey: String,
         index: Int,
         seed: String
@@ -77,7 +91,7 @@ object Lelantus {
         lelantusEntryList: Array<LelantusEntry>
     ): JoinSplitData
 
-    external fun jGetMintKeyPath(value: Long, privateKey: String, index: Int): Long
+    external fun jGetMintKeyPath(value: Long, privateKey: String, index: Int): Int
 
     external fun jCreateJMintScript(
         value: Long,
@@ -99,4 +113,9 @@ object Lelantus {
         anonymitySetHashes: Array<String>,
         groupBlockHashes: Array<String>
     ): String
+
+    external fun jDecryptMintAmount(
+        privateKey: String,
+        encryptedValue: String
+    ): Long
 }

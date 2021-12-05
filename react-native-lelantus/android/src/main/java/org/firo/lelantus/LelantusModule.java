@@ -41,6 +41,17 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
+	public void getMintTag(
+			String privateKey,
+			int index,
+			String seed,
+			Callback callback
+	) {
+		String tag = Lelantus.INSTANCE.createMintTag(privateKey, index, seed);
+		callback.invoke(tag);
+	}
+
+	@ReactMethod
 	public void estimateJoinSplitFee(
 			double spendAmount,
 			boolean subtractFeeFromAmount,
@@ -79,7 +90,7 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 			int index,
 			Callback callback
 	) {
-		double keyPath = (double) Lelantus.INSTANCE.getMintKeyPath((long) value, privateKey, index);
+		double keyPath = Lelantus.INSTANCE.getMintKeyPath((long) value, privateKey, index);
 		callback.invoke(keyPath);
 	}
 
@@ -162,5 +173,15 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 				anonymitySetHashes,
 				groupBlockHashes);
 		callback.invoke(script);
+	}
+
+	@ReactMethod
+	public void decryptMintAmount(
+			String privateKey,
+			String encryptedValue,
+			Callback callback
+	) {
+		double amount = Lelantus.INSTANCE.decryptMintAmount(privateKey, encryptedValue);
+		callback.invoke(amount);
 	}
 }

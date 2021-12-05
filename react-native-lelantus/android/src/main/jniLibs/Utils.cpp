@@ -56,6 +56,18 @@ const char *CreateMintScript(
 	return bin2hex(script, script.size());
 }
 
+const char *CreateTag(
+		const char *keydata,
+		int32_t index,
+		const char *seedID
+) {
+	auto *seed = hex2bin(seedID);
+	std::vector<unsigned char> seedVector(seed, seed + 20);
+
+	uint256 tag = CreateMintTag(hex2bin(keydata), index, uint160(seedVector));
+	return tag.GetHex().c_str();
+}
+
 const char *GetPublicCoin(
 		uint64_t value,
 		const char *keydata,
@@ -248,4 +260,16 @@ const char *CreateJoinSplitScript(
 	CreateJoinSplit(_txHash, privateCoin, spendAmount, fee, coinsToBeSpent, anonymity_sets,
 					_anonymitySetHashes, group_block_hashes, script);
 	return bin2hex(script, script.size());
+}
+
+uint64_t DecryptMintAmount(
+		const char *keydata,
+		const char *encryptedValueHex
+) {
+	unsigned char *encryptedValue = hex2bin(encryptedValueHex);
+	vector<unsigned char> encryptedValueVector(encryptedValue, encryptedValue + 48);
+
+	uint64_t amount;
+	DecryptMintAmount(hex2bin(keydata), encryptedValueVector, amount);
+	return amount;
 }
