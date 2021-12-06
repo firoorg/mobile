@@ -26,7 +26,7 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateTag
 
 /*
 * Class:     org_firo_lelantus_Lelantus
-* Method:    jCreateMintScript
+* Method:    jGetPublicCoin
 * Signature: (JJJ)J
 */
 JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetPublicCoin
@@ -34,7 +34,15 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetPublicCoin
 
 /*
 * Class:     org_firo_lelantus_Lelantus
-* Method:    jEstimateFee
+* Method:    jGetSerialNumber
+* Signature: (JJJ)J
+*/
+JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetSerialNumber
+		(JNIEnv *, jobject, jlong, jstring, jint);
+
+/*
+* Class:     org_firo_lelantus_Lelantus
+* Method:    jEstimateJoinSplitFee
 * Signature: (JJJ)J
 */
 JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
@@ -45,8 +53,16 @@ JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 * Method:    jGetMintKeyPath
 * Signature: (JJJ)J
 */
-JNIEXPORT jint JNICALL Java_org_firo_lelantus_Lelantus_jGetMintKeyPath
+JNIEXPORT jlong JNICALL Java_org_firo_lelantus_Lelantus_jGetMintKeyPath
 		(JNIEnv *, jobject, jlong, jstring, jint);
+
+/*
+* Class:     org_firo_lelantus_Lelantus
+* Method:    jGetAesKeyPath
+* Signature: (J)J
+*/
+JNIEXPORT jlong JNICALL Java_org_firo_lelantus_Lelantus_jGetAesKeyPath
+		(JNIEnv *, jobject, jstring);
 
 /*
 * Class:     org_firo_lelantus_Lelantus

@@ -65,7 +65,8 @@ const char *CreateTag(
 	std::vector<unsigned char> seedVector(seed, seed + 20);
 
 	uint256 tag = CreateMintTag(hex2bin(keydata), index, uint160(seedVector));
-	return tag.GetHex().c_str();
+	const std::string &tagHex = tag.GetHex();
+	return tagHex.c_str();
 }
 
 const char *GetPublicCoin(
@@ -79,6 +80,19 @@ const char *GetPublicCoin(
 	const lelantus::PublicCoin &publicCoin = privateCoin.getPublicCoin();
 	return bin2hex(publicCoin.getValue().getvch().data(),
 				   publicCoin.getValue().getvch().size());
+}
+
+const char *GetSerialNumber(
+		uint64_t value,
+		const char *keydata,
+		int32_t index) {
+	uint32_t keyPathOut;
+	lelantus::PrivateCoin privateCoin = CreateMintPrivateCoin(
+			value, hex2bin(keydata), index, keyPathOut
+	);
+	auto* buffer = new unsigned char[32];
+	privateCoin.getSerialNumber().serialize(buffer);
+	return bin2hex(buffer, 32);
 }
 
 uint64_t EstimateFee(
@@ -148,6 +162,13 @@ uint32_t GetMintKeyPath(
 	uint32_t keyPathOut;
 	CreateMintPrivateCoin(value, hex2bin(keydata), index, keyPathOut);
 	return keyPathOut;
+}
+
+uint32_t GetAesKeyPath(
+		const char *serializedCoin
+) {
+	uint32_t aesKeyPath = GenerateAESKeyPath(serializedCoin);
+	return aesKeyPath;
 }
 
 const char *CreateJMintScript(
@@ -263,13 +284,13 @@ const char *CreateJoinSplitScript(
 }
 
 uint64_t DecryptMintAmount(
-		const char *keydata,
+		const char *privateKeyAES,
 		const char *encryptedValueHex
 ) {
-	unsigned char *encryptedValue = hex2bin(encryptedValueHex);
-	vector<unsigned char> encryptedValueVector(encryptedValue, encryptedValue + 48);
+	auto *encryptedValue = hex2bin(encryptedValueHex);
+	std::vector<unsigned char> encryptedValueVector(encryptedValue, encryptedValue + 48);
 
 	uint64_t amount;
-	DecryptMintAmount(hex2bin(keydata), encryptedValueVector, amount);
+	DecryptMintAmount(hex2bin(privateKeyAES), encryptedValueVector, amount);
 	return amount;
 }

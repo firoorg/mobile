@@ -104,4 +104,6 @@ export interface AbstractWallet {
 
   fetchAnonymitySets(): Promise<boolean>;
   updateMintMetadata(): Promise<boolean>;
+
+  restore(): Promise<void>;
 }

@@ -29,6 +29,14 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetPublicCoin
 	return env->NewStringUTF(publicCoin);
 }
 
+JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetSerialNumber
+		(JNIEnv *env, jobject thisClass, jlong value,
+		 jstring jPrivateKey, jint index) {
+	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
+	const char *serialNumber = GetSerialNumber(value, privateKey, index);
+	return env->NewStringUTF(serialNumber);
+}
+
 JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 		(JNIEnv *env, jobject thisClass, jlong spendAmount,
 		 jboolean subtractFeeFromAmount, jobjectArray jLelantusEntryList) {
@@ -86,10 +94,17 @@ JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 	return result;
 }
 
-JNIEXPORT jint JNICALL Java_org_firo_lelantus_Lelantus_jGetMintKeyPath
+JNIEXPORT jlong JNICALL Java_org_firo_lelantus_Lelantus_jGetMintKeyPath
 		(JNIEnv *env, jobject thisClass, jlong value, jstring jPrivateKey, jint index) {
 	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
 	uint32_t keyPath = GetMintKeyPath(value, privateKey, index);
+	return keyPath;
+}
+
+JNIEXPORT jlong JNICALL Java_org_firo_lelantus_Lelantus_jGetAesKeyPath
+		(JNIEnv *env, jobject thisClass, jstring jSerializedCoin) {
+	auto *serializedCoin = env->GetStringUTFChars(jSerializedCoin, nullptr);
+	uint32_t keyPath = GetAesKeyPath(serializedCoin);
 	return keyPath;
 }
 
@@ -192,10 +207,10 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
 }
 
 JNIEXPORT jlong JNICALL Java_org_firo_lelantus_Lelantus_jDecryptMintAmount
-		(JNIEnv *env, jobject thisClass, jstring jPrivateKey, jstring jEncryptedValue) {
-	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
-	const char *encryptedValue = env->GetStringUTFChars(jEncryptedValue, nullptr);
-	uint64_t tag = DecryptMintAmount(privateKey, encryptedValue);
+		(JNIEnv *env, jobject thisClass, jstring jPrivateKeyAES, jstring jEncryptedValue) {
+	auto *privateKeyAES = env->GetStringUTFChars(jPrivateKeyAES, nullptr);
+	auto *encryptedValue = env->GetStringUTFChars(jEncryptedValue, nullptr);
+	uint64_t tag = DecryptMintAmount(privateKeyAES, encryptedValue);
 	return tag;
 }
 

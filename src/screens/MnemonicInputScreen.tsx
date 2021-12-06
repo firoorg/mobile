@@ -10,9 +10,9 @@ import {FiroWallet} from '../core/FiroWallet';
 import {CurrentFiroTheme} from '../Themes';
 import localization from '../localization';
 import Logger from '../utils/logger';
-import { FiroStatusBar } from '../components/FiroStatusBar';
+import {FiroStatusBar} from '../components/FiroStatusBar';
 
-const { colors } = CurrentFiroTheme;
+const {colors} = CurrentFiroTheme;
 
 const MnemonicInputScreen = () => {
   const [creating, setCreating] = useState(false);
@@ -36,6 +36,8 @@ const MnemonicInputScreen = () => {
     try {
       const wallet = new FiroWallet();
       await wallet.setSecret(mnemonic);
+      await wallet.fetchTransactions();
+      await wallet.restore();
       setWallet(wallet);
       NavigationService.navigate('PassphraseScreen', undefined);
     } catch (e) {
@@ -68,6 +70,7 @@ const MnemonicInputScreen = () => {
         <FiroInputMnemonic
           style={styles.mnemonicInput}
           onTextChanged={txt => setMnemonic(txt)}
+          enabled={!creating}
         />
         <FiroSecondaryButton
           buttonStyle={styles.restoreWallet}
@@ -106,9 +109,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 120,
     marginTop: 30,
+    marginBottom: 50,
   },
   restoreWallet: {
-    marginTop: 'auto',
     width: '100%',
   },
   textCenter: {

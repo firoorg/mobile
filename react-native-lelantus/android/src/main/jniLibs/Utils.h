@@ -44,6 +44,12 @@ const char *GetPublicCoin(
 		int32_t index
 );
 
+const char *GetSerialNumber(
+		uint64_t value,
+		const char *keydata,
+		int32_t index
+);
+
 uint64_t EstimateFee(
 		uint64_t spendAmount,
 		bool subtractFeeFromAmount,
@@ -56,6 +62,10 @@ uint32_t GetMintKeyPath(
 		uint64_t value,
 		const char *keydata,
 		int32_t index
+);
+
+uint32_t GetAesKeyPath(
+		const char *serializedCoin
 );
 
 const char *CreateJMintScript(
@@ -79,7 +89,7 @@ const char *CreateJoinSplitScript(
 );
 
 uint64_t DecryptMintAmount(
-		const char *keydata,
+		const char *privateKeyAES,
 		const char *encryptedValue
 );
 

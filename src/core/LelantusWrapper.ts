@@ -21,6 +21,23 @@ export class LelantusWrapper {
     });
   }
 
+  static async getSerialNumber(
+    keypair: BIP32Interface,
+    index: number,
+    value: number,
+  ): Promise<string> {
+    return new Promise(resolve => {
+      RNLelantus.getSerialNumber(
+        value,
+        keypair.privateKey?.toString('hex'),
+        index,
+        (serialNumber: string) => {
+          resolve(serialNumber);
+        },
+      );
+    });
+  }
+
   static async getMintTag(
     keypair: BIP32Interface,
     index: number,
@@ -72,6 +89,14 @@ export class LelantusWrapper {
           resolve(keyPath);
         },
       );
+    });
+  }
+
+  static async getAesKeyPath(serializedCoin: string) {
+    return new Promise<number>(resolve => {
+      RNLelantus.getAesKeyPath(serializedCoin, (keyPath: number) => {
+        resolve(keyPath);
+      });
     });
   }
 
@@ -130,12 +155,12 @@ export class LelantusWrapper {
   }
 
   static async decryptMintAmount(
-    keypair: BIP32Interface,
+    privateKeyAES: string,
     encryptedValue: string,
   ): Promise<number> {
     return new Promise(resolve => {
-      RNLelantus.getMintTag(
-        keypair.privateKey?.toString('hex'),
+      RNLelantus.decryptMintAmount(
+        privateKeyAES,
         encryptedValue,
         (amount: number) => {
           resolve(amount);

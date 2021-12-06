@@ -17,6 +17,7 @@ type FiroInputProps = {
   style: StyleProp<ViewStyle>;
   onTextChanged: (text: string) => void;
   placeholder?: string;
+  enabled?: boolean;
 };
 
 export const FiroInputPassword: FC<FiroInputProps> = props => {
@@ -59,6 +60,7 @@ export const FiroInputMnemonic: FC<FiroInputProps> = props => {
         }
         multiline
         numberOfLines={5}
+        editable={props.enabled ? props.enabled : true}
       />
     </View>
   );

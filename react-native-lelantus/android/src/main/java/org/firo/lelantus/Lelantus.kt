@@ -14,6 +14,10 @@ object Lelantus {
         return jGetPublicCoin(value, privateKey, index)
     }
 
+    fun getSerialNumber(value: Long, privateKey: String, index: Int): String {
+        return jGetSerialNumber(value, privateKey, index)
+    }
+
     fun estimateJoinSplitFee(
         spendAmount: Long,
         subtractFeeFromAmount: Boolean,
@@ -22,8 +26,12 @@ object Lelantus {
         return jEstimateJoinSplitFee(spendAmount, subtractFeeFromAmount, coins)
     }
 
-    fun getMintKeyPath(value: Long, privateKey: String, index: Int): Int {
+    fun getMintKeyPath(value: Long, privateKey: String, index: Int): Long {
         return jGetMintKeyPath(value, privateKey, index)
+    }
+
+    fun getAesKeyPath(serializedCoin: String): Long {
+        return jGetAesKeyPath(serializedCoin)
     }
 
     fun createJMintScript(
@@ -62,8 +70,8 @@ object Lelantus {
         )
     }
 
-    fun decryptMintAmount(privateKey: String, encryptedValue: String): Long {
-        return jDecryptMintAmount(privateKey, encryptedValue)
+    fun decryptMintAmount(privateKeyAES: String, encryptedValue: String): Long {
+        return jDecryptMintAmount(privateKeyAES, encryptedValue)
     }
 
     external fun jCreateMintScript(
@@ -85,13 +93,21 @@ object Lelantus {
         index: Int
     ): String
 
+    external fun jGetSerialNumber(
+        value: Long,
+        privateKey: String,
+        index: Int
+    ): String
+
     external fun jEstimateJoinSplitFee(
         spendAmount: Long,
         subtractFeeFromAmount: Boolean,
         lelantusEntryList: Array<LelantusEntry>
     ): JoinSplitData
 
-    external fun jGetMintKeyPath(value: Long, privateKey: String, index: Int): Int
+    external fun jGetMintKeyPath(value: Long, privateKey: String, index: Int): Long
+
+    external fun jGetAesKeyPath(serializedCoin: String): Long
 
     external fun jCreateJMintScript(
         value: Long,
@@ -115,7 +131,7 @@ object Lelantus {
     ): String
 
     external fun jDecryptMintAmount(
-        privateKey: String,
+        privateKeyAES: String,
         encryptedValue: String
     ): Long
 }

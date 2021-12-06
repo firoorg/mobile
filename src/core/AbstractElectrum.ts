@@ -17,6 +17,7 @@ export type VIn = {
   txid: string;
   value: number;
   vout: number;
+  nFees: number;
 };
 
 export type VOut = {
@@ -54,6 +55,16 @@ export type AnonymitySetModel = {
   serializedCoins: string[];
   blockHash: string;
   setHash: string;
+};
+
+export type AllCoinsModel = {
+  setID: number;
+  mints: [];
+  jmints: [];
+};
+
+export type UsedSerialsModel = {
+  serials: string[];
 };
 
 export interface AbstractElectrum {
@@ -109,7 +120,8 @@ export interface AbstractElectrum {
 
   getLatestSetId(): Promise<number>;
 
-  getAllCoins(): Promise<AnonymitySetModel>;
+  getAllCoins(): Promise<AllCoinsModel>;
+  getUsedCoinSerials(): Promise<UsedSerialsModel>;
 
   getFeeRate(): Promise<number>;
 }

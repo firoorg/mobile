@@ -41,6 +41,17 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
+	public void getSerialNumber(
+			double value,
+			String privateKey,
+			int index,
+			Callback callback
+	) {
+		String serialNumber = Lelantus.INSTANCE.getSerialNumber((long) value, privateKey, index);
+		callback.invoke(serialNumber);
+	}
+
+	@ReactMethod
 	public void getMintTag(
 			String privateKey,
 			int index,
@@ -90,7 +101,16 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 			int index,
 			Callback callback
 	) {
-		double keyPath = Lelantus.INSTANCE.getMintKeyPath((long) value, privateKey, index);
+		double keyPath = (double) Lelantus.INSTANCE.getMintKeyPath((long) value, privateKey, index);
+		callback.invoke(keyPath);
+	}
+
+	@ReactMethod
+	public void getAesKeyPath(
+			String serializedCoin,
+			Callback callback
+	) {
+		double keyPath = (double) Lelantus.INSTANCE.getAesKeyPath(serializedCoin);
 		callback.invoke(keyPath);
 	}
 
@@ -177,11 +197,11 @@ public class LelantusModule extends ReactContextBaseJavaModule {
 
 	@ReactMethod
 	public void decryptMintAmount(
-			String privateKey,
+			String privateKeyAES,
 			String encryptedValue,
 			Callback callback
 	) {
-		double amount = Lelantus.INSTANCE.decryptMintAmount(privateKey, encryptedValue);
+		double amount = Lelantus.INSTANCE.decryptMintAmount(privateKeyAES, encryptedValue);
 		callback.invoke(amount);
 	}
 }

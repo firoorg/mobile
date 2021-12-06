@@ -5,6 +5,8 @@ import {
   TransactionModel,
   FullTransactionModel,
   AnonymitySetModel,
+  AllCoinsModel,
+  UsedSerialsModel,
 } from './AbstractElectrum';
 import {network} from './FiroNetwork';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -637,7 +639,7 @@ export default class FiroElectrum implements AbstractElectrum {
     return result;
   }
 
-  async getAllCoins(): Promise<AnonymitySetModel> {
+  async getAllCoins(): Promise<AllCoinsModel> {
     this.checkConnection('getAllCoins');
 
     const result = await this.mainClient.request(
@@ -646,6 +648,18 @@ export default class FiroElectrum implements AbstractElectrum {
     );
 
     Logger.info('electrum_wallet:getAllCoins', result);
+    return result;
+  }
+
+  async getUsedCoinSerials(): Promise<UsedSerialsModel> {
+    this.checkConnection('getUsedCoinSerials');
+
+    const result = await this.mainClient.request(
+      'sigma.getusedcoinserials',
+      [],
+    );
+
+    Logger.info('electrum_wallet:getUsedCoinSerials', result);
     return result;
   }
 
