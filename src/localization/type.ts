@@ -160,6 +160,7 @@ export interface IString extends LocalizedStringsMethods {
     error_invalid_fingerprint: string;
     error_invalid_address: string;
     error_invalid_nowallet: string;
+    error_limit_exceeded: string;
     error_network: string;
     title_success: string;
     description_success: string;
