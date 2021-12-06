@@ -60,7 +60,7 @@ export const FiroInputMnemonic: FC<FiroInputProps> = props => {
         }
         multiline
         numberOfLines={5}
-        editable={props.enabled ? props.enabled : true}
+        editable={props.enabled}
       />
     </View>
   );
