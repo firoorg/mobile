@@ -46,8 +46,9 @@ const MnemonicInputScreen = () => {
       setCreating(false);
     }
   };
+
   return (
-    <View>
+    <View style={styles.page}>
       <FiroToolbar title="Enter mnemonic" />
       <FiroStatusBar />
       <View style={styles.root}>
@@ -76,6 +77,7 @@ const MnemonicInputScreen = () => {
           buttonStyle={styles.restoreWallet}
           text={btnRestoreText}
           onClick={onClickContinue}
+          disable={creating}
         />
       </View>
     </View>
@@ -85,12 +87,16 @@ const MnemonicInputScreen = () => {
 export default MnemonicInputScreen;
 
 const styles = StyleSheet.create({
+  page: {
+    flex: 1,
+  },
   root: {
     backgroundColor: colors.background,
-    height: '100%',
+    flexGrow: 1,
     display: 'flex',
     alignItems: 'center',
     paddingHorizontal: 20,
+    paddingBottom: 30,
   },
   logo: {
     width: 120,
@@ -109,7 +115,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 120,
     marginTop: 30,
-    marginBottom: 50,
+    marginBottom: 'auto',
   },
   restoreWallet: {
     width: '100%',
