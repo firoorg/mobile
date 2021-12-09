@@ -945,7 +945,10 @@ export class FiroWallet implements AbstractWallet {
   }
 
   async restore(): Promise<void> {
+    await this.fetchTransactions();
+
     const allCoins = await firoElectrum.getAllCoins();
+    const setIds = Object.keys(allCoins);
     const usedSerialNumbers = (await firoElectrum.getUsedCoinSerials()).serials;
 
     const spendTxIds: string[] = [];
@@ -959,63 +962,68 @@ export class FiroWallet implements AbstractWallet {
         currentIndex,
       );
 
-      const foundMint = allCoins.mints.find(
-        coinData => coinData[1] === mintTag,
-      );
-      if (foundMint) {
-        lastFoundIndex = currentIndex;
-        const amount = foundMint[2];
-        const serialNumber = await LelantusWrapper.getSerialNumber(
-          mintKeyPair,
-          currentIndex,
-          amount,
+      setIds.forEach(async setId => {
+        const coinData = allCoins[setId];
+        const foundMint = coinData.mints.find(
+          mintData => mintData[1] === mintTag,
         );
-        this._lelantus_coins[foundMint[3]] = {
-          index: currentIndex,
-          value: amount,
-          publicCoin: foundMint[0],
-          txId: foundMint[3],
-          anonymitySetId: 1,
-          isUsed: usedSerialNumbers.includes(serialNumber),
-        };
-      } else {
-        const foundJmint = allCoins.jmints.find(
-          coinData => coinData[1] === mintTag,
-        );
-        if (foundJmint) {
+        if (foundMint) {
           lastFoundIndex = currentIndex;
+          const amount = foundMint[2];
+          const serialNumber = await LelantusWrapper.getSerialNumber(
+            mintKeyPair,
+            currentIndex,
+            amount,
+          );
+          this._lelantus_coins[foundMint[3]] = {
+            index: currentIndex,
+            value: amount,
+            publicCoin: foundMint[0],
+            txId: foundMint[3],
+            anonymitySetId: coinData.setID,
+            isUsed: usedSerialNumbers.includes(serialNumber),
+          };
+        } else {
+          const foundJmint = coinData.jmints.find(
+            jmintData => jmintData[1] === mintTag,
+          );
+          if (foundJmint) {
+            lastFoundIndex = currentIndex;
 
-          const keyPath = await LelantusWrapper.getAesKeyPath(foundJmint[0]);
-          const aesKeyPair = this._getNode(JMINT_INDEX, keyPath);
-          const aesPrivateKey = aesKeyPair.privateKey?.toString('hex');
-          if (aesPrivateKey !== undefined) {
-            const amount = await LelantusWrapper.decryptMintAmount(
-              aesPrivateKey,
-              foundJmint[2],
-            );
+            const keyPath = await LelantusWrapper.getAesKeyPath(foundJmint[0]);
+            const aesKeyPair = this._getNode(JMINT_INDEX, keyPath);
+            const aesPrivateKey = aesKeyPair.privateKey?.toString('hex');
+            if (aesPrivateKey !== undefined) {
+              const amount = await LelantusWrapper.decryptMintAmount(
+                aesPrivateKey,
+                foundJmint[2],
+              );
 
-            const serialNumber = await LelantusWrapper.getSerialNumber(
-              mintKeyPair,
-              currentIndex,
-              amount,
-            );
+              const serialNumber = await LelantusWrapper.getSerialNumber(
+                mintKeyPair,
+                currentIndex,
+                amount,
+              );
 
-            this._lelantus_coins[foundJmint[3]] = {
-              index: currentIndex,
-              value: amount,
-              publicCoin: foundJmint[0],
-              txId: foundJmint[3],
-              anonymitySetId: 1,
-              isUsed: usedSerialNumbers.includes(serialNumber),
-            };
+              this._lelantus_coins[foundJmint[3]] = {
+                index: currentIndex,
+                value: amount,
+                publicCoin: foundJmint[0],
+                txId: foundJmint[3],
+                anonymitySetId: coinData.setID,
+                isUsed: usedSerialNumbers.includes(serialNumber),
+              };
 
-            spendTxIds.push(foundJmint[3]);
+              spendTxIds.push(foundJmint[3]);
+            }
           }
         }
-      }
+      });
 
       currentIndex++;
     }
+
+    this.next_free_mint_index = lastFoundIndex + 1;
 
     const spendTxs = await firoElectrum.multiGetTransactionByTxid(spendTxIds);
     for (const [txid, tx] of Object.entries(spendTxs)) {
@@ -1034,8 +1042,6 @@ export class FiroWallet implements AbstractWallet {
       tx.vin.forEach(vin => (transactionItem.fee += vin.nFees));
       this._txs_by_external_index.unshift(transactionItem);
     }
-
-    this.next_free_mint_index = lastFoundIndex + 1;
   }
 
   prepareForSerialization(): void {

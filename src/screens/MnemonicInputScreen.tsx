@@ -36,7 +36,6 @@ const MnemonicInputScreen = () => {
     try {
       const wallet = new FiroWallet();
       await wallet.setSecret(mnemonic);
-      await wallet.fetchTransactions();
       await wallet.restore();
       setWallet(wallet);
       NavigationService.navigate('PassphraseScreen', undefined);

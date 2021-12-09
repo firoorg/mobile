@@ -58,9 +58,11 @@ export type AnonymitySetModel = {
 };
 
 export type AllCoinsModel = {
-  setID: number;
-  mints: [];
-  jmints: [];
+  [key: string]: {
+    setID: number;
+    mints: [];
+    jmints: [];
+  };
 };
 
 export type UsedSerialsModel = {
