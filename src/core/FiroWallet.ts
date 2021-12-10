@@ -546,6 +546,7 @@ export class FiroWallet implements AbstractWallet {
           if (set.publicCoins.includes(publicCoin)) {
             hasUpdate = true;
             unconfirmedCoins[index].anonymitySetId = set.setId;
+            this._updateSendTxStatus(unconfirmedCoins[index]);
           }
         });
       });
@@ -556,6 +557,15 @@ export class FiroWallet implements AbstractWallet {
       Logger.info('firo_wallet:updateMintMetadata', 'up to date');
     }
     return hasUpdate;
+  }
+
+  _updateSendTxStatus(coin: LelantusCoin) {
+    const tx = this._txs_by_external_index.find(
+      item => item.txId === coin.txId,
+    );
+    if (tx && tx.isMint === false) {
+      tx.confirmed = coin.anonymitySetId !== ANONYMITY_SET_EMPTY_ID;
+    }
   }
 
   _getUnconfirmedCoins(): LelantusCoin[] {
