@@ -10,7 +10,7 @@ import {TransactionRow} from '../components/TransactionRow';
 import {Currency} from '../utils/currency';
 import BigNumber from 'bignumber.js';
 import Logger from '../utils/logger';
-import { FiroStatusBar } from '../components/FiroStatusBar';
+import {FiroStatusBar} from '../components/FiroStatusBar';
 
 type WalletStackRouteProps = {
   TransactionDetails: {item: TransactionItem};
@@ -20,7 +20,7 @@ type TransactionDetailsProps = {
   route: RouteProp<WalletStackRouteProps, 'TransactionDetails'>;
 };
 
-const FIRO_EXPLORER_URL = 'https://testexplorer.firo.org/';
+const FIRO_EXPLORER_URL = 'https://explorer.firo.org/';
 
 const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
   const {getFiroRate, getSettings} = useContext(FiroContext);

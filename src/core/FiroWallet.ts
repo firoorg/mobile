@@ -34,7 +34,7 @@ const ANONYMITY_SET_EMPTY_ID = 0;
 
 const TRANSACTION_LELANTUS = 8;
 
-const MINT_LIMIT = 100100000000;
+const MINT_LIMIT = 500100000000;
 
 export const SATOSHI = new BigNumber(100000000);
 
@@ -537,31 +537,25 @@ export class FiroWallet implements AbstractWallet {
 
   async updateMintMetadata(): Promise<boolean> {
     Logger.info('firo_wallet:updateMintMetadata', this.next_free_mint_index);
+    let hasUpdate = false;
     const unconfirmedCoins = this._getUnconfirmedCoins();
     if (unconfirmedCoins.length > 0) {
       const publicCoinList = unconfirmedCoins.map(coin => coin.publicCoin);
       this._anonymity_sets.forEach(set => {
         publicCoinList.forEach((publicCoin, index) => {
           if (set.publicCoins.includes(publicCoin)) {
+            hasUpdate = true;
             unconfirmedCoins[index].anonymitySetId = set.setId;
-            this._updateMintTxStatus(unconfirmedCoins[index]);
           }
         });
       });
+    }
+    if (hasUpdate) {
       Logger.info('firo_wallet:updateMintMetadata', 'updated');
-      return true;
+    } else {
+      Logger.info('firo_wallet:updateMintMetadata', 'up to date');
     }
-    Logger.info('firo_wallet:updateMintMetadata', 'up to date');
-    return false;
-  }
-
-  _updateMintTxStatus(coin: LelantusCoin) {
-    const tx = this._txs_by_external_index.find(
-      item => item.txId === coin.txId,
-    );
-    if (tx) {
-      tx.confirmed = coin.anonymitySetId !== ANONYMITY_SET_EMPTY_ID;
-    }
+    return hasUpdate;
   }
 
   _getUnconfirmedCoins(): LelantusCoin[] {
@@ -881,12 +875,9 @@ export class FiroWallet implements AbstractWallet {
             hasChanges = true;
             this._txs_by_external_index.push(transactionItem);
           }
-        } else if (
-          foundTx.confirmed === false &&
-          tx.confirmations > 0 &&
-          foundTx.isMint === false
-        ) {
+        } else if (foundTx.confirmed === false && tx.confirmations > 0) {
           hasChanges = true;
+          foundTx.confirmed = true;
           foundTx.date = tx.time * 1000;
         }
       });

@@ -25,7 +25,7 @@ type Peer = {
 };
 
 const hardcodedPeers: Peer[] = [
-  {host: '95.179.164.13', tcp: '51001', ssl: null},
+  {host: 'electrumx.firo.org', tcp: '50001', ssl: null},
 ];
 
 /**

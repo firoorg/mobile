@@ -49,7 +49,7 @@ let passphraseInput: string = '';
 let securityCheckPassed: boolean = false;
 let securityCheckFinished: boolean = false;
 let spendError: string = '';
-const spendLimit: number = 1001;
+const SPEND_LIMIT: number = 500100000000;
 
 const SendConfirmScreen: FC<SendConfirmProps> = props => {
   const {
@@ -200,7 +200,7 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
 
   const onClickConfirm = () => {
     try {
-      if (props.route.params.data.amount > spendLimit) {
+      if (props.route.params.data.amount > SPEND_LIMIT) {
         spendError = localization.send_confirm_screen.error_limit_exceeded;
         changeBottomSheetViewMode(BottomSheetViewMode.SpendError);
         setTimeout(() => {

@@ -10,6 +10,7 @@ export type Network = {
   scriptHash: number;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const FIRO_TEST_NET = {
   messagePrefix: '\x19Firo Signed Message:\n',
   bech32: 'firo',
@@ -22,7 +23,6 @@ const FIRO_TEST_NET = {
   wif: 0xb9,
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const FIRO_MAIN_NET = {
   messagePrefix: '\x19Firo Signed Message:\n',
   bech32: 'firo',
@@ -35,4 +35,4 @@ const FIRO_MAIN_NET = {
   wif: 0xd2,
 };
 
-export const network = FIRO_TEST_NET;
+export const network = FIRO_MAIN_NET;
