@@ -936,9 +936,11 @@ export class FiroWallet implements AbstractWallet {
         Logger.info('firo_wallet:fetchAnonymitySets', 'update');
         anonymitySet.setHash = fetchedAnonymitySet.setHash;
         anonymitySet.blockHash = fetchedAnonymitySet.blockHash;
-        fetchedAnonymitySet.serializedCoins.forEach(serializedCoin => {
-          anonymitySet?.publicCoins.push(serializedCoin);
-        });
+        fetchedAnonymitySet.serializedCoins
+          .reverse()
+          .forEach(serializedCoin => {
+            anonymitySet?.publicCoins.unshift(serializedCoin);
+          });
         hasChanges = true;
       }
     }
