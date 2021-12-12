@@ -70,7 +70,6 @@
   "mnemonic_input_screen": {
     "title": "Enter Mnemonic",
     "body_part_1": "Enter your mnemonic bellow, which you saved while creating your wallet.",
-    "body_part_2": "These 24 words below store all the data and transactions of your Firo wallet. It will restore your wallet in case you lose your device.",
     "continue": "Continue",
     "restoring": "Restoring"
   },

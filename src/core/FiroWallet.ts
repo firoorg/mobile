@@ -948,8 +948,6 @@ export class FiroWallet implements AbstractWallet {
   }
 
   async restore(): Promise<void> {
-    await this.fetchTransactions();
-
     const allCoins = await firoElectrum.getAllCoins();
     const setIds = Object.keys(allCoins);
     const usedSerialNumbers = (await firoElectrum.getUsedCoinSerials()).serials;
@@ -965,7 +963,7 @@ export class FiroWallet implements AbstractWallet {
         currentIndex,
       );
 
-      setIds.forEach(async setId => {
+      for (const setId of setIds) {
         const coinData = allCoins[setId];
         const foundMint = coinData.mints.find(
           mintData => mintData[1] === mintTag,
@@ -1021,7 +1019,7 @@ export class FiroWallet implements AbstractWallet {
             }
           }
         }
-      });
+      }
 
       currentIndex++;
     }
@@ -1045,6 +1043,9 @@ export class FiroWallet implements AbstractWallet {
       tx.vin.forEach(vin => (transactionItem.fee += vin.nFees));
       this._txs_by_external_index.unshift(transactionItem);
     }
+
+    await this.fetchAnonymitySets();
+    await this.fetchTransactions();
   }
 
   prepareForSerialization(): void {

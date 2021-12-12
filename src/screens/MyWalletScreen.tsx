@@ -210,9 +210,9 @@ const MyWalletScreen = () => {
   const updateWalletData = async () => {
     setSync(true);
     const t = Date.now();
+    await fetchAnonymitySets();
     await updateMintMetadata();
     await fetchTransactionList();
-    await fetchAnonymitySets();
     await mintUnspentTransactions();
     const dt = 1000 - (Date.now() - t);
     dt > 0 && (await delay(dt));

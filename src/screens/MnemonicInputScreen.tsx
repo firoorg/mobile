@@ -63,10 +63,6 @@ const MnemonicInputScreen = () => {
           style={styles.textCopy}
           text={localization.mnemonic_input_screen.body_part_1}
         />
-        <FiroTextSmall
-          style={styles.textCenter}
-          text={localization.mnemonic_input_screen.body_part_2}
-        />
         <FiroInputMnemonic
           style={styles.mnemonicInput}
           onTextChanged={txt => setMnemonic(txt)}
