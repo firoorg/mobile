@@ -43,6 +43,14 @@ const Settings = () => (
       component={ChangePassphraseScreen}
     />
     <SettingsStack.Screen name="DebugSettings" component={DebugSettings} />
+    <CreateWalletStack.Screen
+      name="MnemonicInputScreen"
+      component={MnemonicInputScreen}
+    />
+    <CreateWalletStack.Screen
+      name="PassphraseScreen"
+      component={PassphraseScreen}
+    />
   </SettingsStack.Navigator>
 );
 

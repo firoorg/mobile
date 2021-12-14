@@ -60,7 +60,12 @@ export const FiroPrimaryGreenButton: FC<ButtonProps> = props => {
 export const FiroSecondaryButton: FC<ButtonProps> = props => {
   return (
     <TouchableOpacity
-      style={[styles.button, styles.secondaryButton, props.buttonStyle]}
+      disabled={props.disable ?? false}
+      style={
+        props.disable
+          ? [styles.button, styles.secondaryButton, props.buttonStyle, styles.disabled]
+          : [styles.button, styles.secondaryButton, props.buttonStyle]
+      }
       onPress={props.onClick}>
       <Text style={[styles.text, styles.secondaryText]}>{props.text}</Text>
     </TouchableOpacity>

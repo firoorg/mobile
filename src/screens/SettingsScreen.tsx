@@ -52,7 +52,7 @@ let disableBiometricResult: {success: boolean; error?: string};
 let passphraseInput: string = '';
 
 const SettingsScreen = () => {
-  const {getSettings, setSettings, verifyPassword} = useContext(FiroContext);
+  const { getSettings, setSettings, verifyPassword } = useContext(FiroContext);
   const [saveInProgress, changeSaveProgress] = useState(false);
   const [chooseCurrency, changeChooseCurrency] = useState(false);
   const [showMyMnemonic, changeMyMnemonic] = useState(MyMnemonicViewMode.None);
@@ -68,6 +68,7 @@ const SettingsScreen = () => {
   const [biometricSettingsViewMode, changeBiometricSettingsViewMode] = useState(
     BiometricSettingsViewMode.None,
   );
+  const [confirmRestoreWallet, changeConfirmRestoreWallet] = useState(false);
 
   const clickOnVersionCode = () => {
     NavigationService.navigate('DebugSettings', undefined);
@@ -106,7 +107,7 @@ const SettingsScreen = () => {
               flexDirection: 'row',
               alignItems: 'flex-start',
             }}>
-            <View style={{flex: 1}}>
+            <View style={{ flex: 1 }}>
               <Text style={styles.title}>
                 {localization.settings.title_currency}
               </Text>
@@ -138,7 +139,7 @@ const SettingsScreen = () => {
               flexDirection: 'row',
               alignItems: 'flex-start',
             }}>
-            <View style={{flex: 1}}>
+            <View style={{ flex: 1 }}>
               <Text style={styles.title}>
                 {localization.settings.title_notification}
               </Text>
@@ -218,7 +219,9 @@ const SettingsScreen = () => {
       <TouchableHighlight
         disabled={saveInProgress}
         underlayColor={colors.highlight}
-        onPress={() => {}}>
+        onPress={() => {
+          changeConfirmRestoreWallet(true);
+        }}>
         <View style={styles.section}>
           <Text style={styles.title}>
             {localization.settings.title_restore}
@@ -281,7 +284,7 @@ const SettingsScreen = () => {
                 flexDirection: 'row',
                 alignItems: 'flex-start',
               }}>
-              <View style={{flex: 1}}>
+              <View style={{ flex: 1 }}>
                 <Text style={styles.title}>
                   {localization.settings.title_fingerprint}
                 </Text>
@@ -312,7 +315,7 @@ const SettingsScreen = () => {
             changeChooseCurrency(false);
           },
         }}>
-        <View style={{...styles.currenciesView, height: windowHeight / 2}}>
+        <View style={{ ...styles.currenciesView, height: windowHeight / 2 }}>
           <TouchableOpacity
             style={styles.closeBottomSheet}
             onPress={() => {
@@ -321,14 +324,14 @@ const SettingsScreen = () => {
             }}>
             <Image source={require('../img/ic_close.png')} />
           </TouchableOpacity>
-          <View style={{display: 'flex'}}>
+          <View style={{ display: 'flex' }}>
             <Text style={styles.changeCurrency}>
               {localization.settings.title_change_currency}
             </Text>
           </View>
           <ScrollView
-            style={{marginTop: 30}}
-            contentContainerStyle={{paddingBottom: 52}}>
+            style={{ marginTop: 30 }}
+            contentContainerStyle={{ paddingBottom: 52 }}>
             {supportedCurrencies.map(currency => {
               return (
                 <ListItem
@@ -375,7 +378,7 @@ const SettingsScreen = () => {
                   changeSaveProgress(false);
                 }
               }}
-              buttonStyle={{backgroundColor: undefined, marginTop: 15}}
+              buttonStyle={{ backgroundColor: undefined, marginTop: 15 }}
             />
           </TouchableOpacity>
         </View>
@@ -401,7 +404,7 @@ const SettingsScreen = () => {
           <Text style={styles.descriptionForBiomertic}>
             {localization.settings.description_passphrase_mnemonic}
           </Text>
-          <View style={{padding: 15, paddingTop: 20}}>
+          <View style={{ padding: 15, paddingTop: 20 }}>
             <FiroInputPassword
               style={styles.password}
               onTextChanged={value => (passphraseInput = value)}
@@ -421,7 +424,7 @@ const SettingsScreen = () => {
                   changeMyMnemonic(MyMnemonicViewMode.None);
                 }
               }}
-              buttonStyle={{backgroundColor: undefined, marginTop: 15}}
+              buttonStyle={{ backgroundColor: undefined, marginTop: 15 }}
             />
           </TouchableOpacity>
         </View>
@@ -434,7 +437,7 @@ const SettingsScreen = () => {
           },
         }}>
         {biometricSettingsViewMode ==
-        BiometricSettingsViewMode.EnterPassphrase ? (
+          BiometricSettingsViewMode.EnterPassphrase ? (
           <View style={styles.biometricSettingsChangeView}>
             <TouchableOpacity
               style={styles.closeBottomSheet}
@@ -449,7 +452,7 @@ const SettingsScreen = () => {
             <Text style={styles.descriptionForBiomertic}>
               {localization.settings.description_passphrase_biometric}
             </Text>
-            <View style={{padding: 15, paddingTop: 20}}>
+            <View style={{ padding: 15, paddingTop: 20 }}>
               <FiroInputPassword
                 style={styles.password}
                 onTextChanged={value => (passphraseInput = value)}
@@ -516,13 +519,13 @@ const SettingsScreen = () => {
                     }, 2000);
                   }
                 }}
-                buttonStyle={{backgroundColor: undefined, marginTop: 15}}
+                buttonStyle={{ backgroundColor: undefined, marginTop: 15 }}
               />
             </TouchableOpacity>
           </View>
         ) : null}
         {biometricSettingsViewMode ==
-        BiometricSettingsViewMode.VerifyingPassphrase ? (
+          BiometricSettingsViewMode.VerifyingPassphrase ? (
           <View style={styles.biometricSettingsChangeView}>
             <Text style={styles.titleForBiometric}>
               {localization.settings.title_processing}
@@ -530,22 +533,22 @@ const SettingsScreen = () => {
             <Text style={styles.descriptionForBiomertic}>
               {localization.settings.description_verifying_passphrase}
             </Text>
-            <View style={{display: 'flex', alignItems: 'center', padding: 35}}>
+            <View style={{ display: 'flex', alignItems: 'center', padding: 35 }}>
               <Progress.Circle indeterminate size={50} color={colors.text} />
             </View>
           </View>
         ) : null}
         {biometricSettingsViewMode ==
-        BiometricSettingsViewMode.PassphraseError ? (
+          BiometricSettingsViewMode.PassphraseError ? (
           <View style={styles.biometricSettingsChangeView}>
             <Text style={styles.titleForBiometric}>
               {localization.settings.error_invalid_passphrase}
             </Text>
-            <Icon name="error" color="red" size={60} style={{padding: 40}} />
+            <Icon name="error" color="red" size={60} style={{ padding: 40 }} />
           </View>
         ) : null}
         {biometricSettingsViewMode ==
-        BiometricSettingsViewMode.EnablingBiometric ? (
+          BiometricSettingsViewMode.EnablingBiometric ? (
           <View style={styles.biometricSettingsChangeView}>
             <Text style={styles.titleForBiometric}>
               {localization.settings.title_processing}
@@ -553,13 +556,13 @@ const SettingsScreen = () => {
             <Text style={styles.descriptionForBiomertic}>
               {localization.settings.description_enabling_biometric}
             </Text>
-            <View style={{display: 'flex', alignItems: 'center', padding: 35}}>
+            <View style={{ display: 'flex', alignItems: 'center', padding: 35 }}>
               <Progress.Circle indeterminate size={50} color={colors.text} />
             </View>
           </View>
         ) : null}
         {biometricSettingsViewMode ==
-        BiometricSettingsViewMode.EnableBiometricSuccess ? (
+          BiometricSettingsViewMode.EnableBiometricSuccess ? (
           <View style={styles.biometricSettingsChangeView}>
             <Text style={styles.titleForBiometric}>
               {localization.settings.title_success}
@@ -567,13 +570,13 @@ const SettingsScreen = () => {
             <Text style={styles.descriptionForBiomertic}>
               {localization.settings.description_enabled_biometric}
             </Text>
-            <View style={{display: 'flex', alignItems: 'center', padding: 35}}>
+            <View style={{ display: 'flex', alignItems: 'center', padding: 35 }}>
               <Image source={require('../img/ic_success.png')} />
             </View>
           </View>
         ) : null}
         {biometricSettingsViewMode ==
-        BiometricSettingsViewMode.EnableBiometricError ? (
+          BiometricSettingsViewMode.EnableBiometricError ? (
           <View style={styles.biometricSettingsChangeView}>
             <Text style={styles.titleForBiometric}>
               {localization.settings.error_enabled_biometric}
@@ -581,11 +584,11 @@ const SettingsScreen = () => {
             <Text style={styles.descriptionForBiomertic}>
               {enableBiometricResult ? enableBiometricResult.error : ''}
             </Text>
-            <Icon name="error" color="red" size={60} style={{padding: 40}} />
+            <Icon name="error" color="red" size={60} style={{ padding: 40 }} />
           </View>
         ) : null}
         {biometricSettingsViewMode ==
-        BiometricSettingsViewMode.DisablingBiometric ? (
+          BiometricSettingsViewMode.DisablingBiometric ? (
           <View style={styles.biometricSettingsChangeView}>
             <Text style={styles.titleForBiometric}>
               {localization.settings.title_processing}
@@ -593,13 +596,13 @@ const SettingsScreen = () => {
             <Text style={styles.descriptionForBiomertic}>
               {localization.settings.description_disabling_biometric}
             </Text>
-            <View style={{display: 'flex', alignItems: 'center', padding: 35}}>
+            <View style={{ display: 'flex', alignItems: 'center', padding: 35 }}>
               <Progress.Circle indeterminate size={50} color={colors.text} />
             </View>
           </View>
         ) : null}
         {biometricSettingsViewMode ==
-        BiometricSettingsViewMode.DisableBiometricSuccess ? (
+          BiometricSettingsViewMode.DisableBiometricSuccess ? (
           <View style={styles.biometricSettingsChangeView}>
             <Text style={styles.titleForBiometric}>
               {localization.settings.title_success}
@@ -607,13 +610,13 @@ const SettingsScreen = () => {
             <Text style={styles.descriptionForBiomertic}>
               {localization.settings.description_disable_biometric}
             </Text>
-            <View style={{display: 'flex', alignItems: 'center', padding: 35}}>
+            <View style={{ display: 'flex', alignItems: 'center', padding: 35 }}>
               <Image source={require('../img/ic_success.png')} />
             </View>
           </View>
         ) : null}
         {biometricSettingsViewMode ==
-        BiometricSettingsViewMode.DisableBiometricError ? (
+          BiometricSettingsViewMode.DisableBiometricError ? (
           <View style={styles.biometricSettingsChangeView}>
             <Text style={styles.titleForBiometric}>
               {localization.settings.error_disabled_biometric}
@@ -621,9 +624,44 @@ const SettingsScreen = () => {
             <Text style={styles.descriptionForBiomertic}>
               {disableBiometricResult ? disableBiometricResult.error : ''}
             </Text>
-            <Icon name="error" color="red" size={60} style={{padding: 40}} />
+            <Icon name="error" color="red" size={60} style={{ padding: 40 }} />
           </View>
         ) : null}
+      </BottomSheet>
+      <BottomSheet isVisible={confirmRestoreWallet} modalProps={{
+        onRequestClose: () => {
+          changeConfirmRestoreWallet(false);
+        },
+      }}>
+        <View style={styles.biometricSettingsChangeView}>
+          <TouchableOpacity
+            style={styles.closeBottomSheet}
+            onPress={() => {
+              changeConfirmRestoreWallet(false);
+            }}>
+            <Image source={require('../img/ic_close.png')} />
+          </TouchableOpacity>
+          <View style={styles.warningRestoreContainer}>
+            <Text style={styles.warningRestoreCard}>
+              <Text style={{ fontWeight: 'bold' }}>
+                {localization.settings.title_warning}
+              </Text>
+              {localization.settings.warning_restore_text}
+            </Text>
+          </View>
+          <TouchableOpacity
+            activeOpacity={1}
+            style={styles.confirmRestoreButton}>
+            <FiroPrimaryGreenButton
+              text={localization.settings.button_confirm_restore}
+              onClick={() => {
+                changeConfirmRestoreWallet(false);
+                NavigationService.navigate('MnemonicInputScreen', undefined);
+              }}
+              buttonStyle={{ backgroundColor: undefined, marginTop: 14 }}
+            />
+          </TouchableOpacity>
+        </View>
       </BottomSheet>
     </ScrollView>
   );
@@ -740,6 +778,28 @@ const styles = StyleSheet.create({
     fontSize: 14,
     opacity: 0.4,
     textDecorationLine: 'underline',
+  },
+  warningRestoreContainer: {
+    width: '100%',
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 0,
+    paddingTop: 47
+  },
+  warningRestoreCard: {
+    width: '100%',
+    borderRadius: 10,
+    backgroundColor: 'rgba(162, 47, 114, 0.1)',
+    padding: 14,
+    fontFamily: 'Rubik-Regular',
+    fontSize: 14,
+    fontWeight: '400',
+    color: colors.text,
+  },
+  confirmRestoreButton: {
+    backgroundColor: colors.cardBackground,
+    height: 54,
+    width: '100%',
   },
 });
 

@@ -71,7 +71,9 @@
     "title": "Enter Mnemonic",
     "body_part_1": "Enter your mnemonic bellow, which you saved while creating your wallet.",
     "continue": "Continue",
-    "restoring": "Restoring"
+    "restoring": "Restoring...",
+    "message_wait": "This can take few minutes, please wait",
+    "message_failed_restore": "Failed restoring the wallet"
   },
 
   "my_mnemonic_screen": {
@@ -219,6 +221,9 @@
     "description_mnemonic": "Double check your mnemonic recovery phrase.",
     "title_restore": "Restore wallet",
     "description_restore": "Restore existing Firo mobile wallet.",
+    "title_warning": "Warning: ",
+    "warning_restore_text": "after restoring you will lose your current wallet. Be sure you backup your mnemonic recovery.",
+    "button_confirm_restore": "Got It",
     "title_fingerprint": "Fingerprint",
     "description_fingerprint": "Set up fingerprint configuration",
     "button_done": "Done",

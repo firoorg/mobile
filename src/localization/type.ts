@@ -76,6 +76,8 @@ export interface IString extends LocalizedStringsMethods {
     body_part_2: string;
     continue: string;
     restoring: string;
+    message_wait: string;
+    message_failed_restore: string;
   };
 
   my_mnemonic_screen: {
@@ -223,6 +225,9 @@ export interface IString extends LocalizedStringsMethods {
     description_mnemonic: string;
     title_restore: string;
     description_restore: string;
+    title_warning: string;
+    warning_restore_text: string;
+    button_confirm_restore: string;
     title_fingerprint: string;
     description_fingerprint: string;
     button_done: string;

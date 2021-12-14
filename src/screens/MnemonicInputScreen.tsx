@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {FC, useContext, useEffect, useState} from 'react';
 import * as NavigationService from '../NavigationService';
 import {Image, StyleSheet, View} from 'react-native';
 import {FiroSecondaryButton} from '../components/Button';
@@ -11,40 +11,51 @@ import {CurrentFiroTheme} from '../Themes';
 import localization from '../localization';
 import Logger from '../utils/logger';
 import {FiroStatusBar} from '../components/FiroStatusBar';
+import { NavigationProp } from '@react-navigation/native';
 
-const {colors} = CurrentFiroTheme;
+const { colors } = CurrentFiroTheme;
 
-const MnemonicInputScreen = () => {
+type MnemonicInputProps = {
+  navigation: NavigationProp<any>;
+};
+
+const MnemonicInputScreen: FC<MnemonicInputProps> = props => {
   const [creating, setCreating] = useState(false);
   const [mnemonic, setMnemonic] = useState('');
+  const [failedRestoring, setFailedRestoring] = useState(false);
   const {setWallet} = useContext(FiroContext);
   const btnRestoreText = creating
     ? localization.mnemonic_input_screen.restoring
     : localization.mnemonic_input_screen.continue;
 
   const onClickContinue = async () => {
-    setCreating(true);
     const words = mnemonic.split(' ');
-    if (words.length !== 24) {
-      Logger.error(
-        'mnemonic_input_screen:onClickContinue',
-        'words lenght must be 24',
-      );
-      setCreating(false);
-      return;
-    }
     try {
+      setFailedRestoring(false);
+      setCreating(true);
       const wallet = new FiroWallet();
       await wallet.setSecret(mnemonic);
       await wallet.restore();
-      setWallet(wallet);
+      setWallet(wallet, true);
       NavigationService.navigate('PassphraseScreen', undefined);
     } catch (e) {
       Logger.error('mnemonic_input_screen:onClickContinue', e);
+      setFailedRestoring(true);
     } finally {
       setCreating(false);
     }
   };
+
+  const navBeforeRemove = (e: any) => {
+    if (creating) {
+      e.preventDefault();
+    }
+  };
+  useEffect(() => {
+    props.navigation.addListener('beforeRemove', navBeforeRemove);
+    return () =>
+      props.navigation.removeListener('beforeRemove', navBeforeRemove);
+  });
 
   return (
     <View style={styles.page}>
@@ -68,11 +79,20 @@ const MnemonicInputScreen = () => {
           onTextChanged={txt => setMnemonic(txt)}
           enabled={!creating}
         />
+        {
+          failedRestoring
+            ? <FiroTextSmall text={localization.mnemonic_input_screen.message_failed_restore} style={{ paddingBottom: 20, color: colors.notification }} />
+            : (
+              creating
+                ? <FiroTextSmall text={localization.mnemonic_input_screen.message_wait} style={{ paddingBottom: 20, color: colors.notification }} />
+                : null
+            )
+        }
         <FiroSecondaryButton
           buttonStyle={styles.restoreWallet}
           text={btnRestoreText}
           onClick={onClickContinue}
-          disable={creating}
+          disable={creating || !mnemonic || mnemonic.split(' ').length != 24}
         />
       </View>
     </View>

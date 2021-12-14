@@ -9,10 +9,10 @@ import Logger from './utils/logger';
 const appStorage = new AppStorage();
 
 type FiroContextType = {
-  setWallet: (wallet: AbstractWallet) => void;
+  setWallet: (wallet: AbstractWallet, isRestored?: boolean) => void;
   getWallet: () => AbstractWallet | undefined;
   isStorageEncrypted: () => Promise<boolean>;
-  encryptStorage: (password: string) => Promise<void>;
+  encryptStorage: (password: string, checkRestordWallet?: boolean) => Promise<void>;
   saveToDisk: () => Promise<void>;
   loadFromDisk: (password: string) => Promise<boolean>;
   getFiroRate: () => number;
@@ -40,6 +40,7 @@ export const FiroContext = createContext<FiroContextType>({
 
 export const FiroContextProvider: FC = props => {
   const [walletState, setWalletState] = useState<AbstractWallet>();
+  const [restoredWalletState, setRestoredWalletState] = useState<AbstractWallet>();
   const [firoRate, changeFiroRate] = useState<number>(
     Currency.firoToFiat(new BigNumber(1)).toNumber(),
   );
@@ -48,9 +49,14 @@ export const FiroContextProvider: FC = props => {
     defaultCurrency: 'usd',
   });
   Currency.setUpdateContextRate(changeFiroRate);
-  const setWallet = (wallet: AbstractWallet) => {
-    Logger.info('firo_context:setWallet', "Setting the wallet");
-    setWalletState(wallet);
+  const setWallet = (wallet: AbstractWallet, isRestored?: boolean) => {
+    if (isRestored) {
+      Logger.info('firo_context:setWallet', "Setting the restored wallet");
+      setRestoredWalletState(wallet);
+    } else {
+      Logger.info('firo_context:setWallet', "Setting the wallet");
+      setWalletState(wallet);
+    }
   };
 
   const getWallet = () => {
@@ -61,10 +67,15 @@ export const FiroContextProvider: FC = props => {
     return await appStorage.hasSavedWallet();
   };
 
-  const encryptStorage = async (password: string) => {
-    let wallet = getWallet();
+  const encryptStorage = async (password: string, checkRestordWallet?: boolean) => {
+    const useRestoredWallet: boolean = !!checkRestordWallet && !!restoredWalletState;
+    let wallet = useRestoredWallet ? restoredWalletState : getWallet();
     if (typeof wallet !== 'undefined') {
       appStorage.saveWalletToDisk(password, wallet);
+    }
+    if (useRestoredWallet) {
+      setWalletState(restoredWalletState);
+      setRestoredWalletState(undefined);
     }
   };
 

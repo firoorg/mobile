@@ -10,6 +10,7 @@ import {FiroContext} from '../FiroContext';
 import localization from '../localization';
 import Logger from '../utils/logger';
 import { FiroStatusBar } from '../components/FiroStatusBar';
+import { AppStorage } from '../app-storage';
 
 const { colors } = CurrentFiroTheme;
 
@@ -25,7 +26,7 @@ const PassphraseScreen = () => {
     var jobDone = false;
     setCreating(true);
     try {
-      await encryptStorage(password);
+      await encryptStorage(password, true);
       jobDone = true;
 
       NavigationService.clearStack('MainScreen');
@@ -34,6 +35,17 @@ const PassphraseScreen = () => {
     } finally {
       if (!jobDone) {
         setCreating(false);
+      } else {
+        // try to turn off fingerprint
+        try {
+          await new AppStorage().setItem(AppStorage.ENCRYPTED_PASSWORD, '');
+        } catch (clearError) {
+          Logger.error(
+            'passphrase_screen',
+            'Failed clear fingerprint after creating passphrase: ' +
+            JSON.stringify(clearError),
+          );
+        }
       }
     }
   };
