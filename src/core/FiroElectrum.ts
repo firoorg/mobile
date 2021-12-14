@@ -5,7 +5,7 @@ import {
   TransactionModel,
   FullTransactionModel,
   AnonymitySetModel,
-  AllCoinsModel,
+  SetDataModel,
   UsedSerialsModel,
 } from './AbstractElectrum';
 import {network} from './FiroNetwork';
@@ -639,15 +639,17 @@ export default class FiroElectrum implements AbstractElectrum {
     return result;
   }
 
-  async getAllCoins(): Promise<AllCoinsModel> {
-    this.checkConnection('getAllCoins');
+  async getSetData(setId: number): Promise<SetDataModel> {
+    this.checkConnection('getSetData');
 
+    const param = [];
+    param.push(setId);
     const result = await this.mainClient.request(
       'sigma.getcoinsforrecovery',
-      [],
+      param,
     );
 
-    Logger.info('electrum_wallet:getAllCoins', result);
+    Logger.info('electrum_wallet:getSetData', result);
     return result;
   }
 

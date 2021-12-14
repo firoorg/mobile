@@ -20,6 +20,7 @@ import {LelantusEntry} from '../data/LelantusEntry';
 import Logger from '../utils/logger';
 import {Transaction} from 'bitcoinjs-lib/types/transaction';
 import {AnonymitySet} from '../data/AnonymitySet';
+import {SetDataModel} from './AbstractElectrum';
 
 const bitcoin = require('bitcoinjs-lib');
 const bip32 = require('bip32');
@@ -948,8 +949,15 @@ export class FiroWallet implements AbstractWallet {
   }
 
   async restore(): Promise<void> {
-    const allCoins = await firoElectrum.getAllCoins();
-    const setIds = Object.keys(allCoins);
+    const setDataMap: {
+      [key: number]: SetDataModel;
+    } = {};
+    const latestSetId = await firoElectrum.getLatestSetId();
+    for (let setId = 1; setId <= latestSetId; setId++) {
+      const setData = await firoElectrum.getSetData(setId);
+      setDataMap[setId] = setData;
+    }
+
     const usedSerialNumbers = (await firoElectrum.getUsedCoinSerials()).serials;
 
     const spendTxIds: string[] = [];
@@ -963,9 +971,9 @@ export class FiroWallet implements AbstractWallet {
         currentIndex,
       );
 
-      for (const setId of setIds) {
-        const coinData = allCoins[setId];
-        const foundMint = coinData.mints.find(
+      for (let setId = 1; setId <= latestSetId; setId++) {
+        const setData = setDataMap[setId];
+        const foundMint = setData.mints.find(
           mintData => mintData[1] === mintTag,
         );
         if (foundMint) {
@@ -981,11 +989,11 @@ export class FiroWallet implements AbstractWallet {
             value: amount,
             publicCoin: foundMint[0],
             txId: foundMint[3],
-            anonymitySetId: coinData.setID,
+            anonymitySetId: setId,
             isUsed: usedSerialNumbers.includes(serialNumber),
           };
         } else {
-          const foundJmint = coinData.jmints.find(
+          const foundJmint = setData.jmints.find(
             jmintData => jmintData[1] === mintTag,
           );
           if (foundJmint) {
@@ -1011,7 +1019,7 @@ export class FiroWallet implements AbstractWallet {
                 value: amount,
                 publicCoin: foundJmint[0],
                 txId: foundJmint[3],
-                anonymitySetId: coinData.setID,
+                anonymitySetId: setId,
                 isUsed: usedSerialNumbers.includes(serialNumber),
               };
 

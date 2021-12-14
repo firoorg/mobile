@@ -57,12 +57,10 @@ export type AnonymitySetModel = {
   setHash: string;
 };
 
-export type AllCoinsModel = {
-  [key: string]: {
-    setID: number;
-    mints: [];
-    jmints: [];
-  };
+export type SetDataModel = {
+  setID: number;
+  mints: [];
+  jmints: [];
 };
 
 export type UsedSerialsModel = {
@@ -122,7 +120,7 @@ export interface AbstractElectrum {
 
   getLatestSetId(): Promise<number>;
 
-  getAllCoins(): Promise<AllCoinsModel>;
+  getSetData(setId: number): Promise<SetDataModel>;
   getUsedCoinSerials(): Promise<UsedSerialsModel>;
 
   getFeeRate(): Promise<number>;
