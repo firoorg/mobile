@@ -11,9 +11,9 @@ import {CurrentFiroTheme} from '../Themes';
 import localization from '../localization';
 import Logger from '../utils/logger';
 import {FiroStatusBar} from '../components/FiroStatusBar';
-import { NavigationProp } from '@react-navigation/native';
+import {NavigationProp} from '@react-navigation/native';
 
-const { colors } = CurrentFiroTheme;
+const {colors} = CurrentFiroTheme;
 
 type MnemonicInputProps = {
   navigation: NavigationProp<any>;
@@ -29,7 +29,6 @@ const MnemonicInputScreen: FC<MnemonicInputProps> = props => {
     : localization.mnemonic_input_screen.continue;
 
   const onClickContinue = async () => {
-    const words = mnemonic.split(' ');
     try {
       setFailedRestoring(false);
       setCreating(true);
@@ -79,15 +78,17 @@ const MnemonicInputScreen: FC<MnemonicInputProps> = props => {
           onTextChanged={txt => setMnemonic(txt)}
           enabled={!creating}
         />
-        {
-          failedRestoring
-            ? <FiroTextSmall text={localization.mnemonic_input_screen.message_failed_restore} style={{ paddingBottom: 20, color: colors.notification }} />
-            : (
-              creating
-                ? <FiroTextSmall text={localization.mnemonic_input_screen.message_wait} style={{ paddingBottom: 20, color: colors.notification }} />
-                : null
-            )
-        }
+        {failedRestoring ? (
+          <FiroTextSmall
+            text={localization.mnemonic_input_screen.message_failed_restore}
+            style={{paddingBottom: 20, color: colors.notification}}
+          />
+        ) : creating ? (
+          <FiroTextSmall
+            text={localization.mnemonic_input_screen.message_wait}
+            style={{paddingBottom: 20, color: colors.notification}}
+          />
+        ) : null}
         <FiroSecondaryButton
           buttonStyle={styles.restoreWallet}
           text={btnRestoreText}

@@ -9,10 +9,10 @@ import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
 import localization from '../localization';
 import Logger from '../utils/logger';
-import { FiroStatusBar } from '../components/FiroStatusBar';
-import { AppStorage } from '../app-storage';
+import {FiroStatusBar} from '../components/FiroStatusBar';
+import {AppStorage} from '../app-storage';
 
-const { colors } = CurrentFiroTheme;
+const {colors} = CurrentFiroTheme;
 
 const PassphraseScreen = () => {
   const [creating, setCreating] = useState(false);
@@ -43,7 +43,7 @@ const PassphraseScreen = () => {
           Logger.error(
             'passphrase_screen',
             'Failed clear fingerprint after creating passphrase: ' +
-            JSON.stringify(clearError),
+              JSON.stringify(clearError),
           );
         }
       }

@@ -1,6 +1,7 @@
 
-#include "Utils.h"
 #include "org_firo_lelantus_Lelantus.h"
+#include "LelantusWrapper.h"
+#include "Utils.h"
 
 extern "C" {
 JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateMintScript
@@ -9,7 +10,7 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateMintScript
 	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
 	auto *seed = env->GetStringUTFChars(jSeed, nullptr);
 	const char *script = CreateMintScript(value, privateKey, index, seed);
-	return env->NewStringUTF(script);
+	return convertToUtf8(env, script);
 }
 
 JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateTag
@@ -18,7 +19,7 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateTag
 	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
 	auto *seed = env->GetStringUTFChars(jSeed, nullptr);
 	const char *tag = CreateTag(privateKey, index, seed);
-	return env->NewStringUTF(tag);
+	return convertToUtf8(env, tag);
 }
 
 JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetPublicCoin
@@ -26,7 +27,7 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetPublicCoin
 		 jstring jPrivateKey, jint index) {
 	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
 	const char *publicCoin = GetPublicCoin(value, privateKey, index);
-	return env->NewStringUTF(publicCoin);
+	return convertToUtf8(env, publicCoin);
 }
 
 JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetSerialNumber
@@ -34,7 +35,7 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jGetSerialNumber
 		 jstring jPrivateKey, jint index) {
 	auto *privateKey = env->GetStringUTFChars(jPrivateKey, nullptr);
 	const char *serialNumber = GetSerialNumber(value, privateKey, index);
-	return env->NewStringUTF(serialNumber);
+	return convertToUtf8(env, serialNumber);
 }
 
 JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
@@ -115,7 +116,7 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateJMintScript
 	auto *privateKeyAES = env->GetStringUTFChars(jPrivateKeyAES, nullptr);
 	auto *seed = env->GetStringUTFChars(jSeed, nullptr);
 	const char *script = CreateJMintScript(value, privateKey, index, seed, privateKeyAES);
-	return env->NewStringUTF(script);
+	return convertToUtf8(env, script);
 }
 
 JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
@@ -203,7 +204,7 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
 			anonymitySetHashes,
 			groupBlockHashes
 	);
-	return env->NewStringUTF(script);
+	return convertToUtf8(env, script);
 }
 
 JNIEXPORT jlong JNICALL Java_org_firo_lelantus_Lelantus_jDecryptMintAmount

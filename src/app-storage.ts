@@ -27,9 +27,9 @@ export class AppStorage {
   static SETTINGS = 'settings';
   static ENCRYPTED_PASSWORD = 'encrypted_password';
 
-  private wallet: AbstractWallet | null = null;
-  // private tx_metadata: Array<> = {};
   private cachedPassword: string | null = null;
+
+  private static realm: typeof Realm | null = null;
 
   /**
    * Wrapper for storage call. Secure store works only in RN environment. AsyncStorage is
@@ -77,6 +77,10 @@ export class AppStorage {
    * @returns {Promise<Realm>}
    */
   async getRealm(): Promise<typeof Realm> {
+    if (AppStorage.realm) {
+      return AppStorage.realm;
+    }
+
     const password = this.hashIt(this.cachedPassword || 'fyegjitkyf[eqjnc.lf');
     const buf = Buffer.from(
       this.hashIt(password) + this.hashIt(password),
@@ -106,11 +110,12 @@ export class AppStorage {
         },
       },
     ];
-    return Realm.open({
+    AppStorage.realm = Realm.open({
       schema,
       path,
       encryptionKey,
     });
+    return AppStorage.realm;
   }
 
   hashIt = (s: string) => {
@@ -126,7 +131,6 @@ export class AppStorage {
         this.cachedPassword = password;
       }
       if (data !== null) {
-        const realm = await this.getRealm();
         data = JSON.parse(data);
         if (!data.wallet) {
           return null;
@@ -134,12 +138,9 @@ export class AppStorage {
         const wallet = data.wallet;
         let unserializedWallet = FiroWallet.fromJson(wallet);
 
+        const realm = await this.getRealm();
         this.inflateTransactionsFromRealm(realm, unserializedWallet);
 
-        // done
-        // this.tx_metadata = data.tx_metadata;
-
-        realm.close();
         Logger.info('storage:loadWalletFromDisk', 'Loaded wallet from disk');
         return unserializedWallet;
       } else {
@@ -176,16 +177,15 @@ export class AppStorage {
     if (password == null) {
       throw Error('No password');
     }
-    const realm = await this.getRealm();
 
     // stripping down:
     const walletJson = JSON.stringify(wallet);
     const keyCloned = FiroWallet.fromJson(walletJson);
     keyCloned.prepareForSerialization();
 
+    const realm = await this.getRealm();
     this.offloadWalletToRealm(realm, wallet);
     let walletToSave = JSON.stringify(keyCloned);
-    realm.close();
     let data = {
       wallet: walletToSave,
       // tx_metadata: this.tx_metadata,

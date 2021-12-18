@@ -12,7 +12,10 @@ type FiroContextType = {
   setWallet: (wallet: AbstractWallet, isRestored?: boolean) => void;
   getWallet: () => AbstractWallet | undefined;
   isStorageEncrypted: () => Promise<boolean>;
-  encryptStorage: (password: string, checkRestordWallet?: boolean) => Promise<void>;
+  encryptStorage: (
+    password: string,
+    checkRestordWallet?: boolean,
+  ) => Promise<void>;
   saveToDisk: () => Promise<void>;
   loadFromDisk: (password: string) => Promise<boolean>;
   getFiroRate: () => number;
@@ -40,7 +43,10 @@ export const FiroContext = createContext<FiroContextType>({
 
 export const FiroContextProvider: FC = props => {
   const [walletState, setWalletState] = useState<AbstractWallet>();
-  const [restoredWalletState, setRestoredWalletState] = useState<AbstractWallet>();
+  const [
+    restoredWalletState,
+    setRestoredWalletState,
+  ] = useState<AbstractWallet>();
   const [firoRate, changeFiroRate] = useState<number>(
     Currency.firoToFiat(new BigNumber(1)).toNumber(),
   );
@@ -49,12 +55,13 @@ export const FiroContextProvider: FC = props => {
     defaultCurrency: 'usd',
   });
   Currency.setUpdateContextRate(changeFiroRate);
+
   const setWallet = (wallet: AbstractWallet, isRestored?: boolean) => {
     if (isRestored) {
-      Logger.info('firo_context:setWallet', "Setting the restored wallet");
+      Logger.info('firo_context:setWallet', 'Setting the restored wallet');
       setRestoredWalletState(wallet);
     } else {
-      Logger.info('firo_context:setWallet', "Setting the wallet");
+      Logger.info('firo_context:setWallet', 'Setting the wallet');
       setWalletState(wallet);
     }
   };
@@ -67,8 +74,12 @@ export const FiroContextProvider: FC = props => {
     return await appStorage.hasSavedWallet();
   };
 
-  const encryptStorage = async (password: string, checkRestordWallet?: boolean) => {
-    const useRestoredWallet: boolean = !!checkRestordWallet && !!restoredWalletState;
+  const encryptStorage = async (
+    password: string,
+    checkRestordWallet?: boolean,
+  ) => {
+    const useRestoredWallet: boolean =
+      !!checkRestordWallet && !!restoredWalletState;
     let wallet = useRestoredWallet ? restoredWalletState : getWallet();
     if (typeof wallet !== 'undefined') {
       appStorage.saveWalletToDisk(password, wallet);
@@ -82,7 +93,7 @@ export const FiroContextProvider: FC = props => {
   const saveToDisk = async () => {
     let wallet = getWallet();
     if (wallet !== undefined) {
-      Logger.info('firo_context:saveToDisk', "Saving wallet to disk");
+      Logger.info('firo_context:saveToDisk', 'Saving wallet to disk');
       appStorage.saveWalletToDisk(null, wallet);
     } else {
       Logger.error('firo_context:saveToDisk', 'wallet is undefined');
