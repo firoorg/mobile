@@ -79,12 +79,12 @@ export const CreateAddressCard: FC<CreateAddressProp> = props => {
           <TouchableOpacity onPress={onCopyClick}>
             <Image style={styles.icon} source={require('../img/ic_copy.png')} />
           </TouchableOpacity>
-          <TouchableWithoutFeedback onPress={props.onRefreshClick}>
+          {/* <TouchableWithoutFeedback onPress={props.onRefreshClick}>
             <Image
               style={styles.icon}
               source={require('../img/ic_refresh.png')}
             />
-          </TouchableWithoutFeedback>
+          </TouchableWithoutFeedback> */}
         </View>
       </View>
       {nameField}
