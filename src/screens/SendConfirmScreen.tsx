@@ -381,6 +381,7 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
                 onClick={async () => {
                   const passwordOk = await verifyPassword(passphraseInput);
                   if (passwordOk) {
+                    changeBottomSheetViewMode(BottomSheetViewMode.None);
                     securityCheckPassed = true;
                     onClickConfirm();
                   } else {
