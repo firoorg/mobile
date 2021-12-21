@@ -412,7 +412,7 @@ export class FiroWallet implements AbstractWallet {
           set => set.setId === anonymitySetId,
         );
         if (anonymitySet) {
-          anonimitySets.push(anonymitySet.publicCoins);
+          anonimitySets.push([...anonymitySet.publicCoins]);
           anonymitySetHashes.push(anonymitySet.setHash);
           groupBlockHashes.push(anonymitySet.blockHash);
         }
