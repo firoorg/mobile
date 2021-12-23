@@ -97,10 +97,6 @@ export default class FiroElectrum implements AbstractElectrum {
     }
 
     try {
-      Logger.info(
-        'electrum_wallet:connectMain',
-        `begin connection ${JSON.stringify(peer)}`,
-      );
       this.mainClient = new ElectrumClient(
         peer.ssl || peer.tcp,
         peer.host,
@@ -129,7 +125,6 @@ export default class FiroElectrum implements AbstractElectrum {
         version: '1.4',
       });
       if (ver && ver[0]) {
-        Logger.info('electrum_wallet:connectMain', `connected to ${ver}`);
         this.serverName = ver[0];
         this.mainConnected = true;
         this.wasConnectedAtLeastOnce = true;
@@ -175,7 +170,6 @@ export default class FiroElectrum implements AbstractElectrum {
   }
 
   private async subscribeHeaders() {
-    Logger.info('electrum_wallet:subscribeHeaders', 'subscribe');
     this.mainClient.subscribe.on(
       'blockchain.headers.subscribe',
       (params: any) => {
@@ -226,8 +220,6 @@ export default class FiroElectrum implements AbstractElectrum {
     const balance = await this.mainClient.blockchainScripthash_getBalance(
       reversedHash.toString('hex'),
     );
-
-    Logger.info('electrum_wallet:getBalanceByAddress', balance);
     return balance;
   }
 
@@ -245,8 +237,6 @@ export default class FiroElectrum implements AbstractElectrum {
     // for (const h of history || []) {
     //   if (h.tx_hash) txhashHeightCache[h.tx_hash] = h.height; // cache tx height
     // }
-
-    Logger.info('electrum_wallet:getTransactionsByAddress', history);
     return history;
   }
 
@@ -289,7 +279,6 @@ export default class FiroElectrum implements AbstractElectrum {
       }
     }
 
-    Logger.info('electrum_wallet:multiGetTransactionsByAddress:return', ret);
     return ret;
   }
 
@@ -342,8 +331,6 @@ export default class FiroElectrum implements AbstractElectrum {
       // delete full.hash; // compact
       ret.push(full);
     }
-
-    Logger.info('electrum_wallet:getBalanceByAddress', ret);
     return ret;
   }
 
@@ -413,10 +400,6 @@ export default class FiroElectrum implements AbstractElectrum {
       ret.push(fullTx);
     }
 
-    Logger.info(
-      'electrum_wallet:multiGetTransactionsFullByAddress:return',
-      ret,
-    );
     return ret;
   }
 
@@ -457,8 +440,6 @@ export default class FiroElectrum implements AbstractElectrum {
         ret.addresses.set(scripthash2addr.get(bal.param)!, bal.result);
       }
     }
-
-    Logger.info('electrum_wallet:multiGetBalanceByAddress', ret);
     return ret;
   }
 
@@ -509,8 +490,6 @@ export default class FiroElectrum implements AbstractElectrum {
         }
       }
     }
-
-    Logger.info('electrum_wallet:multiGetHistoryByAddress', ret);
     return ret;
   }
 
@@ -550,7 +529,6 @@ export default class FiroElectrum implements AbstractElectrum {
       }
     }
 
-    Logger.info('electrum_wallet:multiGetTransactionByTxid', ret);
     return ret;
   }
 
@@ -566,8 +544,6 @@ export default class FiroElectrum implements AbstractElectrum {
     const listUnspent = await this.mainClient.blockchainScripthash_listunspent(
       reversedHash.toString('hex'),
     );
-
-    Logger.info('electrum_wallet:getUnspentTransactionsByAddress', listUnspent);
     return listUnspent;
   }
 
@@ -596,19 +572,16 @@ export default class FiroElectrum implements AbstractElectrum {
         ret[scripthash2addr[utxo.param]!] = utxo.result;
       }
     }
-    Logger.info('electrum_wallet:multiGetUnspentTransactionsByAddress', ret);
     return ret;
   }
 
   async broadcast(hex: string): Promise<string> {
     this.checkConnection('broadcast');
 
-    Logger.info('electrum_wallet:broadcast', hex);
     const broadcast: string = await this.mainClient.blockchainTransaction_broadcast(
       hex,
     );
 
-    Logger.info('electrum_wallet:broadcast', broadcast);
     return broadcast;
   }
 
@@ -625,8 +598,6 @@ export default class FiroElectrum implements AbstractElectrum {
       'sigma.getanonymityset',
       param,
     );
-
-    Logger.info('electrum_wallet:getAnonymitySet', result);
     return result;
   }
 
@@ -634,8 +605,6 @@ export default class FiroElectrum implements AbstractElectrum {
     this.checkConnection('getLatestSetId');
 
     const result = await this.mainClient.request('sigma.getlatestcoinid');
-
-    Logger.info('electrum_wallet:getLatestSetId', result);
     return result;
   }
 
@@ -649,7 +618,6 @@ export default class FiroElectrum implements AbstractElectrum {
       param,
     );
 
-    Logger.info('electrum_wallet:getSetData', result);
     return result;
   }
 
@@ -661,7 +629,6 @@ export default class FiroElectrum implements AbstractElectrum {
       [],
     );
 
-    Logger.info('electrum_wallet:getUsedCoinSerials', result);
     return result;
   }
 
@@ -675,7 +642,6 @@ export default class FiroElectrum implements AbstractElectrum {
       params,
     );
 
-    Logger.info('electrum_wallet:feerate', result);
     return result;
   }
 

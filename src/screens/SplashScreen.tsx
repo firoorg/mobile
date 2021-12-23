@@ -39,6 +39,7 @@ const SplashScreen = () => {
     try {
       firoElectrum.connectMain();
       replaceStackNavigation();
+      Logger.resetLogIfNeed();
     } catch (e) {
       Logger.error('splash_screen', e);
     }
@@ -46,7 +47,7 @@ const SplashScreen = () => {
 
   return (
     <View style={styles.root}>
-      <StatusBar backgroundColor={colors.primary} barStyle={"light-content"} />
+      <StatusBar backgroundColor={colors.primary} barStyle={'light-content'} />
       <Image style={styles.logo} source={require('../img/firo-logo.png')} />
     </View>
   );

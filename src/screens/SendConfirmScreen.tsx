@@ -73,7 +73,6 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
     subtractFeeFromAmount,
     address,
   ) => {
-    Logger.info('send_confirm_screen:doSpend', 'start doSpend');
     try {
       const securityCheck: boolean = await checkSecurityForSpend();
       if (!securityCheck) {
@@ -100,7 +99,7 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
       };
     }
     if (!wallet?.validate(address)) {
-      Logger.error('send_confirm_screen:doSpend', `${address} not valid`);
+      Logger.error('send_confirm_screen:doSpend', 'address not valid');
       return {
         success: false,
         error: localization.send_confirm_screen.error_invalid_address,
@@ -108,25 +107,14 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
     }
     let success: boolean = false;
     try {
-      Logger.info('send_confirm_screen:doSpend', {
-        spendAmount: amount,
-        subtractFeeFromAmount,
-        address: address,
-      });
       const spendData = await wallet?.createLelantusSpendTx({
         spendAmount: amount,
         subtractFeeFromAmount,
         address: address,
       });
 
-      Logger.info('send_confirm_screen:doSpend', spendData);
-
       const txId = await firoElectrum.broadcast(spendData.txHex);
       success = true;
-      Logger.info(
-        'send_confirm_screen:doSpend',
-        `broadcast tx: ${JSON.stringify(txId)}`,
-      );
 
       if (txId === spendData.txId) {
         wallet?.addSendTxToCache(
@@ -142,12 +130,8 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
         );
         wallet?.markCoinsSpend(spendData.spendCoinIndexes);
         await saveToDisk();
-        Logger.info('send_confirm_screen:doSpend', `${txId} saved`);
       } else {
-        Logger.error(
-          'send_confirm_screen:doSpend',
-          `wrong txIds received = ${txId}, local = ${spendData.txId}`,
-        );
+        Logger.error('send_confirm_screen:doSpend', 'wrong txIds received');
       }
     } catch (e) {
       Logger.error('send_confirm_screen:doSpend', e);

@@ -30,9 +30,8 @@ const AddressDetailsScreen: FC<AddressDetailsProps> = props => {
   useEffect(() => {
     const wallet = getWallet();
     if (wallet) {
-      const txs = wallet.getTransactionsByAddress(item.address);
-      Logger.info('address_detail_scree:useEffect', txs);
-      setTxs(txs);
+      const lTxs = wallet.getTransactionsByAddress(item.address);
+      setTxs(lTxs);
     }
   }, []);
 

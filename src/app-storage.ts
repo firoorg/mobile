@@ -141,10 +141,13 @@ export class AppStorage {
         const realm = await this.getRealm();
         this.inflateTransactionsFromRealm(realm, unserializedWallet);
 
-        Logger.info('storage:loadWalletFromDisk', 'Loaded wallet from disk');
         return unserializedWallet;
       } else {
-        return null; // failed loading data or loading/decryptin data
+        Logger.warn(
+          'storage:loadWalletFromDisk',
+          'failed loading data or loading/decryptin data',
+        );
+        return null;
       }
     } catch (error) {
       Logger.warn('storage:loadWalletFromDisk', error);
@@ -270,7 +273,6 @@ export class AppStorage {
     try {
       return (await this.getItem(AppStorage.FLAG_ENCRYPTED)) === '1';
     } catch (error) {
-      Logger.warn('storage:hasSavedWallet', error);
       return false;
     }
   }
@@ -280,7 +282,6 @@ export class AppStorage {
       let addressBookJson = await this.getItem(AppStorage.ADDRESS_BOOK);
       return JSON.parse(addressBookJson) as Array<AddressBookItem>;
     } catch (error) {
-      Logger.warn('storage:loadAddressBook', error);
       return [];
     }
   }
@@ -349,7 +350,6 @@ export class AppStorage {
       let savedAddressesJson = await this.getItem(AppStorage.SAVED_ADDRESSES);
       return JSON.parse(savedAddressesJson) as Array<AddressItem>;
     } catch (error) {
-      Logger.warn('storage:loadSavedAddresses', error);
       return [];
     }
   }

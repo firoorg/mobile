@@ -69,7 +69,6 @@ const SendScreen = () => {
           const sub = subtractFeeFromAmount ? 0 : 1;
           setTotal(amount + sub * changedFee);
         }
-        Logger.info('send_screen:estimateFee', {changedFee, sendAddress});
         checkIsValid(changedFee, sendAddress);
       } catch (e) {
         Logger.error('send_screen:estimateFee', e);
@@ -96,8 +95,6 @@ const SendScreen = () => {
   };
 
   const onAmountSelect = (amount: BigNumber, isMax: boolean) => {
-    Logger.info('send_screen:onAmountSelect', {amount, isMax, sendAddress});
-
     setIsValid(false);
     const substract = subtractFeeFromAmount || isMax;
     const satoshi = amount.times(SATOSHI).integerValue();
@@ -149,7 +146,6 @@ const SendScreen = () => {
         }
       },
     };
-    Logger.info('send_screen:onClickSend', params);
     NavigationService.navigate('SendConfirmScreen', params);
   };
 

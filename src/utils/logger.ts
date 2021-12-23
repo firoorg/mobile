@@ -34,6 +34,7 @@ const defaultConfig: configLoggerType = {
   enabled: true,
 };
 
+const LOG_MAX_SIZE = 1048576; // 1mb
 const log = logger.createLogger(defaultConfig);
 
 export default class Logger {
@@ -65,13 +66,31 @@ export default class Logger {
     log.disable(tag);
   }
 
-  static clear() {
+  private static getFilePath(): string {
     const fileUrl = RNFS.DocumentDirectoryPath + '/log.txt';
+    return fileUrl;
+  }
+
+  static resetLogIfNeed() {
+    const fileUrl = this.getFilePath();
+    RNFS.stat(fileUrl).then(stats => {
+      console.log(stats);
+      const size = parseInt(stats.size, 10);
+      if (!isNaN(size)) {
+        if (size > LOG_MAX_SIZE) {
+          RNFS.unlink(fileUrl);
+        }
+      }
+    });
+  }
+
+  static clear() {
+    const fileUrl = this.getFilePath();
     RNFS.unlink(fileUrl);
   }
 
   static shareAndroid() {
-    const fileUrl = RNFS.DocumentDirectoryPath + '/log.txt';
+    const fileUrl = this.getFilePath();
     RNFS.readFile(fileUrl, 'base64').then(async base64Data => {
       base64Data = 'data:text/plain;base64,' + base64Data;
       await Share.open({url: base64Data});

@@ -48,10 +48,7 @@ const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
       if (supported) {
         Linking.openURL(url);
       } else {
-        Logger.warn(
-          'transaction_detail_screen',
-          `Don't know how to open URI: ${url}`,
-        );
+        Logger.warn('transaction_detail_screen', "Don't know how to open URI");
       }
     });
   };

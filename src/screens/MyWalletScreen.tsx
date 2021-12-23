@@ -31,7 +31,6 @@ const MyWalletScreen = () => {
   const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
   const doMint = async () => {
-    Logger.info('my_wallet_screen:doMint', 'start');
     const wallet = getWallet();
     if (!wallet) {
       Logger.error('my_wallet_screen:doMint', 'wallet is undefined');
@@ -56,10 +55,6 @@ const MyWalletScreen = () => {
       }
 
       const txs = await firoElectrum.multiGetTransactionByTxid(txIds);
-      Logger.info(
-        'my_wallet_screen:doMint',
-        `utxos form mint: ${JSON.stringify(txs)}`,
-      );
 
       for (const [address, utxos] of Object.entries(utxoMap)) {
         const lelantusUtxos = utxos.map(utxo => {
@@ -72,24 +67,12 @@ const MyWalletScreen = () => {
             address: address,
           };
         });
-        Logger.info(
-          'my_wallet_screen:doMint',
-          `lelantus utxos: ${JSON.stringify(lelantusUtxos)}`,
-        );
 
         const mintTxResult = await wallet.createLelantusMintTx({
           utxos: lelantusUtxos,
         });
-        Logger.info(
-          'my_wallet_screen:doMint',
-          `broadcast tx: ${JSON.stringify(mintTxResult)}`,
-        );
 
         const txId = await firoElectrum.broadcast(mintTxResult.txHex);
-        Logger.info(
-          'my_wallet_screen:doMint',
-          `broadcast txId: ${JSON.stringify(txId)}`,
-        );
 
         if (txId === mintTxResult.txId) {
           mintTxResult.mints.forEach(mint => {
@@ -102,15 +85,10 @@ const MyWalletScreen = () => {
             address,
           );
           updateWallet = true;
-          Logger.info(
-            'my_wallet_screen:doMint',
-            `minted tx saved local: ${JSON.stringify(txId)}`,
-          );
         }
       }
       if (updateWallet) {
         await saveToDisk();
-        Logger.info('my_wallet_screen:doMint', 'saved on disk');
       }
     } catch (e) {
       Logger.error('my_wallet_screen:doMint', e);
@@ -123,10 +101,6 @@ const MyWalletScreen = () => {
       let walletUnconfirmedBalance = getWallet()?.getUnconfirmedBalance();
       setBalance(walletBalance ?? new BigNumber(0));
       setUnconfirmedBalance(walletUnconfirmedBalance ?? new BigNumber(0));
-      Logger.info('my_wallet_screen:updateBalance', {
-        walletBalance,
-        walletUnconfirmedBalance,
-      });
     } catch (e) {
       Logger.error('my_wallet_screen:updateBalance', e);
     }
@@ -136,7 +110,6 @@ const MyWalletScreen = () => {
     try {
       const txs = getWallet()?.getTransactions() ?? [];
       setTxHistory(txs);
-      Logger.info('my_wallet_screen:updateTxHistory', txs);
     } catch (e) {
       Logger.error('my_wallet_screen:updateTxHistory', e);
     }
@@ -155,10 +128,6 @@ const MyWalletScreen = () => {
     try {
       if (await wallet.updateMintMetadata()) {
         await saveToDisk();
-        Logger.info(
-          'my_wallet_screen:updateMintMetadata',
-          'updateMintMetadata',
-        );
       }
     } catch (e) {
       Logger.error('my_wallet_screen:updateMintMetadata ', e);
@@ -174,10 +143,6 @@ const MyWalletScreen = () => {
       if (await wallet.fetchTransactions()) {
         await saveToDisk();
       }
-      Logger.info(
-        'my_wallet_screen:fetchTransactionList ',
-        'fetchTransactions',
-      );
     } catch (e) {
       Logger.error('my_wallet_screen:fetchTransactionList ', e);
     }
@@ -192,7 +157,6 @@ const MyWalletScreen = () => {
       if (await wallet.fetchAnonymitySets()) {
         await saveToDisk();
       }
-      Logger.info('my_wallet_screen:fetchAnonymitySet ', 'fetchAnonymitySet');
     } catch (e) {
       Logger.error('my_wallet_screen:fetchAnonymitySet ', e);
     }
@@ -225,11 +189,9 @@ const MyWalletScreen = () => {
     updateWalletData();
     const id = setInterval(updateWalletData, 60000);
     firoElectrum.addChangeListener(updateWalletData);
-    Logger.info('my_wallet_screen:useEffect', 'subscribe to changes');
     return () => {
       firoElectrum.removeChangeListener(updateWalletData);
       clearInterval(id);
-      Logger.info('my_wallet_screen:useEffect', 'unsubscribe to changes');
     };
   }, []);
 

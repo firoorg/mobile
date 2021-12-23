@@ -25,9 +25,7 @@ const EnterPassphraseScreen = () => {
 
   const onClickDone = async (passphrase: string) => {
     setLoading(true);
-    Logger.info('enter_passphrase_screen:onClickDone', 'trying load wallet');
     if (await loadFromDisk(passphrase)) {
-      Logger.info('enter_passphrase_screen:onClickDone', 'wallet loaded');
       NavigationService.clearStack('MainScreen');
     }
     setLoading(false);
