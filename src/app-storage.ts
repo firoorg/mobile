@@ -29,8 +29,6 @@ export class AppStorage {
 
   private cachedPassword: string | null = null;
 
-  private static realm: typeof Realm | null = null;
-
   /**
    * Wrapper for storage call. Secure store works only in RN environment. AsyncStorage is
    * used for cli/tests
@@ -77,10 +75,6 @@ export class AppStorage {
    * @returns {Promise<Realm>}
    */
   async getRealm(): Promise<typeof Realm> {
-    if (AppStorage.realm) {
-      return AppStorage.realm;
-    }
-
     const password = this.hashIt(this.cachedPassword || 'fyegjitkyf[eqjnc.lf');
     const buf = Buffer.from(
       this.hashIt(password) + this.hashIt(password),
@@ -110,12 +104,11 @@ export class AppStorage {
         },
       },
     ];
-    AppStorage.realm = Realm.open({
+    return Realm.open({
       schema,
       path,
       encryptionKey,
     });
-    return AppStorage.realm;
   }
 
   hashIt = (s: string) => {
@@ -140,6 +133,7 @@ export class AppStorage {
 
         const realm = await this.getRealm();
         this.inflateTransactionsFromRealm(realm, unserializedWallet);
+        realm.close();
 
         return unserializedWallet;
       } else {
@@ -177,6 +171,7 @@ export class AppStorage {
     if (password == null) {
       password = this.cachedPassword;
     }
+    this.cachedPassword = password;
     if (password == null) {
       throw Error('No password');
     }
@@ -188,6 +183,8 @@ export class AppStorage {
 
     const realm = await this.getRealm();
     this.offloadWalletToRealm(realm, wallet);
+    realm.close();
+
     let walletToSave = JSON.stringify(keyCloned);
     let data = {
       wallet: walletToSave,
@@ -196,7 +193,6 @@ export class AppStorage {
 
     let newData = encryption.encrypt(JSON.stringify(data), password);
     try {
-      this.cachedPassword = password;
       await this.setItem(AppStorage.FLAG_ENCRYPTED, '1');
       return await this.setItem('data', JSON.stringify(newData));
     } catch (error) {
