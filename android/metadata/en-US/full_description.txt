@@ -1,0 +1,1 @@
+Mobile wallet for the crypto currency Firo, formerly known as Zcoin.
