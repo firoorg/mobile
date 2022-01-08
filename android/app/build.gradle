@@ -131,7 +131,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.firomobilewallet"
+        applicationId "org.firo.wallet"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 16
