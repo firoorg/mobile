@@ -14,14 +14,13 @@ import {AddressItem} from '../data/AddressItem';
 import {useFocusEffect} from '@react-navigation/native';
 import {BottomSheet} from 'react-native-elements';
 import {SavedAddressesList} from '../components/SavedAddressesList';
-import Logger from '../utils/logger';
-import { FiroStatusBar } from '../components/FiroStatusBar';
+import {FiroStatusBar} from '../components/FiroStatusBar';
 
 const appStorage = new AppStorage();
-const { colors } = CurrentFiroTheme;
+const {colors} = CurrentFiroTheme;
 
 const ReceiveScreen = () => {
-  const {getWallet} = useContext(FiroContext);
+  const {getWallet, saveToDisk} = useContext(FiroContext);
   const [address, setAddress] = useState('loading...');
   const [initialName, setInitialName] = useState<string | undefined>();
   const [isSavedAddressesVisible, setSavedAddressesVisible] = useState(false);
@@ -32,9 +31,9 @@ const ReceiveScreen = () => {
   const onClickCreateAddress = () => {
     const wallet = getWallet();
     if (wallet) {
-      wallet.getAddressAsync().then(addr => {
-        setAddress(addr);
-      });
+      setAddress('loading...');
+      wallet.skipAddress();
+      wallet.getAddressAsync().then(setAddress).then(saveToDisk);
     }
   };
 
@@ -48,26 +47,27 @@ const ReceiveScreen = () => {
   };
 
   useEffect(() => {
-    onClickCreateAddress();
-  }, []);
+    const wallet = getWallet();
+    if (wallet) {
+      setAddress('loading...');
+      wallet.getAddressAsync().then(setAddress);
+    }
+  }, [getWallet]);
 
   const loadSavedAddresses = async () => {
     const savedAddresses = await appStorage.loadSavedAddresses();
     setSavedAddressesList(savedAddresses);
   };
 
-  const findAddressItem = async () => {
+  useEffect(() => {
     const foundAddress = savedAddressesList.find(
       item => item.address === address,
     );
     if (foundAddress !== undefined) {
       setInitialName(foundAddress.name);
     }
-  };
-
-  useEffect(() => {
-    findAddressItem();
   }, [address, savedAddressesList]);
+
   useFocusEffect(
     React.useCallback(() => {
       loadSavedAddresses();

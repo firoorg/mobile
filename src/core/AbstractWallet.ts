@@ -66,6 +66,7 @@ export interface AbstractWallet {
   setSecret(secret: string): Promise<void>;
   getSecret(): string;
 
+  skipAddress(): void;
   getAddressAsync(): Promise<string>;
   getChangeAddressAsync(): Promise<string>;
   getTransactionsAddresses(): Promise<Array<string>>;

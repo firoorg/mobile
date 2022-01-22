@@ -638,6 +638,10 @@ export class FiroWallet implements AbstractWallet {
     return child;
   }
 
+  skipAddress(): void {
+    this.next_free_address_index += 1;
+  }
+
   async getAddressAsync(): Promise<string> {
     // looking for free external address
     let freeAddress = '';
