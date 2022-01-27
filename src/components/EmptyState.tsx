@@ -15,7 +15,6 @@ export const FiroTransactionEmpty: FC = () => {
         text={localization.empty_state.no_transaction}
         style={styles.title}
       />
-      <FiroTextSmall text={localization.empty_state.short_description} />
     </View>
   );
 };
