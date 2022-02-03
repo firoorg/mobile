@@ -1,1 +1,1 @@
-FiroWallet - Mobile wallet for FIRO.
+Mobile wallet for crypto currency Firo.

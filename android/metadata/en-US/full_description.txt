@@ -1,1 +1,13 @@
 Mobile wallet for the crypto currency Firo, formerly known as Zcoin.
+
+Privacy
+Firo is at the forefront of cryptocurrency privacy with Lelantus and Lelantus Spark providing trustless, on-chain privacy with high anonymity sets. Dandelion++ technology also provides network-layer privacy.
+
+Blockchain
+Firo uses a hybrid PoW and LLMQ Chainlocks system combining fair distribution of supply with protection against 51% attacks and quick finality of transactions.
+
+Privacy Infrastructure
+Firo's Elysium tokenization layer allows users to create their own privacy-enabled tokens with use-cases from private stablecoins or voting tokens and in the future offer privacy for bridged assets from other chains.
+
+Research and Development
+Firo stands out as one out of a handful of projects that contribute independent research to blockchain privacy and decentralization technologies such as Sigma, Lelantus, Lelantus Spark and MTP. Our work has played a pivotal role in the space having influenced or been adopted in other projects.
