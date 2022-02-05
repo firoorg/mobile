@@ -87,7 +87,7 @@ const ReceiveScreen = () => {
           />
           <View style={styles.qr}>
             <QRCode
-              value={address}
+              value={'firo:' + address}
               size={226}
               color="#000000"
               backgroundColor="#F7F9FB"

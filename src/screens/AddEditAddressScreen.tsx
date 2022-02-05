@@ -4,7 +4,7 @@ import {
   View,
   TextInput,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {FiroToolbar} from '../components/Toolbar';
@@ -14,11 +14,11 @@ import {Confirmation} from '../components/Confirmation';
 import * as NavigationService from '../NavigationService';
 import {AppStorage} from '../app-storage';
 import localization from '../localization';
-import Logger from '../utils/logger';
-import { FiroStatusBar } from '../components/FiroStatusBar';
+import {FiroStatusBar} from '../components/FiroStatusBar';
+const bip21 = require('bip21');
 
 const appStorage = new AppStorage();
-const { colors } = CurrentFiroTheme;
+const {colors} = CurrentFiroTheme;
 
 type AddressBookStackRouteProps = {
   Address: {item: AddressBookItem; onSuccess?: () => void};
@@ -83,7 +83,10 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
                 params: {
                   onBarScanned: (info: {data: string}) => {
                     if (info.data) {
-                      setAddress(info.data);
+                      try {
+                        const decoded = bip21.decode(info.data, 'firo');
+                        setAddress(decoded.address);
+                      } catch {}
                     }
                   },
                 },

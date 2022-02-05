@@ -1,4 +1,4 @@
-import React, {FC, useState, RefObject} from 'react';
+import React, {FC, useState} from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -19,7 +19,7 @@ import {AddressBookItem} from '../data/AddressBookItem';
 import {CurrentFiroTheme} from '../Themes';
 import {useFocusEffect} from '@react-navigation/native';
 const bip21 = require('bip21');
-  
+
 const {colors} = CurrentFiroTheme;
 
 const appStorage = new AppStorage();
@@ -27,7 +27,9 @@ const appStorage = new AppStorage();
 type SendAddressProps = {
   style: StyleProp<ViewStyle>;
   onAddressSelect: (address: string, options?: any) => void;
-  subscribeToAddressChange?: (addressChanged: (address: string) => void) => void;
+  subscribeToAddressChange?: (
+    addressChanged: (address: string) => void,
+  ) => void;
 };
 
 export const SendAddress: FC<SendAddressProps> = props => {
@@ -99,15 +101,15 @@ export const SendAddress: FC<SendAddressProps> = props => {
           NavigationService.navigate('ScanQRCode', {
             screen: 'ScanQRCodeScreen' as any,
             params: {
-              onBarScanned: (info: { data: string }) => {
+              onBarScanned: (info: {data: string}) => {
                 if (info.data) {
                   let scannedAddress = info.data;
                   let options: any;
                   try {
-                    const decoded = bip21.decode(info.data, "firo");
+                    const decoded = bip21.decode(info.data, 'firo');
                     scannedAddress = decoded.address;
                     options = decoded.options;
-                  } catch { }
+                  } catch {}
                   setSendAddress(scannedAddress);
                   notifyAddressChanged(scannedAddress, options);
                 }
