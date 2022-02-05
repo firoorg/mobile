@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import * as NavigationService from '../NavigationService';
 import {Image, StyleSheet, View} from 'react-native';
-import {FiroSecondaryButton} from '../components/Button';
+import {FiroPrimaryButton} from '../components/Button';
 import {FiroToolbar} from '../components/Toolbar';
 import {FiroTitleBig, FiroTextBig} from '../components/Texts';
 import {FiroInputPassword} from '../components/Input';
@@ -9,10 +9,9 @@ import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
 import localization from '../localization';
 import {Biometrics} from '../utils/biometrics';
-import Logger from '../utils/logger';
-import { FiroStatusBar } from '../components/FiroStatusBar';
+import {FiroStatusBar} from '../components/FiroStatusBar';
 
-const { colors } = CurrentFiroTheme;
+const {colors} = CurrentFiroTheme;
 
 const EnterPassphraseScreen = () => {
   const [password, setPassword] = useState('');
@@ -86,8 +85,8 @@ const EnterPassphraseScreen = () => {
             onTextChanged={txt => setPassword(txt)}
           />
         ) : null}
-        <FiroSecondaryButton
-          buttonStyle={styles.restoreWallet}
+        <FiroPrimaryButton
+          buttonStyle={styles.login}
           text={btnText}
           onClick={() => onClickDone(password)}
         />
@@ -127,8 +126,8 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: 40,
   },
-  restoreWallet: {
-    marginTop: 'auto',
+  login: {
+    marginTop: 20,
     width: '100%',
   },
 });

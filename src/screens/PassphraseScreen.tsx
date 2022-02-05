@@ -1,7 +1,7 @@
 import React, {useContext, useState} from 'react';
 import * as NavigationService from '../NavigationService';
 import {Image, StyleSheet, View} from 'react-native';
-import {FiroSecondaryButton} from '../components/Button';
+import {FiroPrimaryButton} from '../components/Button';
 import {FiroToolbar} from '../components/Toolbar';
 import {FiroTitleBig, FiroTextBig} from '../components/Texts';
 import {FiroInputPassword} from '../components/Input';
@@ -70,8 +70,8 @@ const PassphraseScreen = () => {
           style={styles.password}
           onTextChanged={txt => setPassword(txt)}
         />
-        <FiroSecondaryButton
-          buttonStyle={styles.restoreWallet}
+        <FiroPrimaryButton
+          buttonStyle={styles.create}
           text={btnCreateText}
           onClick={onClickDone}
         />
@@ -108,8 +108,8 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: 40,
   },
-  restoreWallet: {
-    marginTop: 'auto',
+  create: {
+    marginTop: 20,
     width: '100%',
   },
 });

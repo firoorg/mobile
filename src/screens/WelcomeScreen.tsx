@@ -8,7 +8,7 @@ import {FiroWallet} from '../core/FiroWallet';
 import {FiroContext} from '../FiroContext';
 import localization from '../localization';
 import Logger from '../utils/logger';
-import { FiroStatusBar } from '../components/FiroStatusBar';
+import {FiroStatusBar} from '../components/FiroStatusBar';
 
 const WelcomeScreen = () => {
   const [creating, setCreating] = useState(false);

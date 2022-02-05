@@ -1,7 +1,7 @@
 import React, {FC, useContext, useEffect, useState} from 'react';
 import * as NavigationService from '../NavigationService';
 import {Image, StyleSheet, View} from 'react-native';
-import {FiroSecondaryButton} from '../components/Button';
+import {FiroPrimaryButton} from '../components/Button';
 import {FiroToolbar} from '../components/Toolbar';
 import {FiroInputMnemonic} from '../components/Input';
 import {FiroTitleBig, FiroTextBig, FiroTextSmall} from '../components/Texts';
@@ -78,23 +78,27 @@ const MnemonicInputScreen: FC<MnemonicInputProps> = props => {
           onTextChanged={txt => setMnemonic(txt)}
           enabled={!creating}
         />
+        <FiroPrimaryButton
+          buttonStyle={styles.restoreWallet}
+          text={btnRestoreText}
+          onClick={onClickContinue}
+          disable={
+            creating ||
+            !mnemonic ||
+            mnemonic.split(' ').filter(token => token.length > 0).length !== 24
+          }
+        />
         {failedRestoring ? (
           <FiroTextSmall
             text={localization.mnemonic_input_screen.message_failed_restore}
-            style={{paddingBottom: 20, color: colors.notification}}
+            style={{paddingTop: 5, color: colors.notification}}
           />
         ) : creating ? (
           <FiroTextSmall
             text={localization.mnemonic_input_screen.message_wait}
-            style={{paddingBottom: 20, color: colors.notification}}
+            style={{paddingTop: 5, color: colors.notification}}
           />
         ) : null}
-        <FiroSecondaryButton
-          buttonStyle={styles.restoreWallet}
-          text={btnRestoreText}
-          onClick={onClickContinue}
-          disable={creating || !mnemonic || mnemonic.split(' ').length != 24}
-        />
       </View>
     </View>
   );
@@ -131,9 +135,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 120,
     marginTop: 30,
-    marginBottom: 'auto',
   },
   restoreWallet: {
+    marginTop: 20,
     width: '100%',
   },
   textCenter: {

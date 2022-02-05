@@ -2,17 +2,16 @@ import React, {useContext} from 'react';
 import * as NavigationService from '../NavigationService';
 import {Image, StyleSheet, View} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
-import {FiroSecondaryButton} from '../components/Button';
+import {FiroPrimaryButton} from '../components/Button';
 import {FiroToolbar} from '../components/Toolbar';
 import {MnemonicText} from '../components/Mnemonic';
 import {FiroTitleBig, FiroTextBig, FiroTextSmall} from '../components/Texts';
 import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
 import localization from '../localization';
-import Logger from '../utils/logger';
-import { FiroStatusBar } from '../components/FiroStatusBar';
+import {FiroStatusBar} from '../components/FiroStatusBar';
 
-const { colors } = CurrentFiroTheme;
+const {colors} = CurrentFiroTheme;
 
 const MnemonicViewScreen = () => {
   const {getWallet} = useContext(FiroContext);
@@ -53,8 +52,8 @@ const MnemonicViewScreen = () => {
           words={words}
           copyMnemonic={() => Clipboard.setString(mnemonic)}
         />
-        <FiroSecondaryButton
-          buttonStyle={styles.restoreWallet}
+        <FiroPrimaryButton
+          buttonStyle={styles.continue}
           text={localization.mnemonic_view_screen.continue}
           onClick={onClickContinue}
         />
@@ -92,7 +91,7 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     marginBottom: 40,
   },
-  restoreWallet: {
+  continue: {
     width: '100%',
   },
   textCenter: {
