@@ -78,6 +78,11 @@ export interface IString extends LocalizedStringsMethods {
     restoring: string;
     message_wait: string;
     message_failed_restore: string;
+    progress_text_1: string;
+    progress_text_2: string;
+    progress_text_3: string;
+    progress_text_4: string;
+    progress_text_5: string;
   };
 
   my_mnemonic_screen: {

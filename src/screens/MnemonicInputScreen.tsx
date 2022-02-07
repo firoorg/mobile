@@ -23,9 +23,10 @@ const MnemonicInputScreen: FC<MnemonicInputProps> = props => {
   const [creating, setCreating] = useState(false);
   const [mnemonic, setMnemonic] = useState('');
   const [failedRestoring, setFailedRestoring] = useState(false);
+  const [progressMessage, setProgressMessage] = useState('');
   const {setWallet} = useContext(FiroContext);
   const btnRestoreText = creating
-    ? localization.mnemonic_input_screen.restoring
+    ? progressMessage
     : localization.mnemonic_input_screen.continue;
 
   const onClickContinue = async () => {
@@ -34,7 +35,11 @@ const MnemonicInputScreen: FC<MnemonicInputProps> = props => {
       setCreating(true);
       const wallet = new FiroWallet();
       await wallet.setSecret(mnemonic);
-      await wallet.restore();
+      await wallet.restore((progress, total) => {
+        setProgressMessage(
+          getProgressText(progress) + ' (' + progress + '/' + total + ')',
+        );
+      });
       setWallet(wallet, true);
       NavigationService.navigate('PassphraseScreen', undefined);
     } catch (e) {
@@ -43,6 +48,21 @@ const MnemonicInputScreen: FC<MnemonicInputProps> = props => {
     } finally {
       setCreating(false);
     }
+  };
+
+  const getProgressText = (progressNumber: number): string => {
+    if (progressNumber === 1) {
+      return localization.mnemonic_input_screen.progress_text_1;
+    } else if (progressNumber === 2) {
+      return localization.mnemonic_input_screen.progress_text_2;
+    } else if (progressNumber === 3) {
+      return localization.mnemonic_input_screen.progress_text_3;
+    } else if (progressNumber === 4) {
+      return localization.mnemonic_input_screen.progress_text_4;
+    } else if (progressNumber === 5) {
+      return localization.mnemonic_input_screen.progress_text_5;
+    }
+    return localization.mnemonic_input_screen.restoring;
   };
 
   const navBeforeRemove = (e: any) => {

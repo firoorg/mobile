@@ -921,10 +921,15 @@ export class FiroWallet implements AbstractWallet {
     return hasChanges;
   }
 
-  async restore(): Promise<void> {
+  async restore(
+    callback: (progress: number, total: number) => void,
+  ): Promise<void> {
+    let callbackIndex = 1;
+    const totalCallbacks = 5;
     const setDataMap: {
       [key: number]: SetDataModel;
     } = {};
+    callback(callbackIndex++, totalCallbacks);
     const latestSetId = await firoElectrum.getLatestSetId();
     for (let setId = 1; setId <= latestSetId; setId++) {
       const setData = await firoElectrum.getSetData(setId);
@@ -935,6 +940,7 @@ export class FiroWallet implements AbstractWallet {
 
     const spendTxIds: string[] = [];
 
+    callback(callbackIndex++, totalCallbacks);
     let lastFoundIndex = 0;
     let currentIndex = 0;
     while (currentIndex < lastFoundIndex + 20) {
@@ -1007,6 +1013,7 @@ export class FiroWallet implements AbstractWallet {
 
     this.next_free_mint_index = lastFoundIndex + 1;
 
+    callback(callbackIndex++, totalCallbacks);
     const spendTxs = await firoElectrum.multiGetTransactionByTxid(spendTxIds);
     for (const [txid, tx] of Object.entries(spendTxs)) {
       const transactionItem = new TransactionItem();
@@ -1025,7 +1032,9 @@ export class FiroWallet implements AbstractWallet {
       this._txs_by_external_index.unshift(transactionItem);
     }
 
+    callback(callbackIndex++, totalCallbacks);
     await this.fetchAnonymitySets();
+    callback(callbackIndex++, totalCallbacks);
     await this.fetchTransactions();
   }
 
