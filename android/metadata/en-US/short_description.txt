@@ -1,1 +1,1 @@
-Mobile wallet for crypto currency Firo.
+Mobile wallet for the cryptocurrency Firo.

@@ -1,4 +1,4 @@
-Mobile wallet for the crypto currency Firo, formerly known as Zcoin.
+Mobile wallet for the cryptocurrency Firo, formerly known as Zcoin.
 
 Privacy
 Firo is at the forefront of cryptocurrency privacy with Lelantus and Lelantus Spark providing trustless, on-chain privacy with high anonymity sets. Dandelion++ technology also provides network-layer privacy.
