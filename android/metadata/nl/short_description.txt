@@ -1,1 +1,1 @@
-FiroWallet - Mobiele portemonnee voor FIRO.
+Mobiele portemonnee voor de cryptovaluta Firo.
