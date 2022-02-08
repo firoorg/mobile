@@ -1,0 +1,13 @@
+Mobiele portemonnee voor de cryptovaluta Firo, voorheen bekend als Zcoin.
+
+Privacy
+Firo loopt voorop op het gebied van cryptovalutaprivacy met Lelantus en Lelantus Spark die betrouwbare, on-chain privacy bieden met hoge anonimiteitssets. Dandelion++-technologie biedt ook privacy op de netwerklaag.
+
+Blokketen
+Firo gebruikt een hybride PoW- en LLMQ Chainlocks-systeem dat een eerlijke distributie van het aanbod combineert met bescherming tegen 51%-aanvallen en snelle afronding van transacties.
+
+Privacy-infrastructuur
+Met de Elysium-tokenisatielaag van Firo kunnen gebruikers hun eigen tokens met privacyfunctionaliteit maken met use-cases van private stablecoins of stemtokens en in de toekomst privacy bieden voor overbrugde activa van andere ketens.
+
+Onderzoek en ontwikkeling
+Firo onderscheidt zich als een van de weinige projecten die onafhankelijk onderzoek bijdragen aan blockchain-privacy- en decentralisatietechnologieën zoals Sigma, Lelantus, Lelantus Spark en MTP. Ons werk heeft een centrale rol gespeeld in de ruimte die andere projecten heeft beïnvloed of overgenomen.

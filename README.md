@@ -1,4 +1,4 @@
-# FiroWallet - Mobile wallet for FIRO
+# Firo - Mobile wallet for the cryptocurrency Firo
 
 Built with React Native and Electrum.
 
