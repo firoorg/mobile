@@ -3,7 +3,7 @@
 # build directories
 : ${SRC_DIR:=`pwd`/src}
 : ${BUILD_DIR:=`pwd`/build}
-: ${SIGMA_DIR:=`pwd`/native-libs/libsigma}
+: ${LELANTUS_DIR:=`pwd`/native-libs/liblelantus}
 : ${NAME:=secp256k1}
 
 doneSection() {
@@ -15,7 +15,7 @@ doneSection() {
 
 copyBundle() {
   echo "Copy bundle..."
-  cp -a $SIGMA_DIR/$NAME/. $SRC_DIR
+  cp -a $LELANTUS_DIR/$NAME/. $SRC_DIR
   doneSection
 }
 
