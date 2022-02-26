@@ -28,8 +28,6 @@ const MyWalletScreen = () => {
   const [sync, setSync] = useState(false);
   const {saveToDisk} = useContext(FiroContext);
 
-  const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
-
   const doMint = async () => {
     const wallet = getWallet();
     if (!wallet) {
@@ -134,31 +132,17 @@ const MyWalletScreen = () => {
     }
   };
 
-  const fetchTransactionList = async () => {
+  const syncWallet = async () => {
     const wallet = getWallet();
     if (!wallet) {
       return;
     }
     try {
-      if (await wallet.fetchTransactions()) {
+      await wallet.sync(async () => {
         await saveToDisk();
-      }
+      });
     } catch (e) {
-      Logger.error('my_wallet_screen:fetchTransactionList ', e);
-    }
-  };
-
-  const fetchAnonymitySets = async () => {
-    const wallet = getWallet();
-    if (!wallet) {
-      return;
-    }
-    try {
-      if (await wallet.fetchAnonymitySets()) {
-        await saveToDisk();
-      }
-    } catch (e) {
-      Logger.error('my_wallet_screen:fetchAnonymitySet ', e);
+      Logger.error('my_wallet_screen:sync ', e);
     }
   };
 
@@ -171,15 +155,17 @@ const MyWalletScreen = () => {
     }, []),
   );
 
+  let syncing = false;
   const updateWalletData = async () => {
+    if (syncing === true) {
+      return;
+    }
+    syncing = true;
     setSync(true);
-    const t = Date.now();
-    await fetchAnonymitySets();
+    await syncWallet();
     await updateMintMetadata();
-    await fetchTransactionList();
     await mintUnspentTransactions();
-    const dt = 1000 - (Date.now() - t);
-    dt > 0 && (await delay(dt));
+    syncing = false;
     setSync(false);
     updateBalance();
     updateTxHistory();

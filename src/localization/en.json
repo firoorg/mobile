@@ -74,11 +74,11 @@
     "restoring": "Restoring...",
     "message_wait": "This can take few minutes, please wait",
     "message_failed_restore": "Failed restoring the wallet",
-    "progress_text_1": "Downloading data",
-    "progress_text_2": "Fetching mints",
-    "progress_text_3": "Fetching spend txs",
-    "progress_text_4": "Caching anonymity sets",
-    "progress_text_5": "Fetching public txs"
+    "progress_text_1": "Fetching public txs",
+    "progress_text_2": "Downloading used coins",
+    "progress_text_3": "Downloading set data",
+    "progress_text_4": "Extracting mint txs",
+    "progress_text_5": "Extracting spend txs"
   },
 
   "my_mnemonic_screen": {

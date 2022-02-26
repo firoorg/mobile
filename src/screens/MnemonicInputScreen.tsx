@@ -23,7 +23,9 @@ const MnemonicInputScreen: FC<MnemonicInputProps> = props => {
   const [creating, setCreating] = useState(false);
   const [mnemonic, setMnemonic] = useState('');
   const [failedRestoring, setFailedRestoring] = useState(false);
-  const [progressMessage, setProgressMessage] = useState('');
+  const [progressMessage, setProgressMessage] = useState(
+    localization.mnemonic_input_screen.restoring,
+  );
   const {setWallet} = useContext(FiroContext);
   const btnRestoreText = creating
     ? progressMessage

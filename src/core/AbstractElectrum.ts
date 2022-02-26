@@ -52,15 +52,9 @@ export class FullTransactionModel {
 }
 
 export type AnonymitySetModel = {
-  serializedCoins: string[];
+  coins: string[][];
   blockHash: string;
   setHash: string;
-};
-
-export type SetDataModel = {
-  setID: number;
-  mints: [];
-  jmints: [];
 };
 
 export type UsedSerialsModel = {
@@ -120,8 +114,7 @@ export interface AbstractElectrum {
 
   getLatestSetId(): Promise<number>;
 
-  getSetData(setId: number): Promise<SetDataModel>;
-  getUsedCoinSerials(): Promise<UsedSerialsModel>;
+  getUsedCoinSerials(coinCount: number): Promise<UsedSerialsModel>;
 
   getFeeRate(): Promise<number>;
 }

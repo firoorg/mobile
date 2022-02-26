@@ -103,6 +103,14 @@ export class AppStorage {
           public_coins: 'string', // stringified json
         },
       },
+      {
+        name: 'UsedCoin',
+        primaryKey: 'id',
+        properties: {
+          id: {type: 'int', indexed: true},
+          serial_number: 'string', // stringified json
+        },
+      },
     ];
     return Realm.open({
       schema,
@@ -227,10 +235,19 @@ export class AppStorage {
         anonytmiySet.setId = realmAnonymitySet.set_id;
         anonytmiySet.blockHash = realmAnonymitySet.block_hash;
         anonytmiySet.setHash = realmAnonymitySet.set_hash;
-        anonytmiySet.publicCoins = JSON.parse(realmAnonymitySet.public_coins);
+        anonytmiySet.coins = JSON.parse(realmAnonymitySet.public_coins);
         wallet._anonymity_sets.push(anonytmiySet);
       } catch (error) {
         Logger.warn('storage:inflateAnonymitySetsFromRealm', error);
+      }
+    }
+
+    const realmUsedCoinData = realm.objects('UsedCoin');
+    for (const realmUsedCoin of realmUsedCoinData) {
+      try {
+        wallet._used_serial_numbers = JSON.parse(realmUsedCoin.serial_number);
+      } catch (error) {
+        Logger.warn('storage:inflateUsedCoinsFromRealm', error);
       }
     }
   }
@@ -250,18 +267,26 @@ export class AppStorage {
       );
 
       wallet._anonymity_sets.forEach(anonymitySet => {
-        const publicCoins = JSON.stringify(anonymitySet.publicCoins);
         realm.create(
           'AnonymitySet',
           {
             set_id: anonymitySet.setId,
             block_hash: anonymitySet.blockHash,
             set_hash: anonymitySet.setHash,
-            public_coins: publicCoins,
+            public_coins: JSON.stringify(anonymitySet.coins),
           },
           Realm.UpdateMode.Modified,
         );
       });
+
+      realm.create(
+        'UsedCoin',
+        {
+          id: 1,
+          serial_number: JSON.stringify(wallet._used_serial_numbers),
+        },
+        Realm.UpdateMode.Modified,
+      );
     });
   }
 

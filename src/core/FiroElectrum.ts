@@ -5,7 +5,6 @@ import {
   TransactionModel,
   FullTransactionModel,
   AnonymitySetModel,
-  SetDataModel,
   UsedSerialsModel,
 } from './AbstractElectrum';
 import {network} from './FiroNetwork';
@@ -595,7 +594,7 @@ export default class FiroElectrum implements AbstractElectrum {
     param.push(setId + '');
     param.push(startBlockHash);
     const result = await this.mainClient.request(
-      'sigma.getanonymityset',
+      'lelantus.getanonymityset',
       param,
     );
     return result;
@@ -604,29 +603,18 @@ export default class FiroElectrum implements AbstractElectrum {
   async getLatestSetId(): Promise<number> {
     this.checkConnection('getLatestSetId');
 
-    const result = await this.mainClient.request('sigma.getlatestcoinid');
+    const result = await this.mainClient.request('lelantus.getlatestcoinid');
     return result;
   }
 
-  async getSetData(setId: number): Promise<SetDataModel> {
-    this.checkConnection('getSetData');
-
-    const param = [];
-    param.push(setId);
-    const result = await this.mainClient.request(
-      'sigma.getcoinsforrecovery',
-      param,
-    );
-
-    return result;
-  }
-
-  async getUsedCoinSerials(): Promise<UsedSerialsModel> {
+  async getUsedCoinSerials(coinCount: number): Promise<UsedSerialsModel> {
     this.checkConnection('getUsedCoinSerials');
 
+    const param = [];
+    param.push(coinCount + '');
     const result = await this.mainClient.request(
-      'sigma.getusedcoinserials',
-      [],
+      'lelantus.getusedcoinserials',
+      param,
     );
 
     return result;

@@ -61,6 +61,7 @@ export interface AbstractWallet {
   _txs_by_external_index: TransactionItem[];
   _txs_by_internal_index: TransactionItem[];
   _anonymity_sets: AnonymitySet[];
+  _used_serial_numbers: string[];
 
   generate(): Promise<void>;
   setSecret(secret: string): Promise<void>;
@@ -104,7 +105,9 @@ export interface AbstractWallet {
   ): void;
 
   fetchAnonymitySets(): Promise<boolean>;
+  fetchUsedCoins(): Promise<boolean>;
   updateMintMetadata(): Promise<boolean>;
 
+  sync(callback: () => void): Promise<void>;
   restore(callback: (progress: number, total: number) => void): Promise<void>;
 }
