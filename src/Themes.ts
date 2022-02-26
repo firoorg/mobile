@@ -18,6 +18,7 @@ type FiroColors = {
   switchTrackTrue: string;
   switchTrackFalse: string;
   switchThumb: string;
+  switchThumbDisabled: string,
   secondaryBackground: string;
   unchecked: string;
   primaryDisabled: string;
@@ -41,15 +42,12 @@ export const FiroDefaultTheme: FiroTheme = {
     colorOnPrimary: '#FFFFFF',
     secondary: '#2FA299',
     cardBackground: '#FFFFFF',
-    // mainColor: '#9B1C2E',
     buttonTextColor: '#ffffff',
-    // buttonDisabledBackgroundColor: '#d1848f',
-    // buttonDisabledTextColor: '#dfe7f5',
-    // secondaryButtonColor: '#000000',
     highlight: '#f2f2f2',
-    switchTrackTrue: '#2fa299',
+    switchTrackTrue: '#d1848f',
     switchTrackFalse: '#878787',
-    switchThumb: '#ffffff',
+    switchThumb: '#9B1C2E',
+    switchThumbDisabled: '#c28f97',
     secondaryBackground: '#f7f9fb',
     unchecked: '#838485',
   },

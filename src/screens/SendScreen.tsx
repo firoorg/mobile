@@ -1,8 +1,8 @@
 import React, {useContext, useState, useEffect} from 'react';
-import {StyleSheet, View, Text, Image, TextInput} from 'react-native';
+import {StyleSheet, View, Text, Image, TextInput, Switch} from 'react-native';
 import {FiroToolbarWithoutBack} from '../components/Toolbar';
 import {CurrentFiroTheme} from '../Themes';
-import {Divider, Switch} from 'react-native-elements';
+import {Divider} from 'react-native-elements';
 import {SendAmountInputCard} from '../components/AmountInput';
 import {SendAddress} from '../components/SendAddress';
 import {FiroPrimaryButton} from '../components/Button';
@@ -17,9 +17,9 @@ import {useFocusEffect} from '@react-navigation/native';
 import * as NavigationService from '../NavigationService';
 import BigNumber from 'bignumber.js';
 import Logger from '../utils/logger';
-import { FiroStatusBar } from '../components/FiroStatusBar';
+import {FiroStatusBar} from '../components/FiroStatusBar';
 
-const { colors } = CurrentFiroTheme;
+const {colors} = CurrentFiroTheme;
 var timerHandler: number = -1;
 let changeAmountCallback: (amount: string) => void;
 let changeAddressCallback: (address: string) => void;
@@ -38,7 +38,6 @@ const SendScreen = () => {
     getSettings().defaultCurrency
   ];
 
-  
   const rate = getFiroRate();
   const estimateFee = (amount: number, subtractFeeFromAmount: boolean) => {
     if (timerHandler !== -1) {
@@ -246,7 +245,11 @@ const SendScreen = () => {
               </Text>
               <Switch
                 value={subtractFeeFromAmount}
-                color={colors.primary}
+                thumbColor={colors.switchThumb}
+                trackColor={{
+                  false: colors.switchTrackFalse,
+                  true: colors.switchTrackTrue,
+                }}
                 onValueChange={onSubtractFeeFromAmountChanged}
               />
             </View>

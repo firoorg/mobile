@@ -304,6 +304,11 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
             </Text>
             <Switch
               value={props.route.params.data.reduceFeeFromAmount}
+              thumbColor={colors.switchThumbDisabled}
+              trackColor={{
+                false: colors.switchTrackFalse,
+                true: colors.switchTrackTrue,
+              }}
               disabled
             />
           </View>
