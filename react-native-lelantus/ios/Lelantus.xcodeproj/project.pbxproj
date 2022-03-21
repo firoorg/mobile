@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B3E7B58A1CC2AC0600A0062D /* Lelantus.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* Lelantus.m */; };
+		2419038627E7B57D007D2F1A /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2419038127E7B57C007D2F1A /* Utils.cpp */; };
+		2419038727E7B57D007D2F1A /* LelantusWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2419038227E7B57C007D2F1A /* LelantusWrapper.cpp */; };
+		2419038827E7B57D007D2F1A /* Lelantus.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2419038527E7B57C007D2F1A /* Lelantus.mm */; };
+		2419038B27E7B5D0007D2F1A /* libsecp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2419038A27E7B5D0007D2F1A /* libsecp.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,8 +27,13 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libLelantus.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libLelantus.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2419038127E7B57C007D2F1A /* Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utils.cpp; sourceTree = "<group>"; };
+		2419038227E7B57C007D2F1A /* LelantusWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LelantusWrapper.cpp; sourceTree = "<group>"; };
+		2419038327E7B57C007D2F1A /* LelantusWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LelantusWrapper.h; sourceTree = "<group>"; };
+		2419038427E7B57C007D2F1A /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
+		2419038527E7B57C007D2F1A /* Lelantus.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Lelantus.mm; sourceTree = "<group>"; };
+		2419038A27E7B5D0007D2F1A /* libsecp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsecp.a; sourceTree = "<group>"; };
 		B3E7B5881CC2AC0600A0062D /* Lelantus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lelantus.h; sourceTree = "<group>"; };
-		B3E7B5891CC2AC0600A0062D /* Lelantus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Lelantus.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2419038B27E7B5D0007D2F1A /* libsecp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,12 +56,25 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		2419038927E7B5D0007D2F1A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2419038A27E7B5D0007D2F1A /* libsecp.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				2419038527E7B57C007D2F1A /* Lelantus.mm */,
+				2419038227E7B57C007D2F1A /* LelantusWrapper.cpp */,
+				2419038327E7B57C007D2F1A /* LelantusWrapper.h */,
+				2419038127E7B57C007D2F1A /* Utils.cpp */,
+				2419038427E7B57C007D2F1A /* Utils.h */,
 				B3E7B5881CC2AC0600A0062D /* Lelantus.h */,
-				B3E7B5891CC2AC0600A0062D /* Lelantus.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
+				2419038927E7B5D0007D2F1A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -95,6 +117,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 58B511D21A9E6C8500147676;
@@ -112,7 +135,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3E7B58A1CC2AC0600A0062D /* Lelantus.m in Sources */,
+				2419038627E7B57D007D2F1A /* Utils.cpp in Sources */,
+				2419038727E7B57D007D2F1A /* LelantusWrapper.cpp in Sources */,
+				2419038827E7B57D007D2F1A /* Lelantus.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,12 +241,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
-				"$(inherited)",
+					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",
 				);
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Lelantus;
 				SKIP_INSTALL = YES;
@@ -237,7 +265,10 @@
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",
 				);
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Lelantus;
 				SKIP_INSTALL = YES;

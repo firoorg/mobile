@@ -8,26 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* FiroMobileWalletTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* FiroMobileWalletTests.m */; };
+		0D7D5FF5CDDADA729560AEA1 /* libPods-FiroMobileWallet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AFAA097CA5DE0F98B4A644E /* libPods-FiroMobileWallet.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		40F7EB26923DBC7AFE1218BB /* libPods-FiroMobileWallet-FiroMobileWalletTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B635BEC777E101FD26E9202 /* libPods-FiroMobileWallet-FiroMobileWalletTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		08C60F09222F40A6A69850CB /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9FAFCBD0773847C78F656FAC /* AntDesign.ttf */; };
-		77BB8FECB21442ADADBC77B4 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4F2EDECC336F4869A52D10ED /* Entypo.ttf */; };
-		4873A4A0FBF34C0C8FA6D9DA /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2CB4BC0074C54C23AB18BAFE /* EvilIcons.ttf */; };
-		DBC6BB2C6BCC43C8A57D4FF8 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 674305AE69CF4B57B48D3987 /* Feather.ttf */; };
-		644065F6189F495A8FE8D824 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 707538451FD2439490C1286F /* FontAwesome.ttf */; };
-		7479FA3653114923BC20ADA3 /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 768C48FE64BA4B8CACB1F193 /* FontAwesome5_Brands.ttf */; };
-		C44258B243004D5FBFD8B28E /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E326157E424C48359720DB28 /* FontAwesome5_Regular.ttf */; };
-		A2437A08B9104C1B829A97C0 /* FontAwesome5_Solid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A566BD359882415A8113D715 /* FontAwesome5_Solid.ttf */; };
-		8B2FA56597D14306AB45170B /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5A1816FF0496439089848A2C /* Fontisto.ttf */; };
-		D83A2AECACB243ACAA355077 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 742CB8A955D14D93B3763A8A /* Foundation.ttf */; };
-		EEFC5F8EC45E486D9EE3C2F0 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 04E8A57123724DE2BB02E322 /* Ionicons.ttf */; };
-		DAB31AD7341947E38E297DAB /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1781DDDCFFDA40EBBD79FB71 /* MaterialCommunityIcons.ttf */; };
-		D39637AC9EFD473CA5B4A9C0 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DFB29237534F4D2384A9B2E1 /* MaterialIcons.ttf */; };
-		C6014F8DD3154B6A9C9497DA /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4A51366BFB634B27A92E3E6D /* Octicons.ttf */; };
-		AE99C4BC1D5847448518FFE3 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 26207B42FDF547CCA3C58D48 /* SimpleLineIcons.ttf */; };
-		67B3432A075848E995202CE2 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A5AB86BB11EA4AFEAC533C0C /* Zocial.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,30 +30,66 @@
 		00E356EE1AD99517003FC87E /* FiroMobileWalletTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FiroMobileWalletTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* FiroMobileWalletTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FiroMobileWalletTests.m; sourceTree = "<group>"; };
+		04E8A57123724DE2BB02E322 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
+		0CCEB2FDC2304C43A907A2B4 /* Rubik-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-Italic.ttf"; path = "../assets/fonts/Rubik-Italic.ttf"; sourceTree = "<group>"; };
+		0D25C86555A7490E820CE963 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = ../assets/fonts/FontAwesome.ttf; sourceTree = "<group>"; };
+		118F6BE88BFB85170C57EAA5 /* Pods-FiroMobileWallet-FiroMobileWalletTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FiroMobileWallet-FiroMobileWalletTests.release.xcconfig"; path = "Target Support Files/Pods-FiroMobileWallet-FiroMobileWalletTests/Pods-FiroMobileWallet-FiroMobileWalletTests.release.xcconfig"; sourceTree = "<group>"; };
+		131C924F096D4AB48FACBCD4 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = ../assets/fonts/Feather.ttf; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* FiroMobileWallet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FiroMobileWallet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = FiroMobileWallet/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = FiroMobileWallet/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = FiroMobileWallet/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = FiroMobileWallet/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = FiroMobileWallet/main.m; sourceTree = "<group>"; };
+		1781DDDCFFDA40EBBD79FB71 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
+		18B804B09392420E814EE0B0 /* Rubik-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-ExtraBold.ttf"; path = "../assets/fonts/Rubik-ExtraBold.ttf"; sourceTree = "<group>"; };
+		1B3D4F412A2A47CBA8EB9D64 /* Rubik-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-BoldItalic.ttf"; path = "../assets/fonts/Rubik-BoldItalic.ttf"; sourceTree = "<group>"; };
+		1B68B53B2AA64929B83997CA /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = ../assets/fonts/EvilIcons.ttf; sourceTree = "<group>"; };
+		1BCA03B8202D4445BBEAE8CA /* Rubik-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-LightItalic.ttf"; path = "../assets/fonts/Rubik-LightItalic.ttf"; sourceTree = "<group>"; };
+		26207B42FDF547CCA3C58D48 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
+		2779EB77CAC04802AB330CCA /* Rubik-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-Black.ttf"; path = "../assets/fonts/Rubik-Black.ttf"; sourceTree = "<group>"; };
+		28FAE8D75DF34DF78A647EE7 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = ../assets/fonts/Octicons.ttf; sourceTree = "<group>"; };
+		2CB4BC0074C54C23AB18BAFE /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
+		4217CE26680A4C03B4DB19DB /* Rubik-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-MediumItalic.ttf"; path = "../assets/fonts/Rubik-MediumItalic.ttf"; sourceTree = "<group>"; };
+		4A51366BFB634B27A92E3E6D /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
+		4BEFA49715B94469AA83DC63 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = ../assets/fonts/Entypo.ttf; sourceTree = "<group>"; };
+		4F2EDECC336F4869A52D10ED /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
+		4FAE500BC7144C7590EFC06C /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = ../assets/fonts/FontAwesome5_Regular.ttf; sourceTree = "<group>"; };
+		50E83883D79C4EFF9A5CB2D9 /* Rubik-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-SemiBold.ttf"; path = "../assets/fonts/Rubik-SemiBold.ttf"; sourceTree = "<group>"; };
+		5982361B5E364A0983061D1F /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = ../assets/fonts/FontAwesome5_Solid.ttf; sourceTree = "<group>"; };
+		5A1816FF0496439089848A2C /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
+		5B635BEC777E101FD26E9202 /* libPods-FiroMobileWallet-FiroMobileWalletTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FiroMobileWallet-FiroMobileWalletTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5E66851B6E8244A1A5749921 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = ../assets/fonts/MaterialIcons.ttf; sourceTree = "<group>"; };
+		6557F6A1A3C1401482D6EC7B /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = ../assets/fonts/MaterialCommunityIcons.ttf; sourceTree = "<group>"; };
+		674305AE69CF4B57B48D3987 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
+		6F0DFB092722DF1E04D9F511 /* Pods-FiroMobileWallet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FiroMobileWallet.release.xcconfig"; path = "Target Support Files/Pods-FiroMobileWallet/Pods-FiroMobileWallet.release.xcconfig"; sourceTree = "<group>"; };
+		6F23903E80B141F5AEFCF631 /* Rubik-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-Medium.ttf"; path = "../assets/fonts/Rubik-Medium.ttf"; sourceTree = "<group>"; };
+		707538451FD2439490C1286F /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
+		71D22E1256E443328A52CDA3 /* Rubik-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-BlackItalic.ttf"; path = "../assets/fonts/Rubik-BlackItalic.ttf"; sourceTree = "<group>"; };
+		732F97F8C27D23F6A9F04640 /* Pods-FiroMobileWallet.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FiroMobileWallet.debug.xcconfig"; path = "Target Support Files/Pods-FiroMobileWallet/Pods-FiroMobileWallet.debug.xcconfig"; sourceTree = "<group>"; };
+		73522D85D8594DA9ADBCF4D2 /* Rubik-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-Bold.ttf"; path = "../assets/fonts/Rubik-Bold.ttf"; sourceTree = "<group>"; };
+		742CB8A955D14D93B3763A8A /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
+		768C48FE64BA4B8CACB1F193 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = FiroMobileWallet/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9AFAA097CA5DE0F98B4A644E /* libPods-FiroMobileWallet.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FiroMobileWallet.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9FAFCBD0773847C78F656FAC /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
+		A566BD359882415A8113D715 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
+		A5AB86BB11EA4AFEAC533C0C /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
+		A9F4B3C3B22C44E7AB97BBCA /* Rubik-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-SemiBoldItalic.ttf"; path = "../assets/fonts/Rubik-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		B4ABED0A6524416BAEC251CF /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = ../assets/fonts/AntDesign.ttf; sourceTree = "<group>"; };
+		BB3433FB1438493F9D09E44B /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = ../assets/fonts/Ionicons.ttf; sourceTree = "<group>"; };
+		C3812B5D15084D5F860F5CF1 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = ../assets/fonts/Zocial.ttf; sourceTree = "<group>"; };
+		C525E5DB6A944BE582349271 /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = ../assets/fonts/Foundation.ttf; sourceTree = "<group>"; };
+		C961C6FEF7464C92ABCCEB5D /* Rubik-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-ExtraBoldItalic.ttf"; path = "../assets/fonts/Rubik-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
+		C96A9246B94D796121FF7608 /* Pods-FiroMobileWallet-FiroMobileWalletTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FiroMobileWallet-FiroMobileWalletTests.debug.xcconfig"; path = "Target Support Files/Pods-FiroMobileWallet-FiroMobileWalletTests/Pods-FiroMobileWallet-FiroMobileWalletTests.debug.xcconfig"; sourceTree = "<group>"; };
+		CA9C2DDC23B243D8972184A2 /* Rubik-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-Regular.ttf"; path = "../assets/fonts/Rubik-Regular.ttf"; sourceTree = "<group>"; };
+		D4BAA626D63145BCA02ED6C0 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = ../assets/fonts/SimpleLineIcons.ttf; sourceTree = "<group>"; };
+		DC4163980AF64E7491474588 /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = ../assets/fonts/Fontisto.ttf; sourceTree = "<group>"; };
+		DFB29237534F4D2384A9B2E1 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
+		E326157E424C48359720DB28 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		9FAFCBD0773847C78F656FAC /* AntDesign.ttf */ = {isa = PBXFileReference; name = "AntDesign.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		4F2EDECC336F4869A52D10ED /* Entypo.ttf */ = {isa = PBXFileReference; name = "Entypo.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		2CB4BC0074C54C23AB18BAFE /* EvilIcons.ttf */ = {isa = PBXFileReference; name = "EvilIcons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		674305AE69CF4B57B48D3987 /* Feather.ttf */ = {isa = PBXFileReference; name = "Feather.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		707538451FD2439490C1286F /* FontAwesome.ttf */ = {isa = PBXFileReference; name = "FontAwesome.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		768C48FE64BA4B8CACB1F193 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; name = "FontAwesome5_Brands.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		E326157E424C48359720DB28 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; name = "FontAwesome5_Regular.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		A566BD359882415A8113D715 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; name = "FontAwesome5_Solid.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		5A1816FF0496439089848A2C /* Fontisto.ttf */ = {isa = PBXFileReference; name = "Fontisto.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		742CB8A955D14D93B3763A8A /* Foundation.ttf */ = {isa = PBXFileReference; name = "Foundation.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		04E8A57123724DE2BB02E322 /* Ionicons.ttf */ = {isa = PBXFileReference; name = "Ionicons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		1781DDDCFFDA40EBBD79FB71 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; name = "MaterialCommunityIcons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		DFB29237534F4D2384A9B2E1 /* MaterialIcons.ttf */ = {isa = PBXFileReference; name = "MaterialIcons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		4A51366BFB634B27A92E3E6D /* Octicons.ttf */ = {isa = PBXFileReference; name = "Octicons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		26207B42FDF547CCA3C58D48 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; name = "SimpleLineIcons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		A5AB86BB11EA4AFEAC533C0C /* Zocial.ttf */ = {isa = PBXFileReference; name = "Zocial.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F309F240F9744CACB1C1B300 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = ../assets/fonts/FontAwesome5_Brands.ttf; sourceTree = "<group>"; };
+		F7CF7FBEB3C14D789B385D38 /* Rubik-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-Light.ttf"; path = "../assets/fonts/Rubik-Light.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +97,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40F7EB26923DBC7AFE1218BB /* libPods-FiroMobileWallet-FiroMobileWalletTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +105,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0D7D5FF5CDDADA729560AEA1 /* libPods-FiroMobileWallet.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -122,6 +146,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
+				9AFAA097CA5DE0F98B4A644E /* libPods-FiroMobileWallet.a */,
+				5B635BEC777E101FD26E9202 /* libPods-FiroMobileWallet-FiroMobileWalletTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -142,6 +168,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				91201C3824B94E818D6870B2 /* Resources */,
+				97186B8D241F829CEBD97890 /* Pods */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -158,7 +185,7 @@
 			sourceTree = "<group>";
 		};
 		91201C3824B94E818D6870B2 /* Resources */ = {
-			isa = "PBXGroup";
+			isa = PBXGroup;
 			children = (
 				9FAFCBD0773847C78F656FAC /* AntDesign.ttf */,
 				4F2EDECC336F4869A52D10ED /* Entypo.ttf */,
@@ -176,10 +203,50 @@
 				4A51366BFB634B27A92E3E6D /* Octicons.ttf */,
 				26207B42FDF547CCA3C58D48 /* SimpleLineIcons.ttf */,
 				A5AB86BB11EA4AFEAC533C0C /* Zocial.ttf */,
+				B4ABED0A6524416BAEC251CF /* AntDesign.ttf */,
+				4BEFA49715B94469AA83DC63 /* Entypo.ttf */,
+				1B68B53B2AA64929B83997CA /* EvilIcons.ttf */,
+				131C924F096D4AB48FACBCD4 /* Feather.ttf */,
+				0D25C86555A7490E820CE963 /* FontAwesome.ttf */,
+				F309F240F9744CACB1C1B300 /* FontAwesome5_Brands.ttf */,
+				4FAE500BC7144C7590EFC06C /* FontAwesome5_Regular.ttf */,
+				5982361B5E364A0983061D1F /* FontAwesome5_Solid.ttf */,
+				DC4163980AF64E7491474588 /* Fontisto.ttf */,
+				C525E5DB6A944BE582349271 /* Foundation.ttf */,
+				BB3433FB1438493F9D09E44B /* Ionicons.ttf */,
+				6557F6A1A3C1401482D6EC7B /* MaterialCommunityIcons.ttf */,
+				5E66851B6E8244A1A5749921 /* MaterialIcons.ttf */,
+				28FAE8D75DF34DF78A647EE7 /* Octicons.ttf */,
+				2779EB77CAC04802AB330CCA /* Rubik-Black.ttf */,
+				71D22E1256E443328A52CDA3 /* Rubik-BlackItalic.ttf */,
+				73522D85D8594DA9ADBCF4D2 /* Rubik-Bold.ttf */,
+				1B3D4F412A2A47CBA8EB9D64 /* Rubik-BoldItalic.ttf */,
+				18B804B09392420E814EE0B0 /* Rubik-ExtraBold.ttf */,
+				C961C6FEF7464C92ABCCEB5D /* Rubik-ExtraBoldItalic.ttf */,
+				0CCEB2FDC2304C43A907A2B4 /* Rubik-Italic.ttf */,
+				F7CF7FBEB3C14D789B385D38 /* Rubik-Light.ttf */,
+				1BCA03B8202D4445BBEAE8CA /* Rubik-LightItalic.ttf */,
+				6F23903E80B141F5AEFCF631 /* Rubik-Medium.ttf */,
+				4217CE26680A4C03B4DB19DB /* Rubik-MediumItalic.ttf */,
+				CA9C2DDC23B243D8972184A2 /* Rubik-Regular.ttf */,
+				50E83883D79C4EFF9A5CB2D9 /* Rubik-SemiBold.ttf */,
+				A9F4B3C3B22C44E7AB97BBCA /* Rubik-SemiBoldItalic.ttf */,
+				D4BAA626D63145BCA02ED6C0 /* SimpleLineIcons.ttf */,
+				C3812B5D15084D5F860F5CF1 /* Zocial.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
-			path = "";
+		};
+		97186B8D241F829CEBD97890 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				732F97F8C27D23F6A9F04640 /* Pods-FiroMobileWallet.debug.xcconfig */,
+				6F0DFB092722DF1E04D9F511 /* Pods-FiroMobileWallet.release.xcconfig */,
+				C96A9246B94D796121FF7608 /* Pods-FiroMobileWallet-FiroMobileWalletTests.debug.xcconfig */,
+				118F6BE88BFB85170C57EAA5 /* Pods-FiroMobileWallet-FiroMobileWalletTests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -188,9 +255,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "FiroMobileWalletTests" */;
 			buildPhases = (
+				4491BF8A2FFC6FCEF45790EA /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
+				6C8D014E6967F908C8E831B3 /* [CP] Embed Pods Frameworks */,
+				D47BDEE73F5E4B85F87A58FB /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -206,11 +276,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "FiroMobileWallet" */;
 			buildPhases = (
+				28FA55F8F17B21D528803B4C /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				3C63F6F8FC333D964074C311 /* [CP] Embed Pods Frameworks */,
+				517A7C8B2813BB3FD930E8C7 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -271,22 +344,6 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				08C60F09222F40A6A69850CB /* AntDesign.ttf in Resources */,
-				77BB8FECB21442ADADBC77B4 /* Entypo.ttf in Resources */,
-				4873A4A0FBF34C0C8FA6D9DA /* EvilIcons.ttf in Resources */,
-				DBC6BB2C6BCC43C8A57D4FF8 /* Feather.ttf in Resources */,
-				644065F6189F495A8FE8D824 /* FontAwesome.ttf in Resources */,
-				7479FA3653114923BC20ADA3 /* FontAwesome5_Brands.ttf in Resources */,
-				C44258B243004D5FBFD8B28E /* FontAwesome5_Regular.ttf in Resources */,
-				A2437A08B9104C1B829A97C0 /* FontAwesome5_Solid.ttf in Resources */,
-				8B2FA56597D14306AB45170B /* Fontisto.ttf in Resources */,
-				D83A2AECACB243ACAA355077 /* Foundation.ttf in Resources */,
-				EEFC5F8EC45E486D9EE3C2F0 /* Ionicons.ttf in Resources */,
-				DAB31AD7341947E38E297DAB /* MaterialCommunityIcons.ttf in Resources */,
-				D39637AC9EFD473CA5B4A9C0 /* MaterialIcons.ttf in Resources */,
-				C6014F8DD3154B6A9C9497DA /* Octicons.ttf in Resources */,
-				AE99C4BC1D5847448518FFE3 /* SimpleLineIcons.ttf in Resources */,
-				67B3432A075848E995202CE2 /* Zocial.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -306,6 +363,118 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
+		};
+		28FA55F8F17B21D528803B4C /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FiroMobileWallet-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3C63F6F8FC333D964074C311 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FiroMobileWallet/Pods-FiroMobileWallet-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FiroMobileWallet/Pods-FiroMobileWallet-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FiroMobileWallet/Pods-FiroMobileWallet-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		4491BF8A2FFC6FCEF45790EA /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FiroMobileWallet-FiroMobileWalletTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		517A7C8B2813BB3FD930E8C7 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FiroMobileWallet/Pods-FiroMobileWallet-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FiroMobileWallet/Pods-FiroMobileWallet-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FiroMobileWallet/Pods-FiroMobileWallet-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6C8D014E6967F908C8E831B3 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FiroMobileWallet-FiroMobileWalletTests/Pods-FiroMobileWallet-FiroMobileWalletTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FiroMobileWallet-FiroMobileWalletTests/Pods-FiroMobileWallet-FiroMobileWalletTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FiroMobileWallet-FiroMobileWalletTests/Pods-FiroMobileWallet-FiroMobileWalletTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D47BDEE73F5E4B85F87A58FB /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FiroMobileWallet-FiroMobileWalletTests/Pods-FiroMobileWallet-FiroMobileWalletTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FiroMobileWallet-FiroMobileWalletTests/Pods-FiroMobileWallet-FiroMobileWalletTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FiroMobileWallet-FiroMobileWalletTests/Pods-FiroMobileWallet-FiroMobileWalletTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -359,6 +528,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C96A9246B94D796121FF7608 /* Pods-FiroMobileWallet-FiroMobileWalletTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -385,6 +555,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 118F6BE88BFB85170C57EAA5 /* Pods-FiroMobileWallet-FiroMobileWalletTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -408,6 +579,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 732F97F8C27D23F6A9F04640 /* Pods-FiroMobileWallet.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -423,7 +595,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = org.firo.wallet.FiroWallet;
 				PRODUCT_NAME = FiroMobileWallet;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -433,6 +605,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6F0DFB092722DF1E04D9F511 /* Pods-FiroMobileWallet.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -447,7 +620,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = org.firo.wallet.FiroWallet;
 				PRODUCT_NAME = FiroMobileWallet;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -487,6 +660,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -508,8 +682,8 @@
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/lib/swift",
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
-					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -551,6 +725,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -565,8 +740,8 @@
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/lib/swift",
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
-					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
