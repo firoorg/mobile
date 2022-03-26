@@ -34,7 +34,7 @@ const ANONYMITY_SET_EMPTY_ID = 0;
 
 const TRANSACTION_LELANTUS = 8;
 
-const MINT_LIMIT = 500100000000;
+const MINT_LIMIT = 100100000000;
 
 export const SATOSHI = new BigNumber(100000000);
 
@@ -153,7 +153,7 @@ export class FiroWallet implements AbstractWallet {
     );
     this._xPub = root
       .deriveHardened(44)
-      .deriveHardened(136)
+      .deriveHardened(1)
       .deriveHardened(0)
       .neutered()
       .toBase58();
@@ -627,7 +627,7 @@ export class FiroWallet implements AbstractWallet {
 
     // eslint-disable-next-line no-undef
     const root = bip32.fromSeed(Buffer.from(this.seed, 'hex'), this.network);
-    let path = `m/44'/136'/0'/${node}/${index}`;
+    let path = `m/44'/1'/0'/${node}/${index}`;
     const child = root.derivePath(path);
 
     return child;
