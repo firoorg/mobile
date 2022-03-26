@@ -211,8 +211,8 @@ JNIEXPORT jlong JNICALL Java_org_firo_lelantus_Lelantus_jDecryptMintAmount
 		(JNIEnv *env, jobject thisClass, jstring jPrivateKeyAES, jstring jEncryptedValue) {
 	auto *privateKeyAES = env->GetStringUTFChars(jPrivateKeyAES, nullptr);
 	auto *encryptedValue = env->GetStringUTFChars(jEncryptedValue, nullptr);
-	uint64_t tag = DecryptMintAmount(privateKeyAES, encryptedValue);
-	return tag;
+	uint64_t amount = DecryptMintAmount(privateKeyAES, encryptedValue);
+	return amount;
 }
 
 }
