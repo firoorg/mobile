@@ -35,4 +35,4 @@ const FIRO_MAIN_NET = {
   wif: 0xd2,
 };
 
-export const network = FIRO_MAIN_NET;
+export const network = FIRO_TEST_NET;

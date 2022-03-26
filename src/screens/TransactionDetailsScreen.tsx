@@ -20,7 +20,7 @@ type TransactionDetailsProps = {
   route: RouteProp<WalletStackRouteProps, 'TransactionDetails'>;
 };
 
-const FIRO_EXPLORER_URL = 'https://explorer.firo.org/';
+const FIRO_EXPLORER_URL = 'https://testexplorer.firo.org/';
 
 const TransactionDetailsScreen: FC<TransactionDetailsProps> = props => {
   const {getFiroRate, getSettings} = useContext(FiroContext);
