@@ -12,7 +12,7 @@ unsigned char *hex2bin(const char *hexstr) {
 	return chrs;
 }
 
-const char *bin2hex(const unsigned char *bytes, int size) asd {
+const char *bin2hex(const unsigned char *bytes, int size) {
 	std::string str;
 	for (int i = 0; i < size; ++i) {
 		const unsigned char ch = bytes[i];

@@ -16,8 +16,16 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => "11.0" }
   s.source       = { :git => "https://github.com/github_account/react-native-lelantus.git", :tag => "#{s.version}" }
 
-  s.source_files = "ios/**/*.{h,m,swift}"
+  s.source_files = ["ios/*.{h,m,mm,hpp,cpp,swift}", "ios/liblelantus/src/include/*.{h,hpp}", "ios/liblelantus/src/*.{h,c,hpp,cpp}",
+  "ios/liblelantus/secp256k1/include/*.{h,hpp}", "ios/liblelantus/bitcoin/**/*.{h,c,hpp,cpp}"]
   s.requires_arc = true
+
+  s.xcconfig = { 'USER_HEADER_SEARCH_PATHS' => '"$(SRCROOT)/../../node_modules/react-native-lelantus/ios"/**',
+                  'ALWAYS_SEARCH_USER_PATHS' => 'YES',
+                  'LIBRARY_SEARCH_PATHS' => '$(SRCROOT)/../node_modules/react-native-lelantus/ios' }
+
+  s.library = 'secp'
+  s.vendored_libraries = 'ios/libsecp.a'
 
   s.dependency "React"
   # ...
