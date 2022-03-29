@@ -38,6 +38,7 @@ export const CreateAddressCard: FC<CreateAddressProp> = props => {
   };
 
   const onCopyClick = () => {
+    console.log(props.address);
     Clipboard.setString(props.address);
     ToastAndroid.showWithGravityAndOffset(
       localization.create_address_card.address_copied,

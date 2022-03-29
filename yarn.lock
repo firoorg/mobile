@@ -6995,6 +6995,9 @@ react-native-image-picker@^4.0.3:
 react-native-lelantus@./react-native-lelantus:
   version "1.0.0"
 
+react-native-lelantus@./react-native-lelantus/:
+  version "1.0.0"
+
 react-native-level-fs@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/react-native-level-fs/-/react-native-level-fs-3.0.1.tgz#f3054614c2bc1a379dcb3d3ee51b6a1b66123283"

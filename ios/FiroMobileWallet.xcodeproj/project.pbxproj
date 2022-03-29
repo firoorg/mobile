@@ -14,6 +14,20 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		40F7EB26923DBC7AFE1218BB /* libPods-FiroMobileWallet-FiroMobileWalletTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B635BEC777E101FD26E9202 /* libPods-FiroMobileWallet-FiroMobileWalletTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		CFE8339727EF268C002EBE09 /* Rubik-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2779EB77CAC04802AB330CCA /* Rubik-Black.ttf */; };
+		CFE8339827EF268C002EBE09 /* Rubik-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 71D22E1256E443328A52CDA3 /* Rubik-BlackItalic.ttf */; };
+		CFE8339927EF268C002EBE09 /* Rubik-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 73522D85D8594DA9ADBCF4D2 /* Rubik-Bold.ttf */; };
+		CFE8339A27EF268C002EBE09 /* Rubik-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1B3D4F412A2A47CBA8EB9D64 /* Rubik-BoldItalic.ttf */; };
+		CFE8339B27EF268C002EBE09 /* Rubik-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 18B804B09392420E814EE0B0 /* Rubik-ExtraBold.ttf */; };
+		CFE8339C27EF268C002EBE09 /* Rubik-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C961C6FEF7464C92ABCCEB5D /* Rubik-ExtraBoldItalic.ttf */; };
+		CFE8339D27EF268C002EBE09 /* Rubik-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0CCEB2FDC2304C43A907A2B4 /* Rubik-Italic.ttf */; };
+		CFE8339E27EF268C002EBE09 /* Rubik-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7CF7FBEB3C14D789B385D38 /* Rubik-Light.ttf */; };
+		CFE8339F27EF268C002EBE09 /* Rubik-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1BCA03B8202D4445BBEAE8CA /* Rubik-LightItalic.ttf */; };
+		CFE833A027EF268C002EBE09 /* Rubik-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6F23903E80B141F5AEFCF631 /* Rubik-Medium.ttf */; };
+		CFE833A127EF268C002EBE09 /* Rubik-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4217CE26680A4C03B4DB19DB /* Rubik-MediumItalic.ttf */; };
+		CFE833A227EF268C002EBE09 /* Rubik-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CA9C2DDC23B243D8972184A2 /* Rubik-Regular.ttf */; };
+		CFE833A327EF268C002EBE09 /* Rubik-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 50E83883D79C4EFF9A5CB2D9 /* Rubik-SemiBold.ttf */; };
+		CFE833A427EF268C002EBE09 /* Rubik-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A9F4B3C3B22C44E7AB97BBCA /* Rubik-SemiBoldItalic.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -342,6 +356,20 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CFE8339727EF268C002EBE09 /* Rubik-Black.ttf in Resources */,
+				CFE8339827EF268C002EBE09 /* Rubik-BlackItalic.ttf in Resources */,
+				CFE8339927EF268C002EBE09 /* Rubik-Bold.ttf in Resources */,
+				CFE8339A27EF268C002EBE09 /* Rubik-BoldItalic.ttf in Resources */,
+				CFE8339B27EF268C002EBE09 /* Rubik-ExtraBold.ttf in Resources */,
+				CFE8339C27EF268C002EBE09 /* Rubik-ExtraBoldItalic.ttf in Resources */,
+				CFE8339D27EF268C002EBE09 /* Rubik-Italic.ttf in Resources */,
+				CFE8339E27EF268C002EBE09 /* Rubik-Light.ttf in Resources */,
+				CFE8339F27EF268C002EBE09 /* Rubik-LightItalic.ttf in Resources */,
+				CFE833A027EF268C002EBE09 /* Rubik-Medium.ttf in Resources */,
+				CFE833A127EF268C002EBE09 /* Rubik-MediumItalic.ttf in Resources */,
+				CFE833A227EF268C002EBE09 /* Rubik-Regular.ttf in Resources */,
+				CFE833A327EF268C002EBE09 /* Rubik-SemiBold.ttf in Resources */,
+				CFE833A427EF268C002EBE09 /* Rubik-SemiBoldItalic.ttf in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 			);
@@ -584,6 +612,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 58CRP3HDCQ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = FiroMobileWallet/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -595,7 +624,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.firo.wallet.FiroWallet;
+				PRODUCT_BUNDLE_IDENTIFIER = org.firo.wallet.FiroWallet2;
 				PRODUCT_NAME = FiroMobileWallet;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -610,6 +639,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 58CRP3HDCQ;
 				INFOPLIST_FILE = FiroMobileWallet/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -620,7 +650,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.firo.wallet.FiroWallet;
+				PRODUCT_BUNDLE_IDENTIFIER = org.firo.wallet.FiroWallet2;
 				PRODUCT_NAME = FiroMobileWallet;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
