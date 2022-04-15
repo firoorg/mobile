@@ -629,7 +629,7 @@ SPEC CHECKSUMS:
   react-native-biometrics: 9d3306e5d29c3bc4e6a3c912d759a94e76a2f683
   react-native-camera: e46c64f0d1212124c915bf83ee9b855ac6d35164
   react-native-image-picker: 474cf2c33c2b6671da53d293a16c97995f0aec15
-  react-native-lelantus: 2b4e854cc55c175998e5c586c0165257e8bd3ce4
+  react-native-lelantus: bae9b3cfd46207070a3eaab25258e48a47b1b721
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
   react-native-tcp-socket: 3bd5b9e374380e78258639c00ec20ca3d049002b
@@ -661,6 +661,6 @@ SPEC CHECKSUMS:
   Yoga: d6b6a80659aa3e91aaba01d0012e7edcbedcbecd
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: ac40f6f77548e19351e1b3a637541a66a410629e
+PODFILE CHECKSUM: 61bbbfa7f755098bad93fb0d961a42813aec9304
 
 COCOAPODS: 1.11.3

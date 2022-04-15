@@ -12,6 +12,7 @@ import localization from '../localization';
 import Logger from '../utils/logger';
 import {FiroStatusBar} from '../components/FiroStatusBar';
 import {NavigationProp} from '@react-navigation/native';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const {colors} = CurrentFiroTheme;
 
@@ -79,50 +80,53 @@ const MnemonicInputScreen: FC<MnemonicInputProps> = props => {
   });
 
   return (
-    <View style={styles.page}>
-      <FiroToolbar title="Enter mnemonic" />
-      <FiroStatusBar />
-      <View style={styles.root}>
-        <Image
-          style={styles.logo}
-          source={require('../img/firo-logo-black.png')}
-        />
-        <FiroTitleBig
-          style={styles.title}
-          text={localization.mnemonic_input_screen.title}
-        />
-        <FiroTextBig
-          style={styles.textCopy}
-          text={localization.mnemonic_input_screen.body_part_1}
-        />
-        <FiroInputMnemonic
-          style={styles.mnemonicInput}
-          onTextChanged={txt => setMnemonic(txt)}
-          enabled={!creating}
-        />
-        <FiroPrimaryButton
-          buttonStyle={styles.restoreWallet}
-          text={btnRestoreText}
-          onClick={onClickContinue}
-          disable={
-            creating ||
-            !mnemonic ||
-            mnemonic.split(' ').filter(token => token.length > 0).length !== 24
-          }
-        />
-        {failedRestoring ? (
-          <FiroTextSmall
-            text={localization.mnemonic_input_screen.message_failed_restore}
-            style={{paddingTop: 5, color: colors.notification}}
+    <ScrollView keyboardShouldPersistTaps="handled">
+      <View style={styles.page}>
+        <FiroToolbar title="Enter mnemonic" />
+        <FiroStatusBar />
+        <View style={styles.root}>
+          <Image
+            style={styles.logo}
+            source={require('../img/firo-logo-black.png')}
           />
-        ) : creating ? (
-          <FiroTextSmall
-            text={localization.mnemonic_input_screen.message_wait}
-            style={{paddingTop: 5, color: colors.notification}}
+          <FiroTitleBig
+            style={styles.title}
+            text={localization.mnemonic_input_screen.title}
           />
-        ) : null}
+          <FiroTextBig
+            style={styles.textCopy}
+            text={localization.mnemonic_input_screen.body_part_1}
+          />
+          <FiroInputMnemonic
+            style={styles.mnemonicInput}
+            onTextChanged={txt => setMnemonic(txt)}
+            enabled={!creating}
+          />
+          <FiroPrimaryButton
+            buttonStyle={styles.restoreWallet}
+            text={btnRestoreText}
+            onClick={onClickContinue}
+            disable={
+              creating ||
+              !mnemonic ||
+              mnemonic.split(' ').filter(token => token.length > 0).length !==
+                24
+            }
+          />
+          {failedRestoring ? (
+            <FiroTextSmall
+              text={localization.mnemonic_input_screen.message_failed_restore}
+              style={{paddingTop: 5, color: colors.notification}}
+            />
+          ) : creating ? (
+            <FiroTextSmall
+              text={localization.mnemonic_input_screen.message_wait}
+              style={{paddingTop: 5, color: colors.notification}}
+            />
+          ) : null}
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

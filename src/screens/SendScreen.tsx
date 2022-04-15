@@ -174,7 +174,7 @@ const SendScreen = () => {
   );
 
   return (
-    <ScrollView keyboardShouldPersistTaps="always">
+    <ScrollView keyboardShouldPersistTaps="handled">
       <View>
         <FiroToolbarWithoutBack title={localization.send_screen.title} />
         <FiroStatusBar />

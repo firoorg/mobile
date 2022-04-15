@@ -12,8 +12,8 @@ target 'FiroMobileWallet' do
     :hermes_enabled => false
   )
 
-  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
-  pod 'react-native-lelantus', :path => '../node_modules/react-native-lelantus'
+  # pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
+  # pod 'react-native-lelantus', :path => '../node_modules/react-native-lelantus'
 
   target 'FiroMobileWalletTests' do
     inherit! :complete

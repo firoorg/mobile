@@ -125,7 +125,7 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
         <View style={styles.sendInputContainer}>
           <TextInput
             style={styles.input}
-            keyboardType="number-pad"
+            keyboardType="decimal-pad"
             value={input}
             placeholderTextColor={colors.textPlaceholder}
             placeholder={`${
