@@ -1,0 +1,268 @@
+{
+  "global": {
+    "firo": "Firo",
+    "balance": "余额"
+  },
+
+  "component_button": {
+    "copy": "复制",
+    "max": "最大值",
+    "get_firo": "获得 Firo",
+    "cancel": "取消",
+    "ok": "好"
+  },
+
+  "component_input": {
+    "mnemonic_input_hint": "在此输入你的助记词：",
+    "passphrase_input_hint": "密码"
+  },
+
+  "create_address_card": {
+    "current_address": "当前地址：",
+    "address_name": "地址名称",
+    "address_copied": "地址已复制",
+    "save_address": "保存地址"
+  },
+
+  "empty_state": {
+    "no_transaction": "你还没有交易记录",
+    "short_description": "这里有简短的描述"
+  },
+
+  "send_address": {
+    "address": "地址"
+  },
+
+  "amount_input": {
+    "enter_amount": "输入金额",
+    "amount": "金额"
+  },
+
+  "transaction_list_item": {
+    "receive": "接收",
+    "send": "发送",
+    "anonymize": "匿名化",
+    "unconfirmed": "等待中"
+  },
+
+  "balance_card": {
+    "balance_firo": "Firo 余额",
+    "pending_balance": "等待中"
+  },
+
+  "welcome_screen": {
+    "title": "欢迎来到 Firo",
+    "body_part_1": "创建你的钱包来管理你的 Firo 币。",
+    "body_part_2": "或",
+    "body_part_3": "恢复你已有的钱包。",
+    "create_wallet": "创建钱包",
+    "creating": "创建中…",
+    "restore_wallet": "恢复钱包"
+  },
+
+  "mnemonic_view_screen": {
+    "title": "备份助记词",
+    "body_part_1": "写下/复制这个助记词，并把它放在安全的地方。",
+    "body_part_2": "下面这 24 个字存储了你的 Firo 钱包的所有数据和交易。如果你的设备丢失，它将恢复你的钱包。",
+    "continue": "继续"
+  },
+
+  "mnemonic_input_screen": {
+    "title": "输入助记词",
+    "body_part_1": "在下面输入你的助记词，你在创建钱包时保存的助记词。",
+    "continue": "继续",
+    "restoring": " 恢复中…",
+    "message_wait": "这可能需要几分钟，请等待",
+    "message_failed_restore": "恢复钱包失败",
+    "progress_text_1": "正在获取公开交易",
+    "progress_text_2": "正在下载使用过的币",
+    "progress_text_3": "正在下载匿名集",
+    "progress_text_4": "正在提取铸币交易",
+    "progress_text_5": "正在提取花费交易"
+  },
+
+  "my_mnemonic_screen": {
+    "title": "我的助记词"
+  },
+
+  "passphrase_screen": {
+    "title": "创建密码",
+    "body": "你将在每次进入时使用这个密码来解锁你的钱包。",
+    "create": "创建",
+    "creating": "创建中…"
+  },
+
+  "enter_passphrase_screen": {
+    "title_toolbar": "输入密码",
+    "title_toolbar_fingerprint": "提供指纹",
+    "title": "输入密码",
+    "title_fingerprint": "提供指纹",
+    "body": "用于解锁钱包",
+    "login": "登录",
+    "loading": "加载中…",
+    "prompt_fingerprint": "通过指纹登录"
+  },
+
+  "change_passphrase_screen": {
+    "title": "修改密码",
+    "label_current": "当前密码",
+    "label_new": "新密码",
+    "label_confirm": "确认新密码",
+    "title_error": "错误",
+    "title_success": "成功！",
+    "description_success": "密码修改成功！",
+    "error_passphrase_mismatch": "新密码和确认密码必须相同",
+    "error_passphrase_same": "新密码和旧密码必须不同",
+    "error_wrong_old_passphrase": "旧密码无效",
+    "error_failed": "修改密码失败",
+    "prompt_fingerprint": "提供指纹以确认修改密码"
+  },
+
+  "transaction_details": {
+    "title": "交易详情",
+    "transaction_id": "交易 ID",
+    "sent": "发送",
+    "received": "接收",
+    "sent_to": "发送到",
+    "received_from": "接收自",
+    "address": "地址",
+    "label": "标签",
+    "fee": "交易费",
+    "address_copied": "地址已复制",
+    "id_copied": "ID 已复制"
+  },
+
+  "send_screen": {
+    "title": "发送 Firo",
+    "label_optional": "标签（可选）",
+    "transaction_fee": "交易费",
+    "total_send_amount": "总发送金额",
+    "send": "发送",
+    "reduce_fee": "从金额中减去交易费",
+    "select_address": "选择地址"
+  },
+
+  "send_confirm_screen": {
+    "title": "确认交易",
+    "warning": "警告：",
+    "warning_text": "交易提交到区块链后，你无法撤销交易。",
+    "amount": "金额",
+    "address": "地址",
+    "label": "标签",
+    "transaction_fee": "交易费",
+    "total_send_amount": "总发送金额",
+    "reduce_fee_from_amount": "从金额中减去交易费",
+    "confirm": "确认",
+    "confirming": "确认中…",
+    "prompt_fingerprint": "提供指纹以确认交易",
+    "title_passphrase": "输入密码",
+    "description_passphrase": "输入密码以确认交易",
+    "button_confirm_passphrase": "确认",
+    "error": "错误",
+    "error_invalid_passphrase": "密码无效",
+    "error_invalid_fingerprint": "指纹验证失败",
+    "error_invalid_address": "地址无效",
+    "error_invalid_nowallet": "获取钱包失败",
+    "error_limit_exceeded": "不能发送超过 5001 FIRO",
+    "error_network": "网络错误，请稍后再试",
+    "title_success": "成功！",
+    "description_success": "交易已成功确认。"
+  },
+
+  "receive_screen": {
+    "title": "接收 Firo",
+    "scan_qr": "扫描此二维码",
+    "select_from_saved_address": "从已保存的地址中选择"
+  },
+
+  "my_wallet_screen": {
+    "title": "我的钱包"
+  },
+
+  "address_details_screen": {
+    "title": "查看地址",
+    "address": "地址",
+    "name": "名称"
+  },
+
+  "address_book_screen": {
+    "title": "地址簿",
+    "add_new": "新增",
+    "address_copied": "地址已复制"
+  },
+
+  "address_book_menu_screen": {
+    "copy": "复制",
+    "view": "查看",
+    "edit": "编辑",
+    "delete": "删除",
+    "cancel": "取消"
+  },
+
+  "add_edit_address_screen": {
+    "edit_address": "编辑地址",
+    "add_new_address": "添加新地址",
+    "address": "地址",
+    "name": "名称",
+    "save": "保存"
+  },
+
+  "scan_qrcode_screen": {
+    "invalid_qrcode_fragment": "无效的动画二维码片段。请再试一次。",
+    "camera_use_permission_title": "允许使用相机",
+    "camera_use_permission_message": "我们需要你的许可来使用相机。",
+    "open_settings": "打开设置"
+  },
+
+  "settings": {
+    "title": "设置",
+    "title_currency": "货币",
+    "description_currency": "设置你首选的法定货币。",
+    "title_notification": "通知",
+    "description_notification": "显示传入交易的通知。",
+    "title_passphrase": "修改密码",
+    "description_passphrase": "更新你的 Firo 手机钱包密码。",
+    "title_mnemonic": "显示我的助记词恢复",
+    "description_mnemonic": "仔细检查你的助记词恢复短语。",
+    "title_restore": "恢复钱包",
+    "description_restore": "恢复已有的 Firo 手机钱包。",
+    "title_warning": "警告：",
+    "warning_restore_text": "恢复后，你将丢失当前的钱包。确保备份你的助记符恢复。",
+    "button_confirm_restore": "知道了",
+    "title_fingerprint": "指纹",
+    "description_fingerprint": "设置指纹识别",
+    "button_done": "完成",
+    "title_change_currency": "更改货币",
+    "title_passphrase_biometric": "输入密码",
+    "description_passphrase_biometric": "输入密码以启用指纹验证",
+    "description_passphrase_mnemonic": "输入密码以查看你的助记词",
+    "button_enable_biometric": "启用指纹",
+    "title_processing": "处理中…",
+    "title_success": "成功！",
+    "description_verifying_passphrase": "验证密码",
+    "description_enabling_biometric": "启用指纹验证",
+    "description_disabling_biometric": "禁用指纹验证",
+    "description_enabled_biometric": "你启用了指纹验证。",
+    "description_disable_biometric": "你禁用了指纹验证。",
+    "error_invalid_passphrase": "密码无效",
+    "error_enabled_biometric": "启用指纹失败",
+    "error_disabled_biometric": "禁用指纹失败",
+    "prompt_enable_biometric": "启用指纹",
+    "prompt_disable_biometric": "禁用指纹",
+    "prompt_view_mnemonic": "提供指纹查看助记词",
+    "version": "版本："
+  },
+
+  "currencies": {
+    "usd": "USD",
+    "eur": "EUR",
+    "gbp": "GBP",
+    "aud": "AUD",
+    "btc": "BTC"
+  },
+
+  "errors": {
+    "error": "错误",
+    "error_biometric_disabled": "未启用指纹验证"
+  }
+}
