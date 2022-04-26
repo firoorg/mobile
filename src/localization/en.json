@@ -69,7 +69,7 @@
 
   "mnemonic_input_screen": {
     "title": "Enter Mnemonic",
-    "body_part_1": "Enter your mnemonic bellow, which you saved while creating your wallet.",
+    "body_part_1": "Enter your mnemonic below, which you saved while creating your wallet.",
     "continue": "Continue",
     "restoring": "Restoring...",
     "message_wait": "This can take few minutes, please wait",
