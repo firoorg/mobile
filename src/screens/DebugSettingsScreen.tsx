@@ -3,8 +3,7 @@ import {
   View,
   StyleSheet,
   Text,
-  TouchableHighlight,
-  ScrollView
+  TouchableHighlight
 } from 'react-native';
 import {CurrentFiroTheme} from '../Themes';
 import {FiroToolbar} from '../components/Toolbar';
@@ -23,34 +22,34 @@ const DebugSettingsScreen = () => {
   };
 
   return (
-    <ScrollView>
-      <View style={styles.toolbar}>
-        <FiroToolbar title={'Debug Settings'} />
-      </View>
+    <View>
+      <FiroToolbar title={'Debug Settings'} />
       <FiroStatusBar />
-      <TouchableHighlight
-        underlayColor={colors.highlight}
-        onPress={shareLogFile}>
-        <View style={styles.section}>
-          <Text style={styles.title}>Share Logs</Text>
-        </View>
-      </TouchableHighlight>
-      <TouchableHighlight
-        underlayColor={colors.highlight}
-        onPress={cleareLogFile}>
-        <View style={styles.section}>
-          <Text style={styles.title}>Clear Logs</Text>
-        </View>
-      </TouchableHighlight>
-    </ScrollView>
+      <View style={styles.root}>
+        <TouchableHighlight
+          underlayColor={colors.highlight}
+          onPress={shareLogFile}>
+          <View style={styles.section}>
+            <Text style={styles.title}>Share Logs</Text>
+          </View>
+        </TouchableHighlight>
+        <TouchableHighlight
+          underlayColor={colors.highlight}
+          onPress={cleareLogFile}>
+          <View style={styles.section}>
+            <Text style={styles.title}>Clear Logs</Text>
+          </View>
+        </TouchableHighlight>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  toolbar: {
-    paddingTop: 30,
-    paddingLeft: 20,
-    paddingBottom: 15,
+  root: {
+    height: '100%',
+    display: 'flex',
+    paddingHorizontal: 20,
   },
   section: {
     marginTop: 15,
