@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import {CurrentFiroTheme} from '../Themes';
 import localization from '../localization';
+import { Card } from './Card';
 
 const {colors} = CurrentFiroTheme;
 
@@ -26,7 +27,7 @@ export const FiroInputPassword: FC<FiroInputProps> = props => {
     ? require('../img/ic_hide.png')
     : require('../img/ic_show.png');
   return (
-    <View style={[styles.container, props.style]}>
+    <Card style={[styles.container, props.style]}>
       <TextInput
         style={[styles.input]}
         placeholderTextColor={colors.textPlaceholder}
@@ -42,7 +43,7 @@ export const FiroInputPassword: FC<FiroInputProps> = props => {
       <TouchableWithoutFeedback onPress={() => setSecureText(!secureText)}>
         <Image style={styles.eye} source={eyeImage} />
       </TouchableWithoutFeedback>
-    </View>
+    </Card>
   );
 };
 

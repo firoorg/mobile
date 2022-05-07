@@ -14,6 +14,7 @@ import {FiroContext} from '../FiroContext';
 import {Currency} from '../utils/currency';
 import BigNumber from 'bignumber.js';
 import {CurrentFiroTheme} from '../Themes';
+import { Card } from './Card';
 const {colors} = CurrentFiroTheme;
 
 type SendAmountInputCardProp = {
@@ -120,7 +121,7 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
   };
 
   return (
-    <View style={styles.card}>
+    <Card style={styles.card}>
       <View style={styles.inputContainer}>
         <View style={styles.sendInputContainer}>
           <TextInput
@@ -145,7 +146,7 @@ export const SendAmountInputCard: FC<SendAmountInputCardProp> = props => {
       <TouchableOpacity onPress={onClickToSwap}>
         <Image style={styles.swap} source={require('../img/ic_swap.png')} />
       </TouchableOpacity>
-    </View>
+    </Card>
   );
 };
 
@@ -156,7 +157,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#ffffff',
     borderRadius: 15,
-    elevation: 2,
     marginTop: 20,
     width: '100%',
   },
@@ -179,9 +179,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 14,
     color: colors.text,
+    height: 38,
+    textAlignVertical: 'top',
+    lineHeight: 14,
+    paddingVertical: 10,
+    margin: 6,
   },
   secondaryText: {
-    height: 42,
+    marginVertical: 16,
     textAlignVertical: 'center',
     marginHorizontal: 24,
     fontFamily: 'Rubik-Regular',

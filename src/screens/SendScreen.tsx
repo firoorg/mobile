@@ -18,6 +18,7 @@ import * as NavigationService from '../NavigationService';
 import BigNumber from 'bignumber.js';
 import Logger from '../utils/logger';
 import {FiroStatusBar} from '../components/FiroStatusBar';
+import { Card } from '../components/Card';
 
 const {colors} = CurrentFiroTheme;
 var timerHandler: number = -1;
@@ -217,13 +218,15 @@ const SendScreen = () => {
               changeAddressCallback = callback;
             }}
           />
-          <TextInput
-            style={styles.label}
-            value={label}
-            placeholderTextColor={colors.textPlaceholder}
-            placeholder={localization.send_screen.label_optional}
-            onChangeText={newLabel => setLabel(newLabel)}
-          />
+          <Card style={styles.labelCard}>
+            <TextInput
+              style={styles.label}
+              value={label}
+              placeholderTextColor={colors.textPlaceholder}
+              placeholder={localization.send_screen.label_optional}
+              onChangeText={newLabel => setLabel(newLabel)}
+            />
+          </Card>
           <View style={styles.feeDetailsContainer}>
             <FiroVerticalInfoText
               style={styles.feeDetail}
@@ -315,16 +318,20 @@ const styles = StyleSheet.create({
   address: {
     marginTop: 25,
   },
-  label: {
+  labelCard: {
+    marginTop: 25,
+    borderRadius: 25,
     backgroundColor: colors.cardBackground,
+    width: '100%',
+  },
+  label: {
     color: colors.text,
     paddingHorizontal: 20,
-    marginTop: 25,
     fontFamily: 'Rubik-Medium',
     fontSize: 14,
-    borderRadius: 25,
-    elevation: 2,
-    width: '100%',
+    height: 48,
+    lineHeight: 14,
+    paddingVertical: 10,
   },
   feeDetailsContainer: {
     display: 'flex',
@@ -342,6 +349,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   reduceFeeTitle: {
+  color: colors.text,
     fontFamily: 'Rubik-Regular',
     fontStyle: 'normal',
     fontSize: 16,

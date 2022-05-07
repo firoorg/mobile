@@ -7,6 +7,7 @@ import {TX_DATE_FORMAT} from '../core/FiroWallet';
 import {Currency} from '../utils/currency';
 import {formatTimestamp} from '../utils/datetime';
 import BigNumber from 'bignumber.js';
+import { Card } from './Card';
 
 type TransactionRowProps = {
   style: StyleProp<ViewStyle>;
@@ -41,7 +42,7 @@ export const TransactionRow: FC<TransactionRowProps> = props => {
   // }
 
   return (
-    <View style={[styles.root, props.style]}>
+    <Card style={[styles.root, props.style]}>
       <Image style={styles.icon} source={ic} />
       <View style={styles.textContainer}>
         <View style={styles.row}>
@@ -61,7 +62,7 @@ export const TransactionRow: FC<TransactionRowProps> = props => {
           <Text style={styles.subtitle}>{formatTimestamp(item.date)}</Text>
         </View>
       </View>
-    </View>
+    </Card>
   );
 };
 

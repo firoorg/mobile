@@ -417,6 +417,7 @@ const SettingsScreen = () => {
               text={localization.settings.button_done}
               onClick={async () => {
                 const passwordOk = await verifyPassword(passphraseInput);
+                passphraseInput = '';
                 if (passwordOk) {
                   changeMyMnemonic(MyMnemonicViewMode.PassphraseOk);
                   NavigationService.navigate('MyMnemonicScreen', undefined);

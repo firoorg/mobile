@@ -5,6 +5,8 @@ import {
   TextInput,
   Image,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {FiroToolbar} from '../components/Toolbar';
@@ -15,6 +17,8 @@ import * as NavigationService from '../NavigationService';
 import {AppStorage} from '../app-storage';
 import localization from '../localization';
 import {FiroStatusBar} from '../components/FiroStatusBar';
+import Header from 'react-native-elements/dist/header/Header';
+import { Card } from '../components/Card';
 const bip21 = require('bip21');
 
 const appStorage = new AppStorage();
@@ -56,7 +60,10 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
   };
 
   return (
-    <View>
+    <KeyboardAvoidingView
+      keyboardVerticalOffset={Platform.select({ios: 48, android: 0})}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}>
       <FiroToolbar
         title={
           hasInputAddress
@@ -66,13 +73,14 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
       />
       <FiroStatusBar />
       <View style={styles.root}>
-        <View style={[styles.card]}>
+        <Card style={[styles.card]}>
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
               placeholderTextColor={colors.textPlaceholder}
               placeholder={localization.send_address.address}
               value={address}
+              autoCorrect={false}
               onChangeText={txt => setAddress(txt)}
             />
           </View>
@@ -94,14 +102,17 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
             }}>
             <Image style={styles.icon} source={require('../img/ic_scan.png')} />
           </TouchableOpacity>
-        </View>
-        <TextInput
-          style={styles.label}
-          value={name}
-          placeholderTextColor={colors.textPlaceholder}
-          placeholder={localization.add_edit_address_screen.name}
-          onChangeText={txt => setName(txt)}
-        />
+        </Card>
+        <Card style={styles.nameCard}>
+          <TextInput
+            style={styles.name}
+            value={name}
+            autoCorrect={false}
+            placeholderTextColor={colors.textPlaceholder}
+            placeholder={localization.add_edit_address_screen.name}
+            onChangeText={txt => setName(txt)}
+          />
+        </Card>
       </View>
 
       <Confirmation
@@ -110,13 +121,16 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
         onDiscardAction={onDiscard}
         onConfirmAction={onConfirm}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
 export default AddEditAddress;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   root: {
     height: '100%',
     display: 'flex',
@@ -128,7 +142,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#ffffff',
     borderRadius: 25,
-    elevation: 2,
     width: '100%',
   },
   inputContainer: {
@@ -136,10 +149,13 @@ const styles = StyleSheet.create({
     width: 0,
   },
   input: {
-    marginLeft: 20,
+    height: 48,
     fontFamily: 'Rubik-Medium',
     fontWeight: '500',
     fontSize: 14,
+    lineHeight: 14,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     color: colors.text,
   },
   divider: {
@@ -152,16 +168,21 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
   },
-  label: {
-    backgroundColor: colors.cardBackground,
-    paddingHorizontal: 20,
+  nameCard: {
     marginTop: 25,
-    fontFamily: 'Rubik-Medium',
-    fontSize: 14,
-    borderRadius: 25,
-    elevation: 2,
+    borderRadius: 20,
     width: '100%',
+    backgroundColor: colors.cardBackground,
+  },
+  name: {
+    paddingHorizontal: 20,
     color: colors.text,
+    height: 48,
+    fontFamily: 'Rubik-Medium',
+    fontWeight: '500',
+    fontSize: 14,
+    lineHeight: 14,
+    paddingVertical: 10,
   },
   confirmation: {
     marginTop: 'auto',

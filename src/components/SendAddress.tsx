@@ -18,6 +18,7 @@ import {AddressBookList} from './AddressBookList';
 import {AddressBookItem} from '../data/AddressBookItem';
 import {CurrentFiroTheme} from '../Themes';
 import {useFocusEffect} from '@react-navigation/native';
+import { Card } from './Card';
 const bip21 = require('bip21');
 
 const {colors} = CurrentFiroTheme;
@@ -79,7 +80,7 @@ export const SendAddress: FC<SendAddressProps> = props => {
   }
 
   return (
-    <View style={[styles.card, props.style]}>
+    <Card style={[styles.card, props.style]}>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -147,7 +148,7 @@ export const SendAddress: FC<SendAddressProps> = props => {
           />
         </View>
       </BottomSheet>
-    </View>
+    </Card>
   );
 };
 
@@ -158,7 +159,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#ffffff',
     borderRadius: 25,
-    elevation: 2,
     width: '100%',
   },
   inputContainer: {
@@ -171,6 +171,13 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 14,
     color: colors.text,
+    flexGrow: 1,
+    marginHorizontal: 20,
+    height: 38,
+    textAlignVertical: 'top',
+    lineHeight: 14,
+    paddingVertical: 10,
+    margin: 6,
   },
   divider: {
     width: 30,

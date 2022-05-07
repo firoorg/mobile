@@ -1,6 +1,6 @@
 import React, {useContext, useState} from 'react';
 import * as NavigationService from '../NavigationService';
-import {StyleSheet, View, Image} from 'react-native';
+import {StyleSheet, View, Image, KeyboardAvoidingView, Platform} from 'react-native';
 import {FiroToolbar} from '../components/Toolbar';
 import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
@@ -41,7 +41,10 @@ const ChangePassphraseScreen = () => {
   };
 
   return (
-    <View>
+    <KeyboardAvoidingView
+      keyboardVerticalOffset={Platform.select({ios: 48, android: 0})}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}>
       <FiroToolbar title={localization.change_passphrase_screen.title} />
       <FiroStatusBar />
       <View style={styles.root}>
@@ -201,11 +204,14 @@ const ChangePassphraseScreen = () => {
           </View>
         ) : null}
       </BottomSheet>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   root: {
     backgroundColor: colors.background,
     height: '100%',

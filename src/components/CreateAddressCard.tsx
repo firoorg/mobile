@@ -12,6 +12,7 @@ import {AppStorage} from '../app-storage';
 import {AddressItem} from '../data/AddressItem';
 import {FiroInfoText} from './Texts';
 import {CurrentFiroTheme} from '../Themes';
+import { Card } from './Card';
 const {colors} = CurrentFiroTheme;
 
 const appStorage = new AppStorage();
@@ -70,7 +71,7 @@ export const CreateAddressCard: FC<CreateAddressProp> = props => {
   }
 
   return (
-    <View style={styles.card}>
+    <Card style={styles.card}>
       <Text style={styles.currentAddressLabel}>
         {localization.create_address_card.current_address}
       </Text>
@@ -95,7 +96,7 @@ export const CreateAddressCard: FC<CreateAddressProp> = props => {
         onClick={onAddressSaveClick}
         disable={props.name !== undefined || name === undefined || name === ''}
       />
-    </View>
+    </Card>
   );
 };
 
@@ -107,7 +108,6 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingHorizontal: 15,
     paddingBottom: 12,
-    elevation: 2,
   },
   currentAddressLabel: {
     fontFamily: 'Rubik-Regular',
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     height: 36,
     borderWidth: 1,
     borderRadius: 20,
-    borderColor: 'rgba(0, 0, 0, 0.2)',
+    borderColor: colors.border,
     textAlignVertical: 'top',
     fontFamily: 'Rubik-Medium',
     fontWeight: '500',

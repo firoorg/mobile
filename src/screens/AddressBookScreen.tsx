@@ -5,7 +5,7 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  ToastAndroid
+  ToastAndroid,
 } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {BottomSheet, ListItem, Avatar} from 'react-native-elements';
@@ -20,10 +20,10 @@ import {useFocusEffect} from '@react-navigation/native';
 import {Divider} from 'react-native-elements/dist/divider/Divider';
 import Logger from '../utils/logger';
 import {SearchBar} from 'react-native-elements/dist/searchbar/SearchBar';
-import { FiroStatusBar } from '../components/FiroStatusBar';
+import {FiroStatusBar} from '../components/FiroStatusBar';
 
 const appStorage = new AppStorage();
-const { colors } = CurrentFiroTheme;
+const {colors} = CurrentFiroTheme;
 
 const AddressBookScreen = () => {
   const [addressBookList, setAddressBookList] = useState<AddressBookItem[]>([]);
@@ -120,7 +120,9 @@ const AddressBookScreen = () => {
               source={require('../img/ic_add.png')}
             />
             <Divider style={styles.divider} />
-            <Text>{localization.address_book_screen.add_new}</Text>
+            <Text style={styles.add_new}>
+              {localization.address_book_screen.add_new}
+            </Text>
           </TouchableOpacity>
         </View>
         <AddressBookList
@@ -242,5 +244,8 @@ const styles = StyleSheet.create({
   },
   divider: {
     marginHorizontal: 5,
+  },
+  add_new: {
+    color: colors.text,
   },
 });

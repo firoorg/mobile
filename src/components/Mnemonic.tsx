@@ -3,6 +3,7 @@ import {Text} from 'react-native-elements';
 import {View, StyleSheet, StyleProp, ViewStyle} from 'react-native';
 import {FiroCopyButton} from './Button';
 import {CurrentFiroTheme} from '../Themes';
+import { Card } from './Card';
 
 const colors = CurrentFiroTheme.colors;
 
@@ -20,12 +21,12 @@ export const MnemonicText: FC<MnemonicTextProp> = props => {
   ));
 
   return (
-    <View style={[styles.card, props.style]}>
+    <Card style={[styles.card, props.style]}>
       <View style={styles.mems}>{mems}</View>
       <View style={styles.copyContainer}>
         <FiroCopyButton onClick={props.copyMnemonic} />
       </View>
-    </View>
+    </Card>
   );
 };
 
@@ -33,7 +34,6 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.card,
     borderRadius: 20,
-    elevation: 2,
   },
   mems: {
     display: 'flex',

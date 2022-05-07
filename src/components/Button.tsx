@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {CurrentFiroTheme} from '../Themes';
 import localization from '../localization';
+import {Card} from './Card';
 
 const {colors} = CurrentFiroTheme;
 
@@ -63,7 +64,12 @@ export const FiroSecondaryButton: FC<ButtonProps> = props => {
       disabled={props.disable ?? false}
       style={
         props.disable
-          ? [styles.button, styles.secondaryButton, props.buttonStyle, styles.disabled]
+          ? [
+              styles.button,
+              styles.secondaryButton,
+              props.buttonStyle,
+              styles.disabled,
+            ]
           : [styles.button, styles.secondaryButton, props.buttonStyle]
       }
       onPress={props.onClick}>
@@ -132,27 +138,43 @@ export const FiroBackButton: FC<IconButtonProps> = props => {
 
 export const FiroSelectFromSavedAddress: FC<ButtonProps> = props => {
   return (
-    <TouchableOpacity
-      disabled={props.disable ?? false}
-      style={[styles.button, styles.savedAddressButton, props.buttonStyle]}
-      onPress={props.onClick}>
-      <Image
-        style={props.disable ? [styles.icon, styles.disabled] : styles.icon}
-        source={require('../img/ic_saved_address.png')}
-      />
-      <Text
-        style={
-          props.disable
-            ? [styles.text, styles.savedAddressText, styles.disabled]
-            : [styles.text, styles.savedAddressText]
-        }>
-        {props.text}
-      </Text>
-    </TouchableOpacity>
+    <Card style={[styles.card, props.buttonStyle]}>
+      <TouchableOpacity
+        disabled={props.disable ?? false}
+        style={styles.savaAddress}
+        onPress={props.onClick}>
+        <Image
+          style={props.disable ? [styles.icon, styles.disabled] : styles.icon}
+          source={require('../img/ic_saved_address.png')}
+        />
+        <Text
+          style={
+            props.disable
+              ? [styles.text, styles.savedAddressText, styles.disabled]
+              : [styles.text, styles.savedAddressText]
+          }>
+          {props.text}
+        </Text>
+      </TouchableOpacity>
+    </Card>
   );
 };
 
 const styles = StyleSheet.create({
+  card: {
+    height: 42,
+    display: 'flex',
+    borderRadius: 20,
+    backgroundColor: '#ffffff',
+    borderColor: 'transparent',
+  },
+  savaAddress: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexGrow: 1,
+  },
   button: {
     height: 42,
     display: 'flex',
@@ -175,12 +197,6 @@ const styles = StyleSheet.create({
     height: 30,
     backgroundColor: 'transparent',
     borderColor: 'transparent',
-  },
-  savedAddressButton: {
-    // height: 36,
-    backgroundColor: '#ffffff',
-    borderColor: 'transparent',
-    elevation: 2,
   },
   secondaryButton: {
     backgroundColor: 'transparent',
