@@ -129,6 +129,11 @@ export const SendAddress: FC<SendAddressProps> = props => {
         }}
         isVisible={isAddressbookVisible}>
         <View style={{...styles.addresbookView}}>
+          <View style={styles.selectAddressContainer}>
+            <Text style={styles.selectAddress}>
+              {localization.send_screen.select_address}
+            </Text>
+          </View>
           <TouchableOpacity
             style={styles.closeBottomSheet}
             onPress={() => {
@@ -136,11 +141,6 @@ export const SendAddress: FC<SendAddressProps> = props => {
             }}>
             <Image source={require('../img/ic_close.png')} />
           </TouchableOpacity>
-          <View style={styles.selectAddressContainer}>
-            <Text style={styles.selectAddress}>
-              {localization.send_screen.select_address}
-            </Text>
-          </View>
           <AddressBookList
             addressBookList={addressBookList}
             onAddressSelect={onAddressSelect}

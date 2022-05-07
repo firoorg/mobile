@@ -316,6 +316,11 @@ const SettingsScreen = () => {
           },
         }}>
         <View style={{ ...styles.currenciesView, height: windowHeight / 2 }}>
+          <View style={{ display: 'flex' }}>
+            <Text style={styles.changeCurrency}>
+              {localization.settings.title_change_currency}
+            </Text>
+          </View>
           <TouchableOpacity
             style={styles.closeBottomSheet}
             onPress={() => {
@@ -324,11 +329,6 @@ const SettingsScreen = () => {
             }}>
             <Image source={require('../img/ic_close.png')} />
           </TouchableOpacity>
-          <View style={{ display: 'flex' }}>
-            <Text style={styles.changeCurrency}>
-              {localization.settings.title_change_currency}
-            </Text>
-          </View>
           <ScrollView
             style={{ marginTop: 30 }}
             contentContainerStyle={{ paddingBottom: 52 }}>
@@ -439,6 +439,9 @@ const SettingsScreen = () => {
         {biometricSettingsViewMode ==
           BiometricSettingsViewMode.EnterPassphrase ? (
           <View style={styles.biometricSettingsChangeView}>
+            <Text style={styles.titleForBiometric}>
+              {localization.settings.title_passphrase_biometric}
+            </Text>
             <TouchableOpacity
               style={styles.closeBottomSheet}
               onPress={() => {
@@ -446,9 +449,6 @@ const SettingsScreen = () => {
               }}>
               <Image source={require('../img/ic_close.png')} />
             </TouchableOpacity>
-            <Text style={styles.titleForBiometric}>
-              {localization.settings.title_passphrase_biometric}
-            </Text>
             <Text style={styles.descriptionForBiomertic}>
               {localization.settings.description_passphrase_biometric}
             </Text>
@@ -634,13 +634,6 @@ const SettingsScreen = () => {
         },
       }}>
         <View style={styles.biometricSettingsChangeView}>
-          <TouchableOpacity
-            style={styles.closeBottomSheet}
-            onPress={() => {
-              changeConfirmRestoreWallet(false);
-            }}>
-            <Image source={require('../img/ic_close.png')} />
-          </TouchableOpacity>
           <View style={styles.warningRestoreContainer}>
             <Text style={styles.warningRestoreCard}>
               <Text style={{ fontWeight: 'bold' }}>
@@ -649,6 +642,13 @@ const SettingsScreen = () => {
               {localization.settings.warning_restore_text}
             </Text>
           </View>
+          <TouchableOpacity
+            style={styles.closeBottomSheet}
+            onPress={() => {
+              changeConfirmRestoreWallet(false);
+            }}>
+            <Image source={require('../img/ic_close.png')} />
+          </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={1}
             style={styles.confirmRestoreButton}>
