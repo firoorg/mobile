@@ -1,5 +1,5 @@
 #import <React/RCTBridgeModule.h>
 
-@interface Lelantus : NSObject <RCTBridgeModule>
+@interface RNLelantus : NSObject <RCTBridgeModule>
 
 @end

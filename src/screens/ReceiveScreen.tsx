@@ -76,7 +76,7 @@ const ReceiveScreen = () => {
   );
 
   return (
-    <ScrollView keyboardShouldPersistTaps="always">
+    <ScrollView keyboardShouldPersistTaps="handled">
       <View>
         <FiroToolbarWithoutBack title={localization.receive_screen.title} />
         <FiroStatusBar />

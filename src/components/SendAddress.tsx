@@ -89,12 +89,14 @@ export const SendAddress: FC<SendAddressProps> = props => {
           onChangeText={onTextChanged}
         />
       </View>
-      <TouchableOpacity onPress={openAddressBook}>
-        <Image
-          style={styles.icon}
-          source={require('../img/ic_address_book.png')}
-        />
-      </TouchableOpacity>
+      {addressBookList.length !== 0 && (
+        <TouchableOpacity onPress={openAddressBook}>
+          <Image
+            style={styles.icon}
+            source={require('../img/ic_address_book.png')}
+          />
+        </TouchableOpacity>
+      )}
       <Divider style={styles.divider} />
       <TouchableOpacity
         onPress={() => {
