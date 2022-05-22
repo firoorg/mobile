@@ -139,6 +139,19 @@ export class AppStorage {
         const wallet = data.wallet;
         let unserializedWallet = FiroWallet.fromJson(wallet);
 
+        // migration from lelantus_coins to lelantus_coins_list
+        let lelntusCoins = Object.values(unserializedWallet._lelantus_coins)
+        if (unserializedWallet._lelantus_coins_list.length == 0 && lelntusCoins.length > 0) {
+          unserializedWallet._lelantus_coins_list = lelntusCoins;
+          unserializedWallet._lelantus_coins = {};
+          let updatedData = {
+            wallet: JSON.stringify(unserializedWallet)
+          };
+          let newData = encryption.encrypt(JSON.stringify(updatedData), password);
+          await this.setItem('data', JSON.stringify(newData));
+        }
+
+
         const realm = await this.getRealm();
         this.inflateTransactionsFromRealm(realm, unserializedWallet);
         realm.close();

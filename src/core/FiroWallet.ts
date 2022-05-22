@@ -67,6 +67,7 @@ export class FiroWallet implements AbstractWallet {
   network: Network = network;
   balance: number = 0;
   unconfirmed_balance: number = 0;
+  _lelantus_coins_list: LelantusCoin[] = [];
   _lelantus_coins: {
     [txId: string]: LelantusCoin;
   } = {};
@@ -466,23 +467,19 @@ export class FiroWallet implements AbstractWallet {
     value: number,
     publicCoin: string,
   ): void {
-    if (this._lelantus_coins[txId]) {
-      return;
-    }
-    this._lelantus_coins[txId] = {
+    this._lelantus_coins_list.push({
       index: this.next_free_mint_index,
       value: value,
       publicCoin: publicCoin,
       txId: txId,
       anonymitySetId: 0,
       isUsed: false,
-    };
+    });
     this.next_free_mint_index += 1;
   }
 
   markCoinsSpend(spendCoinIndexes: number[]): void {
-    const coins = Object.values(this._lelantus_coins);
-    coins.forEach(coin => {
+    this._lelantus_coins_list.forEach(coin => {
       if (spendCoinIndexes.includes(coin.index)) {
         coin.isUsed = true;
       }
@@ -542,15 +539,13 @@ export class FiroWallet implements AbstractWallet {
   }
 
   _getUnconfirmedCoins(): LelantusCoin[] {
-    const coins = Object.values(this._lelantus_coins);
-    return coins.filter(coin => {
+    return this._lelantus_coins_list.filter(coin => {
       return !coin.isUsed && coin.anonymitySetId === ANONYMITY_SET_EMPTY_ID;
     });
   }
 
   _getUnspentCoins(): LelantusCoin[] {
-    const coins = Object.values(this._lelantus_coins);
-    return coins.filter(coin => {
+    return this._lelantus_coins_list.filter(coin => {
       return !coin.isUsed && coin.anonymitySetId !== ANONYMITY_SET_EMPTY_ID;
     });
   }
@@ -1030,14 +1025,14 @@ export class FiroWallet implements AbstractWallet {
               currentIndex,
               amount,
             );
-            this._lelantus_coins[foundCoin[3]] = {
+            this._lelantus_coins_list.push({
               index: currentIndex,
               value: amount,
               publicCoin: foundCoin[0],
               txId: foundCoin[3],
               anonymitySetId: setId,
               isUsed: this._used_serial_numbers.includes(serialNumber),
-            };
+            });
           } else {
             // jmint
             lastFoundIndex = currentIndex;
@@ -1057,14 +1052,14 @@ export class FiroWallet implements AbstractWallet {
                 amount,
               );
 
-              this._lelantus_coins[foundCoin[3]] = {
+              this._lelantus_coins_list.push({
                 index: currentIndex,
                 value: amount,
                 publicCoin: foundCoin[0],
                 txId: foundCoin[3],
                 anonymitySetId: setId,
                 isUsed: this._used_serial_numbers.includes(serialNumber),
-              };
+              });
 
               spendTxIds.push(foundCoin[3]);
             }
