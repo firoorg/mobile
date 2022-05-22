@@ -100,7 +100,8 @@
     "body": "For unlock wallet",
     "login": "Login",
     "loading": "Loading...",
-    "prompt_fingerprint": "Login Via Fingerprint"
+    "prompt_fingerprint": "Login Via Fingerprint",
+    "wrong_passphrase": "Wrong passphrase"
   },
 
   "change_passphrase_screen": {

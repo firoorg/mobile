@@ -8,6 +8,7 @@ import {Divider} from 'react-native-elements';
 type ConfirmationProps = {
   style: StyleProp<ViewStyle>;
   confirmButtonText: string;
+  enabled?: boolean;
   onDiscardAction: () => void;
   onConfirmAction: () => void;
 };
@@ -25,6 +26,7 @@ export const Confirmation: FC<ConfirmationProps> = props => {
         buttonStyle={styles.button}
         text={props.confirmButtonText}
         onClick={props.onConfirmAction}
+        disable={props.enabled == false}
       />
     </View>
   );

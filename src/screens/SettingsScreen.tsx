@@ -121,7 +121,7 @@ const SettingsScreen = () => {
           </View>
         </View>
       </TouchableHighlight>
-      <TouchableHighlight
+      {/* <TouchableHighlight
         disabled={saveInProgress}
         underlayColor={colors.highlight}
         onPress={() => {
@@ -164,7 +164,7 @@ const SettingsScreen = () => {
             />
           </View>
         </View>
-      </TouchableHighlight>
+      </TouchableHighlight> */}
       <TouchableHighlight
         disabled={saveInProgress}
         underlayColor={colors.highlight}

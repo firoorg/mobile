@@ -202,9 +202,9 @@ const MyWalletScreen = () => {
             style={styles.balanceCard}
             balance={balance}
             unconfirmedBalance={unconfirmedBalance}
+            syncing={sync}
           />
         </View>
-        {sync && <Text style={styles.syncText}>Syncing...</Text>}
         {transactionList}
       </View>
     </View>
@@ -231,11 +231,6 @@ const styles = StyleSheet.create({
   },
   transactionContainer: {
     flexGrow: 1,
-  },
-  syncText: {
-    textAlign: 'right',
-    alignSelf: 'flex-end',
-    paddingHorizontal: 20,
   },
 });
 

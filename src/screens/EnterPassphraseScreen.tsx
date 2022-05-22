@@ -1,9 +1,9 @@
 import React, {useContext, useEffect, useState} from 'react';
 import * as NavigationService from '../NavigationService';
-import {Image, StyleSheet, View} from 'react-native';
+import {Image, StyleSheet, View, Keyboard} from 'react-native';
 import {FiroPrimaryButton} from '../components/Button';
 import {FiroToolbar} from '../components/Toolbar';
-import {FiroTitleBig, FiroTextBig} from '../components/Texts';
+import {FiroTitleBig, FiroTextBig, FiroTextSmall} from '../components/Texts';
 import {FiroInputPassword} from '../components/Input';
 import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
@@ -17,6 +17,7 @@ const EnterPassphraseScreen = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [biometricEnabled, setBiometricEnabled] = useState(false);
+  const [wrongPassphrase, setWrongPassphrase] = useState(false);
   const {loadFromDisk} = useContext(FiroContext);
   const btnText = loading
     ? localization.enter_passphrase_screen.loading
@@ -26,6 +27,9 @@ const EnterPassphraseScreen = () => {
     setLoading(true);
     if (await loadFromDisk(passphrase)) {
       NavigationService.clearStack('MainScreen');
+    } else {
+      setWrongPassphrase(true);
+      Keyboard.dismiss();
     }
     setLoading(false);
   };
@@ -90,6 +94,12 @@ const EnterPassphraseScreen = () => {
           text={btnText}
           onClick={() => onClickDone(password)}
         />
+        {wrongPassphrase && 
+          <FiroTextSmall
+            text={localization.enter_passphrase_screen.wrong_passphrase}
+            style={styles.errorText}
+          />
+        }
       </View>
     </View>
   );
@@ -129,5 +139,9 @@ const styles = StyleSheet.create({
   login: {
     marginTop: 20,
     width: '100%',
+  },
+  errorText: {
+    paddingTop: 5,
+    color: colors.notification
   },
 });

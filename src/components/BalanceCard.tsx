@@ -7,6 +7,7 @@ import {
   Image,
   ViewStyle,
   StyleProp,
+  ActivityIndicator,
 } from 'react-native';
 import {CurrentFiroTheme} from '../Themes';
 import {FiroGetFiroButton} from './Button';
@@ -21,6 +22,7 @@ type BalanceCardProp = {
   style: StyleProp<ViewStyle>;
   balance: BigNumber;
   unconfirmedBalance: BigNumber;
+  syncing: boolean;
 };
 
 export const BalanceCard: FC<BalanceCardProp> = props => {
@@ -34,10 +36,13 @@ export const BalanceCard: FC<BalanceCardProp> = props => {
         colors={['#9B1C2E', '#C73D48']}
         style={[styles.card, props.style]}>
         <View style={styles.titleContainer}>
-          <Image
-            style={styles.icon}
-            source={require('../img/ic_firo_balance_white.png')}
-          />
+          {!props.syncing &&
+            <Image
+              style={styles.icon}
+              source={require('../img/ic_firo_balance_white.png')}
+            />
+          }
+          {props.syncing && <ActivityIndicator color="#ffffff" style={styles.icon} />}
           <Text style={styles.title}>
             {localization.balance_card.balance_firo}
           </Text>

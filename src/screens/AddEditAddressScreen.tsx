@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useState, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {FiroToolbar} from '../components/Toolbar';
+import {FiroContext} from '../FiroContext';
 import {CurrentFiroTheme} from '../Themes';
 import {AddressBookItem} from '../data/AddressBookItem';
 import {Confirmation} from '../components/Confirmation';
@@ -17,7 +18,6 @@ import * as NavigationService from '../NavigationService';
 import {AppStorage} from '../app-storage';
 import localization from '../localization';
 import {FiroStatusBar} from '../components/FiroStatusBar';
-import Header from 'react-native-elements/dist/header/Header';
 import { Card } from '../components/Card';
 const bip21 = require('bip21');
 
@@ -33,12 +33,29 @@ type AddEditAddressProps = {
 };
 
 const AddEditAddress: FC<AddEditAddressProps> = props => {
+  const {getWallet} = useContext(FiroContext);
   let {item, onSuccess} = props.route.params;
   const hasInputAddress = item !== undefined;
 
   const [address, setAddress] = useState(hasInputAddress ? item.address : '');
   const [name, setName] = useState(hasInputAddress ? item.name : '');
+  const [saveButtonEsabled, setSaveButtonEsabled] = useState(false)
 
+  const onAddressChange = (address: string) => {
+    setAddress(address);
+    validateAddressAndName(address, name)
+  }
+  const onNameChange = (name: string) => {
+    setName(name);
+    validateAddressAndName(address, name)
+  }
+  const validateAddressAndName = (address: string, name: string) => {
+    const wallet = getWallet();
+    if (!wallet) {
+      return;
+    }
+    setSaveButtonEsabled(wallet.validate(address) && name !== '');
+  }
   const onDiscard = () => {
     NavigationService.back();
   };
@@ -81,7 +98,7 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
               placeholder={localization.send_address.address}
               value={address}
               autoCorrect={false}
-              onChangeText={txt => setAddress(txt)}
+              onChangeText={txt => onAddressChange(txt)}
             />
           </View>
           <TouchableOpacity
@@ -93,7 +110,7 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
                     if (info.data) {
                       try {
                         const decoded = bip21.decode(info.data, 'firo');
-                        setAddress(decoded.address);
+                        onAddressChange(decoded.address);
                       } catch {}
                     }
                   },
@@ -110,7 +127,7 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
             autoCorrect={false}
             placeholderTextColor={colors.textPlaceholder}
             placeholder={localization.add_edit_address_screen.name}
-            onChangeText={txt => setName(txt)}
+            onChangeText={txt => onNameChange(txt)}
           />
         </Card>
       </View>
@@ -120,6 +137,7 @@ const AddEditAddress: FC<AddEditAddressProps> = props => {
         confirmButtonText={localization.add_edit_address_screen.save}
         onDiscardAction={onDiscard}
         onConfirmAction={onConfirm}
+        enabled={saveButtonEsabled}
       />
     </KeyboardAvoidingView>
   );

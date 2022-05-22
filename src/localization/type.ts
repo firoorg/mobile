@@ -105,6 +105,7 @@ export interface IString extends LocalizedStringsMethods {
     login: string;
     loading: string;
     prompt_fingerprint: string;
+    wrong_passphrase: string;
   };
 
   change_passphrase_screen: {

@@ -50,7 +50,12 @@ export class Currency {
         return new BigNumber(amount.toFixed(8));
       default:
         // for other currencies 2 digits is enough for now
-        return new BigNumber(amount.times(rate).toFixed(2));
+        let value = amount.times(rate)
+        let fixNumber = 2
+        if (value.lt(1)) {
+          fixNumber = 5;
+        }
+        return new BigNumber(value.toFixed(fixNumber));
     }
   }
 

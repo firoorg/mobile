@@ -17,11 +17,16 @@ const {colors} = CurrentFiroTheme;
 const PassphraseScreen = () => {
   const [creating, setCreating] = useState(false);
   const [password, setPassword] = useState('');
+  const [emptyPassphrase, setEmptyPassphrase] = useState(true);
   const {encryptStorage} = useContext(FiroContext);
   const btnCreateText = creating
     ? localization.passphrase_screen.creating
     : localization.passphrase_screen.create;
 
+  const onPassphraseChange = (passphrase: string) => {
+    setEmptyPassphrase(passphrase === '')
+    setPassword(passphrase)
+  }
   const onClickDone = async () => {
     var jobDone = false;
     setCreating(true);
@@ -68,12 +73,13 @@ const PassphraseScreen = () => {
         />
         <FiroInputPassword
           style={styles.password}
-          onTextChanged={txt => setPassword(txt)}
+          onTextChanged={txt => onPassphraseChange(txt)}
         />
         <FiroPrimaryButton
           buttonStyle={styles.create}
           text={btnCreateText}
           onClick={onClickDone}
+          disable={emptyPassphrase}
         />
       </View>
     </View>

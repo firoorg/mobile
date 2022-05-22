@@ -116,12 +116,12 @@ const MnemonicInputScreen: FC<MnemonicInputProps> = props => {
           {failedRestoring ? (
             <FiroTextSmall
               text={localization.mnemonic_input_screen.message_failed_restore}
-              style={{paddingTop: 5, color: colors.notification}}
+              style={styles.errorText}
             />
           ) : creating ? (
             <FiroTextSmall
               text={localization.mnemonic_input_screen.message_wait}
-              style={{paddingTop: 5, color: colors.notification}}
+              style={styles.warningText}
             />
           ) : null}
         </View>
@@ -168,5 +168,13 @@ const styles = StyleSheet.create({
   },
   textCenter: {
     textAlign: 'center',
+  },
+  warningText: {
+    paddingTop: 5,
+    color: colors.notification
+  },
+  errorText: {
+    paddingTop: 5,
+    color: colors.notification
   },
 });
