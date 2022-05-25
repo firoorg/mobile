@@ -7,6 +7,7 @@ import {SupportedLanguages} from './languages';
 
 const localizations: IString = new LocalizedStrings({
   en: require('./en.json'),
+  zh: require('./zh-cn.json')
 });
 
 (async () => {

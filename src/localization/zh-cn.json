@@ -100,7 +100,8 @@
     "body": "用于解锁钱包",
     "login": "登录",
     "loading": "加载中…",
-    "prompt_fingerprint": "通过指纹登录"
+    "prompt_fingerprint": "通过指纹登录",
+    "wrong_passphrase": "密码错误"
   },
 
   "change_passphrase_screen": {
