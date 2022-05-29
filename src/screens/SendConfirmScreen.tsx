@@ -49,7 +49,7 @@ let passphraseInput: string = '';
 let securityCheckPassed: boolean = false;
 let securityCheckFinished: boolean = false;
 let spendError: string = '';
-const SPEND_LIMIT: number = 100100000000;
+const SPEND_LIMIT: number = 500100000000;
 
 const SendConfirmScreen: FC<SendConfirmProps> = props => {
   const {
