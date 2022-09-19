@@ -99,6 +99,7 @@ export class FiroWallet implements AbstractWallet {
   _node1: BIP32Interface | undefined = undefined;
   usedAddresses = [];
   gap_limit = 20;
+  mint_index_gap_limit = 50;
 
   async generate(): Promise<void> {
     const buf = await randomBytes(32);
@@ -409,7 +410,7 @@ export class FiroWallet implements AbstractWallet {
       spendAmount,
       params.subtractFeeFromAmount,
       jmintKeyPair,
-      this.next_free_mint_index,
+      index,
       lelantusEntries,
       txHash.toString('hex'),
       setIds,
@@ -472,7 +473,7 @@ export class FiroWallet implements AbstractWallet {
       value: value,
       publicCoin: publicCoin,
       txId: txId,
-      anonymitySetId: 0,
+      anonymitySetId: ANONYMITY_SET_EMPTY_ID,
       isUsed: false,
     });
     this.next_free_mint_index += 1;
@@ -514,14 +515,12 @@ export class FiroWallet implements AbstractWallet {
     let hasUpdate = false;
     const unconfirmedCoins = this._getUnconfirmedCoins();
     if (unconfirmedCoins.length > 0) {
-      const publicCoinList = unconfirmedCoins.map(coin => coin.publicCoin);
       this._anonymity_sets.forEach(set => {
-        const setCoins = set.coins.map(coin => coin[0]);
-        publicCoinList.forEach((publicCoin, index) => {
-          if (setCoins.includes(publicCoin)) {
+        unconfirmedCoins.forEach(coin => {
+          if (coin.anonymitySetId < set.setId && set.coins.filter(c => c[0] == coin.publicCoin).length > 0) {
             hasUpdate = true;
-            unconfirmedCoins[index].anonymitySetId = set.setId;
-            this._updateSendTxStatus(unconfirmedCoins[index]);
+            coin.anonymitySetId = set.setId;
+            this._updateSendTxStatus(coin);
           }
         });
       });
@@ -546,7 +545,7 @@ export class FiroWallet implements AbstractWallet {
 
   _getUnspentCoins(): LelantusCoin[] {
     return this._lelantus_coins_list.filter(coin => {
-      return !coin.isUsed && coin.anonymitySetId !== ANONYMITY_SET_EMPTY_ID;
+      return !coin.isUsed && coin.anonymitySetId !== ANONYMITY_SET_EMPTY_ID && coin.value > 0;
     });
   }
 
@@ -722,44 +721,44 @@ export class FiroWallet implements AbstractWallet {
 
   async _getNodeAddressByIndex(node: number, index: number) {
     index = index * 1; // cast to int
-    if (node === 0) {
+    if (node === EXTERNAL_INDEX) {
       if (this.external_addresses_cache[index]) {
-        return this.external_addresses_cache[index]; // cache hit]
+        return this.external_addresses_cache[index]; // cache hit
       }
     }
 
-    if (node === 1) {
+    if (node === INTERNAL_INDEX) {
       if (this.internal_addresses_cache[index]) {
         return this.internal_addresses_cache[index]; // cache hit
       }
     }
 
-    if (node === 0 && !this._node0) {
+    if (node === EXTERNAL_INDEX && !this._node0) {
       const xpub = await this.getXpub();
       const hdNode = bip32.fromBase58(xpub, this.network);
       this._node0 = hdNode.derive(node);
     }
 
-    if (node === 1 && !this._node1) {
+    if (node === INTERNAL_INDEX && !this._node1) {
       const xpub = await this.getXpub();
       const hdNode = bip32.fromBase58(xpub, this.network);
       this._node1 = hdNode.derive(node);
     }
 
     let address;
-    if (node === 0) {
+    if (node === EXTERNAL_INDEX) {
       address = this._nodeToLegacyAddress(this._node0!!.derive(index));
     }
 
-    if (node === 1) {
+    if (node === INTERNAL_INDEX) {
       address = this._nodeToLegacyAddress(this._node1!!.derive(index));
     }
 
-    if (node === 0) {
+    if (node === EXTERNAL_INDEX) {
       return (this.external_addresses_cache[index] = address);
     }
 
-    if (node === 1) {
+    if (node === INTERNAL_INDEX) {
       return (this.internal_addresses_cache[index] = address);
     }
   }
@@ -775,7 +774,7 @@ export class FiroWallet implements AbstractWallet {
     await this.getXpub();
     const address2Fetch = [];
     // external addresses first
-    for (let c = 0; c < this.next_free_address_index + this.gap_limit; c++) {
+    for (let c = 0; c < this.next_free_address_index + 40; c++) {
       const extAddr = await this._getExternalAddressByIndex(c);
       address2Fetch.push(extAddr);
     }
@@ -783,7 +782,7 @@ export class FiroWallet implements AbstractWallet {
     // next internal addresses
     for (
       let c = 0;
-      c < this.next_free_change_address_index + this.gap_limit;
+      c < this.next_free_change_address_index + 40;
       c++
     ) {
       const intAddr = await this._getInternalAddressByIndex(c);
@@ -810,11 +809,11 @@ export class FiroWallet implements AbstractWallet {
         address2Check,
       );
       fullTxs.forEach(tx => {
-        const foundTx = this._txs_by_external_index.find(
+        const foundTxs = this._txs_by_external_index.filter(
           item => item.txId === tx.txid,
         );
 
-        if (foundTx === undefined) {
+        if (foundTxs.length == 0 || foundTxs.length == 1 && foundTxs[0].received == false && foundTxs[0].isMint == false) {
           let transactionItem = new TransactionItem();
           transactionItem.address = tx.address;
           transactionItem.txId = tx.txid;
@@ -857,11 +856,14 @@ export class FiroWallet implements AbstractWallet {
             hasChanges = true;
             this._txs_by_external_index.push(transactionItem);
           }
-        } else if (foundTx.confirmed === false && tx.confirmations > 0) {
-          hasChanges = true;
-          foundTx.confirmed = true;
-          foundTx.date = tx.time * 1000;
         }
+        foundTxs.forEach(foundTx => {
+          if (foundTx.confirmed === false && tx.confirmations > 0) {
+            hasChanges = true;
+            foundTx.confirmed = true;
+            foundTx.date = tx.time * 1000;
+          }
+        })
       });
     } catch (e) {
       Logger.error('firo_wallet:fetchTransaction', e);
@@ -876,9 +878,9 @@ export class FiroWallet implements AbstractWallet {
     this._txs_by_external_index.sort(
       (tx1: TransactionItem, tx2: TransactionItem) => {
         if (Math.abs(tx2.date - tx1.date) < 1000) {
-          if (tx2.isMint && tx1.received) {
+          if (tx2.isMint && tx1.received || tx2.received && !tx1.received && !tx1.isMint) {
             return 1;
-          } else if (tx1.isMint && tx2.received) {
+          } else if (tx1.isMint && tx2.received || tx1.received && !tx2.received && !tx2.isMint) {
             return -1;
           } else {
             return tx2.date - tx1.date;
@@ -908,7 +910,7 @@ export class FiroWallet implements AbstractWallet {
       if (!anonymitySet) {
         anonymitySet = new AnonymitySet();
         anonymitySet.setId = setId;
-        this._anonymity_sets.unshift(anonymitySet);
+        this._anonymity_sets.push(anonymitySet);
       }
       const fetchedAnonymitySet = await firoElectrum.getAnonymitySet(
         anonymitySet.setId,
@@ -926,6 +928,32 @@ export class FiroWallet implements AbstractWallet {
         hasChanges = true;
       }
     }
+    return hasChanges;
+  }
+
+  private async fixDuplicateCoinIssue(): Promise<boolean> {
+    let hasChanges = false;
+    let unspentCoins = this._getUnspentCoins();
+    unspentCoins.forEach(coin => {
+      let duplicateCoins = this._lelantus_coins_list.filter(c => c.index == coin.index);
+      if (duplicateCoins.length > 1) {
+        let maxSetId = Math.max(...duplicateCoins.map(c => c.anonymitySetId));
+        this._lelantus_coins_list = this._lelantus_coins_list.filter(c => c.index != coin.index || c.anonymitySetId == maxSetId)
+        hasChanges = true;
+      }
+    })
+    unspentCoins = this._getUnspentCoins();
+    unspentCoins.forEach(coin => {
+      this._anonymity_sets.forEach(set => {
+        if (coin.anonymitySetId < set.setId) {
+          const foundCoin = set.coins.find(setCoin => setCoin[0] === coin.publicCoin);
+          if (foundCoin) {
+            coin.anonymitySetId = set.setId;
+            hasChanges = true;
+          }
+        }
+      })
+    })
     return hasChanges;
   }
 
@@ -952,9 +980,15 @@ export class FiroWallet implements AbstractWallet {
       callback();
     }
 
+    if (await this.fixDuplicateCoinIssue()) {
+      callback();
+    }
+
     let result = await this.extractMintTransactions();
     if (result.hasChanges) {
-      await this.fetchSpendTxs(result.spendTxIds);
+      if (result.spendTxIds.length > 0) {
+        await this.fetchSpendTxs(result.spendTxIds);
+      }
       callback();
     }
   }
@@ -987,35 +1021,42 @@ export class FiroWallet implements AbstractWallet {
   }> {
     let hasChanges = false;
 
+    const latestSetId = Math.max(...this._anonymity_sets.map(set => set.setId));
     const setDataMap: {
       [key: number]: AnonymitySet;
     } = {};
-    const latestSetId = await firoElectrum.getLatestSetId();
-    for (let setId = 1; setId <= latestSetId; setId++) {
-      const setData = this._anonymity_sets.find(set => set.setId === setId);
-      if (typeof setData !== 'undefined') {
-        setDataMap[setId] = setData;
-      }
-    }
+    this._anonymity_sets.forEach(set => {
+      setDataMap[set.setId] = set;
+    })
 
     const unspentCoins = this._getUnspentCoins();
 
     const spendTxIds: string[] = [];
 
-    let lastFoundIndex = this.next_free_mint_index;
+    if (this._lelantus_coins_list.length > 0) {
+      const actualFreeMintIndex = this._lelantus_coins_list[this._lelantus_coins_list.length - 1].index + 1;
+      if (this.next_free_mint_index != actualFreeMintIndex) {
+        this.next_free_mint_index = actualFreeMintIndex
+        hasChanges = true;
+      }
+    }
+
+    let lastFoundIndex = this.next_free_mint_index - 1;
     let currentIndex = this.next_free_mint_index;
-    while (currentIndex < lastFoundIndex + 20) {
+    while (currentIndex < lastFoundIndex + this.mint_index_gap_limit) {
       const mintKeyPair = this._getNode(MINT_INDEX, currentIndex);
       const mintTag = await LelantusWrapper.getMintTag(
         mintKeyPair,
         currentIndex,
       );
 
-      for (let setId = 1; setId <= latestSetId; setId++) {
+      let coinSetId = 0;
+      for (let setId = latestSetId; setId >= 1; setId--) {
         const setData = setDataMap[setId];
         const foundCoin = setData.coins.find(coin => coin[1] === mintTag);
-        if (foundCoin) {
+        if (foundCoin && coinSetId == 0) {
           hasChanges = true;
+          coinSetId = setId;
           if (typeof foundCoin[2] === 'number') {
             // mint
             lastFoundIndex = currentIndex;
@@ -1072,6 +1113,11 @@ export class FiroWallet implements AbstractWallet {
 
     this.next_free_mint_index = lastFoundIndex + 1;
 
+    if (this.mint_index_gap_limit != 20) {
+      hasChanges = true;
+      this.mint_index_gap_limit = 20;
+    }
+
     if (spendTxIds.length > 0) {
       for (let index = 0; index < unspentCoins.length; index++) {
         const coin = unspentCoins[index];
@@ -1087,11 +1133,11 @@ export class FiroWallet implements AbstractWallet {
   private async fetchSpendTxs(spendTxIds: string[]): Promise<void> {
     const spendTxs = await firoElectrum.multiGetTransactionByTxid(spendTxIds);
     for (const [txid, tx] of Object.entries(spendTxs)) {
-      const foundTx = this._txs_by_external_index.find(
+      const foundTxs = this._txs_by_external_index.filter(
         item => item.txId === tx.txid,
       );
 
-      if (foundTx === undefined) {
+      if (foundTxs.length == 0 || foundTxs.length == 1 && foundTxs[0].received == true) {
         const transactionItem = new TransactionItem();
         if (tx.confirmations > 0) {
           transactionItem.confirmed = tx.confirmations > 0;
@@ -1109,9 +1155,7 @@ export class FiroWallet implements AbstractWallet {
       }
     }
 
-    if (spendTxIds.length > 0) {
-      this.sortTransactions();
-    }
+    this.sortTransactions();
   }
 
   prepareForSerialization(): void {

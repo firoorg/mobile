@@ -99,7 +99,7 @@ const MnemonicInputScreen: FC<MnemonicInputProps> = props => {
           />
           <FiroInputMnemonic
             style={styles.mnemonicInput}
-            onTextChanged={txt => setMnemonic(txt)}
+            onTextChanged={txt => setMnemonic(txt.trim())}
             enabled={!creating}
           />
           <FiroPrimaryButton
