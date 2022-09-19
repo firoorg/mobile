@@ -69,8 +69,8 @@ JNIEXPORT jobject JNICALL Java_org_firo_lelantus_Lelantus_jEstimateJoinSplitFee
 		keydata = (jstring) env->CallObjectMethod(mintCoin, leGetPrivateKeyId);
 		index = static_cast<int>(env->CallIntMethod(mintCoin, leGetIndexId));
 		isUsed = static_cast<bool>(env->CallBooleanMethod(mintCoin, leIsUsedId));
-		height = static_cast<bool>(env->CallIntMethod(mintCoin, leGetHeightId));
-		anonymitySetId = static_cast<bool>(env->CallIntMethod(mintCoin, leGetAnonymitySetIdId));
+		height = static_cast<int>(env->CallIntMethod(mintCoin, leGetHeightId));
+		anonymitySetId = static_cast<int>(env->CallIntMethod(mintCoin, leGetAnonymitySetIdId));
 		LelantusEntry lelantusEntry{isUsed, height, anonymitySetId, amount, (uint32_t) index,
 									env->GetStringUTFChars(keydata, nullptr)};
 		coins.push_back(lelantusEntry);
@@ -150,8 +150,8 @@ JNIEXPORT jstring JNICALL Java_org_firo_lelantus_Lelantus_jCreateSpendScript
 		keydata = (jstring) env->CallObjectMethod(mintCoin, leGetPrivateKeyId);
 		coinIndex = static_cast<int>(env->CallIntMethod(mintCoin, leGetIndexId));
 		isUsed = static_cast<bool>(env->CallBooleanMethod(mintCoin, leIsUsedId));
-		height = static_cast<bool>(env->CallIntMethod(mintCoin, leGetHeightId));
-		anonymitySetId = static_cast<bool>(env->CallIntMethod(mintCoin, leGetAnonymitySetIdId));
+		height = static_cast<int>(env->CallIntMethod(mintCoin, leGetHeightId));
+		anonymitySetId = static_cast<int>(env->CallIntMethod(mintCoin, leGetAnonymitySetIdId));
 		LelantusEntry lelantusEntry{isUsed, height, anonymitySetId, amount, (uint32_t) coinIndex,
 									env->GetStringUTFChars(keydata, nullptr)};
 		coins.push_back(lelantusEntry);
