@@ -24,7 +24,7 @@ type Peer = {
 };
 
 const hardcodedPeers: Peer[] = [
-  {host: 'electrumx03.firo.org', tcp: '50001', ssl: null},
+  {host: 'electrumx05.firo.org', tcp: '50001', ssl: null},
 ];
 
 /**
@@ -593,10 +593,24 @@ export default class FiroElectrum implements AbstractElectrum {
     const param = [];
     param.push(setId + '');
     param.push(startBlockHash);
-    const result = await this.mainClient.request(
+    const result: AnonymitySetModel = await this.mainClient.request(
       'lelantus.getanonymityset',
       param,
     );
+    result.blockHash = Buffer.from(result.blockHash, "base64").reverse().toString('hex')
+    result.setHash = Buffer.from(result.setHash, "base64").toString('hex')
+    result.coins = result.coins.map(coinData => {
+      let amount = coinData[2];
+      if (typeof amount !== 'number') {
+        amount = Buffer.from(amount, "base64").toString('hex');
+      }
+      return [
+        Buffer.from(coinData[0], "base64").toString('hex'),
+        Buffer.from(coinData[1], "base64").reverse().toString('hex'),
+        amount,
+        Buffer.from(coinData[3], "base64").reverse().toString('hex')
+      ]
+    });
     return result;
   }
 
@@ -612,10 +626,11 @@ export default class FiroElectrum implements AbstractElectrum {
 
     const param = [];
     param.push(coinCount + '');
-    const result = await this.mainClient.request(
+    const result: UsedSerialsModel = await this.mainClient.request(
       'lelantus.getusedcoinserials',
       param,
     );
+    result.serials = result.serials.map(serialBase64 => Buffer.from(serialBase64, "base64").toString('hex'));
 
     return result;
   }
