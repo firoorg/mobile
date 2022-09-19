@@ -134,8 +134,8 @@ android {
         applicationId "org.firo.wallet"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 24
-        versionName "0.1.19"
+        versionCode 28
+        versionName "0.1.20"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
     packagingOptions {
