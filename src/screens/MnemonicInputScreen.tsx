@@ -31,9 +31,12 @@ const MnemonicInputScreen: FC<MnemonicInputProps> = props => {
   const btnRestoreText = creating
     ? progressMessage
     : localization.mnemonic_input_screen.continue;
+  
+  let changeMnemonicCallback: (mnemonic: string, placeholder: string | null) => void;
 
   const onClickContinue = async () => {
     try {
+      changeMnemonicCallback('', localization.mnemonic_input_screen.hidden);
       setFailedRestoring(false);
       setCreating(true);
       const wallet = new FiroWallet();
@@ -50,6 +53,7 @@ const MnemonicInputScreen: FC<MnemonicInputProps> = props => {
       setFailedRestoring(true);
     } finally {
       setCreating(false);
+      changeMnemonicCallback(mnemonic, null);
     }
   };
 
@@ -101,6 +105,9 @@ const MnemonicInputScreen: FC<MnemonicInputProps> = props => {
             style={styles.mnemonicInput}
             onTextChanged={txt => setMnemonic(txt.trim())}
             enabled={!creating}
+            subscribeToTextChanges={callback => {
+              changeMnemonicCallback = callback;
+            }}
           />
           <FiroPrimaryButton
             buttonStyle={styles.restoreWallet}

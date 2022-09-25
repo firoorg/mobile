@@ -76,6 +76,7 @@ export interface IString extends LocalizedStringsMethods {
     body_part_2: string;
     continue: string;
     restoring: string;
+    hidden: string;
     message_wait: string;
     message_failed_restore: string;
     progress_text_1: string;

@@ -19,6 +19,7 @@ type FiroInputProps = {
   onTextChanged: (text: string) => void;
   placeholder?: string;
   enabled?: boolean;
+  subscribeToTextChanges?: (textChange: (text: string, placeholder: string | null) => void) => void;
 };
 
 export const FiroInputPassword: FC<FiroInputProps> = props => {
@@ -48,20 +49,42 @@ export const FiroInputPassword: FC<FiroInputProps> = props => {
 };
 
 export const FiroInputMnemonic: FC<FiroInputProps> = props => {
+  const [mnemonic, setMnemonic] = useState('');
+  const [placeholder, setPlaceholder] = useState(props.placeholder
+    ? props.placeholder
+    : localization.component_input.mnemonic_input_hint
+  );
+
+  const onMnemonicChanged = (text: string) => {
+    setMnemonic(text);
+    props.onTextChanged(text);
+  };
+
+  if (props.subscribeToTextChanges) {
+    props.subscribeToTextChanges((mnemonic, placeholder) => {
+      setMnemonic(mnemonic)
+      if (placeholder != null) {
+        setPlaceholder(placeholder)
+      } else {
+        setPlaceholder(props.placeholder
+          ? props.placeholder
+          : localization.component_input.mnemonic_input_hint
+        )
+      }
+    });
+  }
+
   return (
     <View style={[styles.container, props.style]}>
       <TextInput
         style={[styles.input, styles.mnemonic]}
-        onChangeText={props.onTextChanged}
+        onChangeText={onMnemonicChanged}
         placeholderTextColor={colors.textPlaceholder}
-        placeholder={
-          props.placeholder
-            ? props.placeholder
-            : localization.component_input.mnemonic_input_hint
-        }
+        placeholder={placeholder}
         multiline
         numberOfLines={5}
         editable={props.enabled}
+        value={mnemonic}
       />
     </View>
   );

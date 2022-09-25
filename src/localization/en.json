@@ -13,7 +13,7 @@
   },
 
   "component_input": {
-    "mnemonic_input_hint": "enter your mnemonic here:",
+    "mnemonic_input_hint": "Enter your mnemonic here:",
     "passphrase_input_hint": "Passphrase"
   },
 
@@ -72,6 +72,7 @@
     "body_part_1": "Enter your mnemonic below, which you saved while creating your wallet.",
     "continue": "Continue",
     "restoring": "Restoring...",
+    "hidden": "Mnemonic is hidden",
     "message_wait": "This can take few minutes, please wait",
     "message_failed_restore": "Failed restoring the wallet",
     "progress_text_1": "Fetching public txs",
