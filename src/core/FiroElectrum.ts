@@ -363,32 +363,6 @@ export default class FiroElectrum implements AbstractElectrum {
     );
     for (const [txid, fullTx] of Object.entries(fullTxsMap)) {
       fullTx.address = txId2Address[txid]!;
-      for (const input of fullTx.vin) {
-        if (!input.txid) {
-          continue;
-        }
-        // now we need to fetch previous TX where this VIN became an output, so we can see its amount
-        const prevTxForVin = await this.mainClient.blockchainTransaction_get(
-          input.txid,
-          verbose,
-        );
-        if (
-          prevTxForVin &&
-          prevTxForVin.vout &&
-          prevTxForVin.vout[input.vout]
-        ) {
-          input.value = prevTxForVin.vout[input.vout].value;
-          // also, we extract destination address from prev output:
-          if (
-            prevTxForVin.vout[input.vout].scriptPubKey &&
-            prevTxForVin.vout[input.vout].scriptPubKey.addresses
-          ) {
-            input.addresses =
-              prevTxForVin.vout[input.vout].scriptPubKey.addresses;
-          }
-        }
-      }
-
       for (const output of fullTx.vout) {
         if (output.scriptPubKey && output.scriptPubKey.addresses) {
           output.addresses = output.scriptPubKey.addresses;
