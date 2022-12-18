@@ -963,7 +963,7 @@ export class FiroWallet implements AbstractWallet {
       await firoElectrum.getUsedCoinSerials(this._used_serial_numbers.length)
     ).serials;
     hasChanges = usedSerialNumbers.length > 0;
-    this._used_serial_numbers.push(...usedSerialNumbers);
+    this._used_serial_numbers = [...this._used_serial_numbers, ...usedSerialNumbers];
     return hasChanges;
   }
 
