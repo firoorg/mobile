@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {StyleSheet, View} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {FiroToolbar} from '../components/Toolbar';
@@ -7,6 +7,7 @@ import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
 import localization from '../localization';
 import { FiroStatusBar } from '../components/FiroStatusBar';
+import RNScreenshotPrevent from 'react-native-screenshot-prevent';
 
 const { colors } = CurrentFiroTheme;
 
@@ -18,6 +19,13 @@ const MyMnemonicScreen = () => {
   }
   const mnemonic = wallet.getSecret();
   var words = mnemonic.split(' ');
+
+  useEffect(() => {
+    RNScreenshotPrevent.enabled(true);
+    return () =>
+      RNScreenshotPrevent.enabled(false);
+    }, []
+  );
 
   return (
     <View>

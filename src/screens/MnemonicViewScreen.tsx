@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import * as NavigationService from '../NavigationService';
 import {Image, StyleSheet, View} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -10,6 +10,7 @@ import {CurrentFiroTheme} from '../Themes';
 import {FiroContext} from '../FiroContext';
 import localization from '../localization';
 import {FiroStatusBar} from '../components/FiroStatusBar';
+import RNScreenshotPrevent from 'react-native-screenshot-prevent';
 
 const {colors} = CurrentFiroTheme;
 
@@ -21,6 +22,13 @@ const MnemonicViewScreen = () => {
   }
   const mnemonic = wallet.getSecret();
   var words = mnemonic.split(' ');
+
+  useEffect(() => {
+    RNScreenshotPrevent.enabled(true);
+    return () =>
+      RNScreenshotPrevent.enabled(false);
+    }, []
+  );
 
   const onClickContinue = () => {
     NavigationService.navigate('PassphraseScreen', undefined);

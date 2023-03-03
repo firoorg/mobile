@@ -13,6 +13,7 @@ import Logger from '../utils/logger';
 import {FiroStatusBar} from '../components/FiroStatusBar';
 import {NavigationProp} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
+import RNScreenshotPrevent from 'react-native-screenshot-prevent';
 
 const {colors} = CurrentFiroTheme;
 
@@ -33,6 +34,13 @@ const MnemonicInputScreen: FC<MnemonicInputProps> = props => {
     : localization.mnemonic_input_screen.continue;
   
   let changeMnemonicCallback: (mnemonic: string, placeholder: string | null) => void;
+
+  useEffect(() => {
+    RNScreenshotPrevent.enabled(true);
+    return () =>
+      RNScreenshotPrevent.enabled(false);
+    }, []
+  );
 
   const onClickContinue = async () => {
     try {
