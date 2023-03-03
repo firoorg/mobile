@@ -232,78 +232,75 @@ const SettingsScreen = () => {
         </View>
       </TouchableHighlight>
       {biometricsAvailable && biometricsEnabled != null ? (
-        <TouchableHighlight
-          disabled={saveInProgress}
-          underlayColor={colors.highlight}
-          onPress={async () => {
-            const isEnabled = await Biometrics.biometricAuthorizationEnabled();
-            if (isEnabled) {
-              disableBiometricResult = await Biometrics.clearPassphraseFromStorage(
-                localization.settings.prompt_disable_biometric,
-                () =>
-                  changeBiometricSettingsViewMode(
-                    BiometricSettingsViewMode.DisablingBiometric,
-                  ),
-              );
-              if (disableBiometricResult.success) {
-                changeBiometricSettingsViewMode(
-                  BiometricSettingsViewMode.DisableBiometricSuccess,
-                );
-                changeBiometricEnabled(false);
-                setTimeout(() => {
-                  changeBiometricSettingsViewMode(
-                    BiometricSettingsViewMode.None,
-                  );
-                }, 2000);
-              } else {
-                if (disableBiometricResult.error) {
-                  changeBiometricSettingsViewMode(
-                    BiometricSettingsViewMode.DisableBiometricError,
-                  );
-                  setTimeout(() => {
-                    changeBiometricSettingsViewMode(
-                      BiometricSettingsViewMode.None,
+        <View style={styles.section}>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'flex-start',
+            }}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.title}>
+                {localization.settings.title_fingerprint}
+              </Text>
+              <Text style={styles.description}>
+                {localization.settings.description_fingerprint}
+              </Text>
+            </View>
+            <Switch
+              value={biometricsEnabled == true}
+              thumbColor={biometricsEnabled == true ? colors.switchThumb : colors.switchThumbDisabled}
+              trackColor={{
+                false: colors.switchTrackFalse,
+                true: colors.switchTrackTrue,
+              }}
+              disabled={saveInProgress}
+              onValueChange={async () => {
+                  const isEnabled = await Biometrics.biometricAuthorizationEnabled();
+                  if (isEnabled) {
+                    disableBiometricResult = await Biometrics.clearPassphraseFromStorage(
+                      localization.settings.prompt_disable_biometric,
+                      () =>
+                        changeBiometricSettingsViewMode(
+                          BiometricSettingsViewMode.DisablingBiometric,
+                        ),
                     );
-                  }, 2000);
-                } else {
-                  changeBiometricSettingsViewMode(
-                    BiometricSettingsViewMode.None,
-                  );
+                    if (disableBiometricResult.success) {
+                      changeBiometricSettingsViewMode(
+                        BiometricSettingsViewMode.DisableBiometricSuccess,
+                      );
+                      changeBiometricEnabled(false);
+                      setTimeout(() => {
+                        changeBiometricSettingsViewMode(
+                          BiometricSettingsViewMode.None,
+                        );
+                      }, 2000);
+                    } else {
+                      if (disableBiometricResult.error) {
+                        changeBiometricSettingsViewMode(
+                          BiometricSettingsViewMode.DisableBiometricError,
+                        );
+                        setTimeout(() => {
+                          changeBiometricSettingsViewMode(
+                            BiometricSettingsViewMode.None,
+                          );
+                        }, 2000);
+                      } else {
+                        changeBiometricSettingsViewMode(
+                          BiometricSettingsViewMode.None,
+                        );
+                      }
+                    }
+                  } else {
+                    changeBiometricSettingsViewMode(
+                      BiometricSettingsViewMode.EnterPassphrase,
+                    );
+                  }
                 }
               }
-            } else {
-              changeBiometricSettingsViewMode(
-                BiometricSettingsViewMode.EnterPassphrase,
-              );
-            }
-          }}>
-          <View style={styles.section}>
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-              }}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.title}>
-                  {localization.settings.title_fingerprint}
-                </Text>
-                <Text style={styles.description}>
-                  {localization.settings.description_fingerprint}
-                </Text>
-              </View>
-              <Switch
-                value={biometricsEnabled == true}
-                disabled={true}
-                thumbColor={colors.switchThumb}
-                trackColor={{
-                  false: colors.switchTrackFalse,
-                  true: colors.switchTrackTrue,
-                }}
-              />
-            </View>
+            />
           </View>
-        </TouchableHighlight>
+        </View>
       ) : null}
       <Text style={styles.version} onPress={clickOnVersionCode}>
         {localization.settings.version + deviceInfoModule.getVersion()}
