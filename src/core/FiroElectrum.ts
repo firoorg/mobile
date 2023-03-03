@@ -141,7 +141,7 @@ export default class FiroElectrum implements AbstractElectrum {
 
     if (!this.mainConnected) {
       Logger.warn('electrum_wallet:connectMain', 'retry');
-      this.mainClient.close && this.mainClient.close();
+      // this.mainClient.close && this.mainClient.close();
       setTimeout(() => {
         this.connectMain();
       }, 5000);
