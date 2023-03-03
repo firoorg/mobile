@@ -654,7 +654,7 @@ export class FiroWallet implements AbstractWallet {
     // looking for free external address
     let freeAddress = '';
     let c;
-    for (c = 0; c < this.gap_limit + 1; c++) {
+    for (c = 0; true; c++) {
       if (this.next_free_address_index + c < 0) {
         continue;
       }
@@ -676,13 +676,6 @@ export class FiroWallet implements AbstractWallet {
       }
     }
 
-    if (!freeAddress) {
-      // could not find in cycle above, give up
-      freeAddress = await this._getExternalAddressByIndex(
-        this.next_free_address_index + c,
-      ); // we didnt check this one, maybe its free
-      this.next_free_address_index += c; // now points to this one
-    }
     return freeAddress;
   }
 
@@ -690,7 +683,7 @@ export class FiroWallet implements AbstractWallet {
     // looking for free internal address
     let freeAddress = '';
     let c;
-    for (c = 0; c < this.gap_limit + 1; c++) {
+    for (c = 0; true; c++) {
       if (this.next_free_change_address_index + c < 0) {
         continue;
       }
@@ -714,13 +707,6 @@ export class FiroWallet implements AbstractWallet {
       }
     }
 
-    if (!freeAddress) {
-      // could not find in cycle above, give up
-      freeAddress = await this._getInternalAddressByIndex(
-        this.next_free_change_address_index + c,
-      ); // we didnt check this one, maybe its free
-      this.next_free_change_address_index += c; // now points to this one
-    }
     return freeAddress;
   }
 
@@ -1013,6 +999,8 @@ export class FiroWallet implements AbstractWallet {
     const totalCallbacks = 5;
 
     callback(callbackIndex++, totalCallbacks);
+    await this.getAddressAsync();
+    await this.getChangeAddressAsync();
     await this.fetchTransactions();
 
     callback(callbackIndex++, totalCallbacks);
