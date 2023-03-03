@@ -150,7 +150,24 @@ export class AppStorage {
           let newData = encryption.encrypt(JSON.stringify(updatedData), password);
           await this.setItem('data', JSON.stringify(newData));
         }
-
+        // sort by mint index
+        if (unserializedWallet._lelantus_coins_list.length > 0) {
+          let sort = false;
+          for (let i = 0; i < unserializedWallet._lelantus_coins_list.length - 1; i++) {
+            if (unserializedWallet._lelantus_coins_list[i].index > unserializedWallet._lelantus_coins_list[i + 1].index) {
+              sort = true;
+              break;
+            }
+          }
+          if (sort) {
+            unserializedWallet._lelantus_coins_list.sort((coin1, coin2) => { return coin1.index - coin2.index });
+            let updatedData = {
+              wallet: JSON.stringify(unserializedWallet)
+            };
+            let newData = encryption.encrypt(JSON.stringify(updatedData), password);
+            await this.setItem('data', JSON.stringify(newData));
+          }
+        }
 
         const realm = await this.getRealm();
         this.inflateTransactionsFromRealm(realm, unserializedWallet);

@@ -220,26 +220,37 @@ export class FiroWallet implements AbstractWallet {
 
   private async createMintsFromAmount(total: number) {
     let tmpTotal = new BigNumber(total);
-    let index = 0;
+    let counter = 0;
     const mints = [];
     while (tmpTotal.toNumber() > 0) {
+      const index = this.next_free_mint_index + counter;
       const mintKeyPair = this._getNode(
         MINT_INDEX,
-        this.next_free_mint_index + index,
+        index,
       );
-      const mintValue = Math.min(tmpTotal.toNumber(), MINT_LIMIT);
-      const mint = await LelantusWrapper.lelantusMint(
+
+      const mintTag = await LelantusWrapper.getMintTag(
         mintKeyPair,
-        this.next_free_mint_index + index,
-        mintValue,
+        index,
       );
-      mints.push({
-        value: mintValue,
-        script: mint.script,
-        publicCoin: mint.publicCoin,
-      });
-      tmpTotal = tmpTotal.minus(MINT_LIMIT);
-      index++;
+      
+      if (this._anonymity_sets.find(set => set.coins.find(coin => coin[1] == mintTag) !== undefined) === undefined) {
+        const mintValue = Math.min(tmpTotal.toNumber(), MINT_LIMIT);
+        const mint = await LelantusWrapper.lelantusMint(
+          mintKeyPair,
+          index,
+          mintValue,
+        );
+        mints.push({
+          value: mintValue,
+          script: mint.script,
+          publicCoin: mint.publicCoin,
+          index: index,
+        });
+        tmpTotal = tmpTotal.minus(MINT_LIMIT);
+      }
+
+      counter++;
     }
     return mints;
   }
@@ -459,6 +470,7 @@ export class FiroWallet implements AbstractWallet {
       fee: fee,
       jmintValue: chageToMint,
       publicCoin: jmintData.publicCoin,
+      mintIndex: index,
       spendCoinIndexes: spendCoinIndexes,
     };
   }
@@ -467,16 +479,17 @@ export class FiroWallet implements AbstractWallet {
     txId: string,
     value: number,
     publicCoin: string,
+    index: number,
   ): void {
     this._lelantus_coins_list.push({
-      index: this.next_free_mint_index,
+      index: index,
       value: value,
       publicCoin: publicCoin,
       txId: txId,
       anonymitySetId: ANONYMITY_SET_EMPTY_ID,
       isUsed: false,
     });
-    this.next_free_mint_index += 1;
+    this.next_free_mint_index = Math.max(index + 1, this.next_free_mint_index);
   }
 
   markCoinsSpend(spendCoinIndexes: number[]): void {

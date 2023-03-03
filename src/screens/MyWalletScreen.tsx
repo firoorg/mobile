@@ -13,7 +13,6 @@ import {SATOSHI} from '../core/FiroWallet';
 import {useFocusEffect} from '@react-navigation/native';
 import BigNumber from 'bignumber.js';
 import Logger from '../utils/logger';
-import {Text} from 'react-native-elements';
 import {FiroStatusBar} from '../components/FiroStatusBar';
 
 const {colors} = CurrentFiroTheme;
@@ -74,7 +73,7 @@ const MyWalletScreen = () => {
 
         if (txId === mintTxResult.txId) {
           mintTxResult.mints.forEach(mint => {
-            wallet.addLelantusMintToCache(txId, mint.value, mint.publicCoin);
+            wallet.addLelantusMintToCache(txId, mint.value, mint.publicCoin, mint.index);
           });
           wallet.addMintTxToCache(
             txId,
@@ -114,7 +113,9 @@ const MyWalletScreen = () => {
   };
 
   const mintUnspentTransactions = async () => {
-    await doMint();
+    if (synced === true) {
+      await doMint();
+    }
   };
 
   const updateMintMetadata = async () => {
@@ -132,15 +133,18 @@ const MyWalletScreen = () => {
     }
   };
 
+  let synced = false;
   const syncWallet = async () => {
     const wallet = getWallet();
     if (!wallet) {
       return;
     }
     try {
+      synced = false;
       await wallet.sync(async () => {
         await saveToDisk();
       });
+      synced = true;
     } catch (e) {
       Logger.error('my_wallet_screen:sync ', e);
     }
@@ -155,17 +159,17 @@ const MyWalletScreen = () => {
     }, []),
   );
 
-  let syncing = false;
+  let updating = false;
   const updateWalletData = async () => {
-    if (syncing === true) {
+    if (updating === true) {
       return;
     }
-    syncing = true;
+    updating = true;
     setSync(true);
     await syncWallet();
     await updateMintMetadata();
     await mintUnspentTransactions();
-    syncing = false;
+    updating = false;
     setSync(false);
     updateBalance();
     updateTxHistory();

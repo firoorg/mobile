@@ -127,6 +127,7 @@ const SendConfirmScreen: FC<SendConfirmProps> = props => {
           txId,
           spendData.jmintValue,
           spendData.publicCoin,
+          spendData.mintIndex
         );
         wallet?.markCoinsSpend(spendData.spendCoinIndexes);
         await saveToDisk();
