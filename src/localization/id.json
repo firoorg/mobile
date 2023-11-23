@@ -1,0 +1,241 @@
+{
+  "global": {
+    "firo": "Firo",
+    "balance": "Saldo"
+  },
+  "component_button": {
+    "copy": "Salin",
+    "max": "Maks",
+    "get_firo": "Dapatkan Firo",
+    "cancel": "Batal",
+    "ok": "OK"
+  },
+  "component_input": {
+    "mnemonic_input_hint": "Masukkan mnemonik Anda di sini:",
+    "passphrase_input_hint": "Frasa sandi"
+  },
+  "create_address_card": {
+    "current_address": "Alamat saat ini:",
+    "address_name": "Nama alamat",
+    "address_copied": "Alamat telah disalin",
+    "save_address": "Simpan Alamat"
+  },
+  "empty_state": {
+    "no_transaction": "Anda Belum Melakukan Transaksi",
+    "short_description": "Deskripsi Singkat Di Sini"
+  },
+  "send_address": {
+    "address": "Alamat"
+  },
+  "amount_input": {
+    "enter_amount": "Masukan jumlah",
+    "amount": "Jumlah"
+  },
+  "transaction_list_item": {
+    "receive": "Diterima",
+    "send": "Terkirim",
+    "anonymize": "Dianonimkan",
+    "unconfirmed": "Tertunda"
+  },
+  "balance_card": {
+    "balance_firo": "Saldo Firo",
+    "pending_balance": "Tertunda"
+  },
+  "welcome_screen": {
+    "title": "Selamat datang di Firo",
+    "body_part_1": "Buat dompet Anda untuk mengelola Koin Firo Anda.",
+    "body_part_2": "Atau",
+    "create_wallet": "Buat Dompet",
+    "creating": "Membuat...",
+    "restore_wallet": "Pulihkan Dompet"
+  },
+  "mnemonic_view_screen": {
+    "title": "Cadangankan Mnemonik",
+    "body_part_1": "Tulis/salin mnemonik ini dan simpan di tempat yang aman.",
+    "body_part_2": "24 kata di bawah ini menyimpan semua data dan transaksi dompet Firo Anda. Kata-kata ini akan memulihkan dompet Anda jika Anda kehilangan perangkat Anda.",
+    "continue": "Lanjutkan"
+  },
+  "mnemonic_input_screen": {
+    "title": "Masukkan Mnemonik",
+    "body_part_1": "Masukkan mnemonik Anda di bawah ini, yang Anda simpan saat membuat dompet Anda.",
+    "continue": "Melanjutkan",
+    "restoring": "Memulihkan...",
+    "hidden": "Mnemonik disembunyikan",
+    "message_wait": "Proses ini memerlukan waktu beberapa menit, harap tunggu",
+    "message_failed_restore": "Gagal memulihkan dompet",
+    "progress_text_1": "Mengambil tx publik",
+    "progress_text_2": "Mengunduh koin yang sudah terpakai",
+    "progress_text_3": "Mengunduh kumpulan data",
+    "progress_text_4": "Mengekstraksi mint txs",
+    "progress_text_5": "Mengekstraksi pembelanjaan txs"
+  },
+  "my_mnemonic_screen": {
+    "title": "Mnemonik Milik Saya"
+  },
+  "passphrase_screen": {
+    "title": "Buat Frasa Sandi",
+    "body": "Anda akan menggunakan frasa sandi ini untuk membuka kunci dompet Anda setiap kali Anda memasukkannya.",
+    "create": "Buat",
+    "creating": "Membuat..."
+  },
+  "enter_passphrase_screen": {
+    "title_toolbar": "Masukkan frasa sandi",
+    "title_toolbar_fingerprint": "Harap Berikan sidik jari",
+    "title": "Masukkan Frasa Sandi",
+    "title_fingerprint": "Harap Berikan Sidik Jari",
+    "body": "Untuk membuka kunci dompet",
+    "login": "Masuk",
+    "loading": "Memuat...",
+    "prompt_fingerprint": "Masuk Melalui Sidik Jari",
+    "wrong_passphrase": "Frasa sandi salah"
+  },
+  "change_passphrase_screen": {
+    "title": "Ubah Frasa Sandi",
+    "label_current": "Frasa Sandi Saat Ini",
+    "label_new": "Frasa Sandi Baru",
+    "label_confirm": "Konfirmasikan Frasa Sandi Baru",
+    "title_error": "Kesalahan",
+    "title_success": "Kesuksesan!",
+    "description_success": "Frasa sandi berhasil diubah!",
+    "error_passphrase_mismatch": "Frasa sandi baru dan konfirmasi harus sama",
+    "error_passphrase_same": "Kata sandi baru dan lama harus berbeda",
+    "error_wrong_old_passphrase": "Frasa sandi lama tidak valid",
+    "error_failed": "Gagal mengubah frasa sandi",
+    "prompt_fingerprint": "Berikan Sidik Jari untuk Mengonfirmasi Perubahan Frasa Sandi"
+  },
+  "transaction_details": {
+    "title": "Detil transaksi",
+    "transaction_id": "ID transaksi",
+    "sent": "Terkirim",
+    "received": "Diterima",
+    "sent_to": "Dikirim ke",
+    "received_from": "Diterima dari",
+    "address": "Alamat",
+    "label": "Label",
+    "fee": "Biaya",
+    "address_copied": "Alamat telah disalin",
+    "id_copied": "ID telah disalin"
+  },
+  "send_screen": {
+    "title": "Kirim Firo",
+    "label_optional": "Label (opsional)",
+    "transaction_fee": "Biaya transaksi",
+    "total_send_amount": "Total Jumlah Pengiriman",
+    "send": "Kirim",
+    "reduce_fee": "Kurangi Biaya Dari Jumlah",
+    "select_address": "Pilih Alamat"
+  },
+  "send_confirm_screen": {
+    "title": "Konfirmasi Transaksi",
+    "warning": "Peringatan: ",
+    "warning_text": "Anda tidak dapat mengembalikan transaksi setelah dikirimkan ke blockchain.",
+    "amount": "Jumlah",
+    "address": "Alamat",
+    "label": "Label",
+    "transaction_fee": "Biaya transaksi",
+    "total_send_amount": "Total Jumlah Pengiriman",
+    "reduce_fee_from_amount": "Kurangi Biaya Dari Jumlah",
+    "confirm": "Konfirmasi",
+    "confirming": "Mengonfirmasi...",
+    "prompt_fingerprint": "Berikan Sidik Jari untuk Konfirmasi Transaksi",
+    "title_passphrase": "Masukkan frasa sandi",
+    "description_passphrase": "Masukkan frasa sandi untuk mengonfirmasi transaksi",
+    "button_confirm_passphrase": "konfirmasi",
+    "error": "Kesalahan",
+    "error_invalid_passphrase": "Frasa sandi tidak valid",
+    "error_invalid_fingerprint": "Verifikasi sidik jari gagal",
+    "error_invalid_address": "Alamat tidak valid",
+    "error_invalid_nowallet": "Gagal mendapatkan dompet",
+    "error_limit_exceeded": "Tidak dapat mengirim lebih dari 5001 FIRO",
+    "error_network": "Kesalahan jaringan, silakan coba lagi nanti",
+    "title_success": "Kesuksesan!",
+    "description_success": "Transaksi berhasil dikonfirmasi."
+  },
+  "receive_screen": {
+    "title": "Terima Firo",
+    "scan_qr": "Pindai kode QR ini",
+    "select_from_saved_address": "Pilih Dari Alamat Yang Sudah Tersimpan"
+  },
+  "my_wallet_screen": {
+    "title": "Dompetku"
+  },
+  "address_details_screen": {
+    "title": "Lihat Alamat",
+    "address": "Alamat",
+    "name": "Nama"
+  },
+  "address_book_screen": {
+    "title": "Buku alamat",
+    "add_new": "Tambah baru",
+    "address_copied": "Alamat disalin"
+  },
+  "address_book_menu_screen": {
+    "copy": "Salin",
+    "view": "Lihat",
+    "edit": "Sunting",
+    "delete": "Hapus",
+    "cancel": "Batal"
+  },
+  "add_edit_address_screen": {
+    "edit_address": "Sunting Alamat",
+    "add_new_address": "Tambahkan alamat baru",
+    "address": "Alamat",
+    "name": "Nama",
+    "save": "Simpan"
+  },
+  "scan_qrcode_screen": {
+    "invalid_qrcode_fragment": "Fragmen QRCode animasi tidak valid. ",
+    "camera_use_permission_title": "Izin untuk menggunakan kamera",
+    "camera_use_permission_message": "Kami memerlukan izin Anda untuk menggunakan kamera Anda.",
+    "open_settings": "Buka Pengaturan"
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "title_currency": "Mata uang",
+    "description_currency": "Tetapkan mata uang fiat pilihan Anda.",
+    "title_notification": "Pemberitahuan",
+    "description_notification": "Tampilkan notifikasi untuk transaksi masuk.",
+    "title_passphrase": "Ubah frasa sandi",
+    "description_passphrase": "Perbarui frasa sandi dompet seluler Firo Anda.",
+    "title_mnemonic": "Tunjukkan pemulihan mnemonik saya",
+    "description_mnemonic": "Periksa kembali frase pemulihan mnemonik Anda.",
+    "title_restore": "Pulihkan dompet",
+    "description_restore": "Pulihkan dompet seluler Firo yang ada.",
+    "title_warning": "Peringatan:",
+    "warning_restore_text": "setelah memulihkan Anda akan kehilangan dompet Anda saat ini. Pastikan Anda mencadangkan pemulihan mnemonik Anda",
+    "button_confirm_restore": "Mengerti",
+    "title_fingerprint": "Sidik jari",
+    "description_fingerprint": "Siapkan konfigurasi sidik jari",
+    "button_done": "Selesai",
+    "title_change_currency": "Ubah Mata Uang",
+    "title_passphrase_biometric": "Masukkan frasa sandi",
+    "description_passphrase_biometric": "Masukkan frasa sandi untuk mengaktifkan otentikasi sidik jari",
+    "description_passphrase_mnemonic": "Masukkan frasa sandi untuk melihat mnemonik Anda",
+    "button_enable_biometric": "Aktifkan Sidik Jari",
+    "title_processing": "Memproses...",
+    "title_success": "Sukses!",
+    "description_verifying_passphrase": "Memverifikasi frasa sandi",
+    "description_enabling_biometric": "Mengaktifkan otentikasi sidik jari",
+    "description_disabling_biometric": "Menonaktifkan otentikasi sidik jari",
+    "description_enabled_biometric": "Anda mengaktifkan otentikasi sidik jari Anda.",
+    "description_disable_biometric": "Anda menonaktifkan otentikasi sidik jari Anda.",
+    "error_invalid_passphrase": "Frasa sandi tidak valid",
+    "error_enabled_biometric": "Gagal mengaktifkan sidik jari",
+    "error_disabled_biometric": "Gagal menonaktifkan sidik jari",
+    "prompt_enable_biometric": "Aktifkan Sidik Jari",
+    "prompt_disable_biometric": "Nonaktifkan Sidik Jari",
+    "prompt_view_mnemonic": "Berikan Sidik Jari untuk Melihat Mnemonik",
+    "version": "Versi:"
+  },
+  "currencies": {
+    "usd": "USD",
+    "eur": "EUR",
+    "gbp": "GBP",
+    "aud": "AUD",
+    "btc": "BTC"
+  },
+  "errors": {
+    "error": "Kesalahan",
+    "error_biometric_disabled": "Otentikasi sidik jari tidak diaktifkan"
+  }
+}
